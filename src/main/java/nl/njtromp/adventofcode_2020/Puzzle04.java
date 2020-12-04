@@ -1,8 +1,66 @@
 package nl.njtromp.adventofcode_2020;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Puzzle04 {
+    private static final String[] requiredFields = {
+            "byr",
+            "iyr",
+            "eyr",
+            "hgt",
+            "hcl",
+            "ecl",
+            "pid"
+    };
+    private static final String[] optionalFields = {"cid"};
+
     static int solvePart1(String[] passportScans) {
-        return 0;
+        int validPassports = 0;
+        StringBuilder rawPassportData = new StringBuilder();
+        for (String passportScan : passportScans) {
+            if (passportScan.length() == 0) {
+                if (isValidPassport(rawPassportData.toString().strip(), requiredFields, optionalFields)) {
+                    validPassports += 1;
+                }
+                rawPassportData = new StringBuilder();
+            } else {
+                // Make sure to include a field separator!
+                rawPassportData.append(" ").append(passportScan);
+            }
+        }
+        if (rawPassportData.length() != 0) {
+            if (isValidPassport(rawPassportData.toString().strip(), requiredFields, optionalFields)) {
+                validPassports += 1;
+            }
+        }
+        return validPassports;
+    }
+
+    private static boolean isValidPassport(String passportData, String[] requiredFields, String[] optionalFields) {
+        Map<String, String> passportFields = new HashMap<>();
+        for (String fieldValue : passportData.split(" ")) {
+            if (fieldValue.length() != 0) {
+                String[] keyValuePair = fieldValue.strip().split(":");
+                if (passportFields.containsKey(keyValuePair[0])) {
+                    return false;
+                }
+                passportFields.put(keyValuePair[0], keyValuePair[1]);
+            }
+        }
+        for (String requiredField : requiredFields) {
+            if (!passportFields.containsKey(requiredField)) {
+                return false;
+            }
+            passportFields.remove(requiredField);
+        }
+        if (passportFields.size() > optionalFields.length) {
+            return false;
+        }
+        for (String optionalField : optionalFields) {
+            passportFields.remove(optionalField);
+        }
+        return passportFields.size() == 0;
     }
 
     public static void main(String[] args) {
