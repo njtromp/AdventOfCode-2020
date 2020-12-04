@@ -2,6 +2,8 @@ package nl.njtromp.adventofcode_2020;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Puzzle04 {
     private static final String[] requiredFields = {
@@ -16,11 +18,19 @@ public class Puzzle04 {
     private static final String[] optionalFields = {"cid"};
 
     static int solvePart1(String[] passportScans) {
+        return countValidPasswords(passportScans, false);
+    }
+
+    static int solvePart2(String[] passportScans) {
+        return countValidPasswords(passportScans, true);
+    }
+
+    private static int countValidPasswords(String[] passportScans, boolean validateFielValues) {
         int validPassports = 0;
         StringBuilder rawPassportData = new StringBuilder();
         for (String passportScan : passportScans) {
             if (passportScan.length() == 0) {
-                if (isValidPassport(rawPassportData.toString().strip(), requiredFields, optionalFields)) {
+                if (isValidPassport(rawPassportData.toString().strip(), requiredFields, optionalFields, validateFielValues)) {
                     validPassports += 1;
                 }
                 rawPassportData = new StringBuilder();
@@ -30,14 +40,14 @@ public class Puzzle04 {
             }
         }
         if (rawPassportData.length() != 0) {
-            if (isValidPassport(rawPassportData.toString().strip(), requiredFields, optionalFields)) {
+            if (isValidPassport(rawPassportData.toString().strip(), requiredFields, optionalFields, validateFielValues)) {
                 validPassports += 1;
             }
         }
         return validPassports;
     }
 
-    private static boolean isValidPassport(String passportData, String[] requiredFields, String[] optionalFields) {
+    private static boolean isValidPassport(String passportData, String[] requiredFields, String[] optionalFields, boolean validateFielValues) {
         Map<String, String> passportFields = new HashMap<>();
         for (String fieldValue : passportData.split(" ")) {
             if (fieldValue.length() != 0) {
@@ -52,6 +62,9 @@ public class Puzzle04 {
             if (!passportFields.containsKey(requiredField)) {
                 return false;
             }
+            if (validateFielValues && !isValidField(requiredField, passportFields.get(requiredField))) {
+                return false;
+            }
             passportFields.remove(requiredField);
         }
         if (passportFields.size() > optionalFields.length) {
@@ -63,8 +76,59 @@ public class Puzzle04 {
         return passportFields.size() == 0;
     }
 
+    private static Pattern fourDigits = Pattern.compile("\\d{4}");
+    private static Pattern nineDigits = Pattern.compile("\\d{9}");
+    private static Pattern height = Pattern.compile("(\\d{2,3})((in)|(cm))");
+    private static Pattern hairColor = Pattern.compile("#([a-f]|\\d){6}");
+    private static Pattern eyeColors = Pattern.compile("(amb)|(blu)|(brn)|(gry)|(grn)|(hzl)|(oth)");
+
+    public static boolean isValidField(String key, String value) {
+        switch (key) {
+            case "byr":
+                if (fourDigits.matcher(value).matches()) {
+                    int number = Integer.parseInt(value);
+                    return number >= 1920 && number <= 2002;
+                }
+                return false;
+            case "iyr":
+                if (fourDigits.matcher(value).matches()) {
+                    int number = Integer.parseInt(value);
+                    return number >= 2010 && number <= 2020;
+                }
+                return false;
+            case "eyr":
+                if (fourDigits.matcher(value).matches()) {
+                    int number = Integer.parseInt(value);
+                    return number >= 2020 && number <= 2030;
+                }
+                return false;
+            case "hgt":
+                Matcher heightMatcher = height.matcher(value);
+                if (heightMatcher.matches()) {
+                    int height = Integer.parseInt(heightMatcher.group(1));
+                    switch (heightMatcher.group(2)) {
+                        case "cm":
+                            return height >= 150 && height <= 193;
+                        case "in":
+                            return height >= 59 && height <= 76;
+                    }
+                }
+                return false;
+            case "hcl":
+                return hairColor.matcher(value).matches();
+            case "ecl":
+                return eyeColors.matcher(value).matches();
+            case "pid":
+                return nineDigits.matcher(value).matches();
+            case "cid":
+                return true;
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         System.out.printf("Answer part 1: %d\n", solvePart1(passportScans));
+        System.out.printf("Answer part 2: %d\n", solvePart2(passportScans));
     }
 
     private static String[] passportScans = {
