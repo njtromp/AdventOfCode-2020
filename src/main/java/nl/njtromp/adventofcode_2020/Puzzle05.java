@@ -9,7 +9,9 @@ public class Puzzle05 {
     }
 
     static int convertToSeatId(String boardingPass) {
-        return -1;
+        return Integer.parseInt(boardingPass
+                .replaceAll("F|L", "0")
+                .replaceAll("B|R", "1"), 2);
     }
 
     public static void main(String[] args) {
