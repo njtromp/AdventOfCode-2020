@@ -22,8 +22,8 @@ public class Puzzle05 {
 
     static int convertToSeatId(String boardingPass) {
         return Integer.parseInt(boardingPass
-                .replaceAll("F|L", "0")
-                .replaceAll("B|R", "1"), 2);
+                .replaceAll("[FL]", "0")
+                .replaceAll("[BR]", "1"), 2);
     }
 
     public static void main(String[] args) {
