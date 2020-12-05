@@ -1,11 +1,23 @@
 package nl.njtromp.adventofcode_2020;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Puzzle05 {
 
     static int solvePart1(String[] boardingPasses) {
         return Arrays.stream(boardingPasses).mapToInt(Puzzle05::convertToSeatId).max().getAsInt();
+    }
+
+    static int solvePart2(String[] boardingPasses) {
+        Set<Integer> occupiedSeats = Arrays.stream(boardingPasses).map(Puzzle05::convertToSeatId).collect(Collectors.toSet());
+        for (int seat = 8; seat < 128 * 8; seat++) {
+            if (!occupiedSeats.contains(seat) && occupiedSeats.contains(seat - 1) && occupiedSeats.contains(seat + 1)) {
+                return seat;
+            }
+        }
+        return -1;
     }
 
     static int convertToSeatId(String boardingPass) {
@@ -16,6 +28,7 @@ public class Puzzle05 {
 
     public static void main(String[] args) {
         System.out.printf("Answer part 1: %d\n", solvePart1(boardingPasses));
+        System.out.printf("Answer part 2: %d\n", solvePart2(boardingPasses));
     }
 
     static String[] boardingPasses = {
