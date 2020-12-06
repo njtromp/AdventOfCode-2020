@@ -1,6 +1,8 @@
 package nl.njtromp;
 
-import nl.njtromp.model.Reading;
+import nl.njtromp.model.ContaminantReading;
+import nl.njtromp.model.LevelReading;
+import nl.njtromp.model.Region;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ public class TrackingGame {
     public static void main(String[] args) {
         puzzle1();
         puzzle2();
+        puzzle3();
     }
 
     private static void puzzle1() {
@@ -31,12 +34,12 @@ public class TrackingGame {
                 rawReading.append((char)Integer.parseInt(ec, 2));
             }
         }
-        Map<String, List<Reading>> readings = new HashMap<>();
+        Map<String, List<ContaminantReading>> readings = new HashMap<>();
         try {
             JSONArray readingsForInterval = new JSONArray(rawReading.toString());
             for (int i = 0; i < readingsForInterval.length(); i++) {
                 String date = ((JSONObject) readingsForInterval.get(i)).get("date").toString();
-                List<Reading> readingsOnDay = new ArrayList<>();
+                List<ContaminantReading> readingsOnDay = new ArrayList<>();
                 readings.put(date, readingsOnDay);
 
                 JSONArray readingsPerDay = readingsForInterval.getJSONObject(i).getJSONArray("readings");
@@ -44,7 +47,7 @@ public class TrackingGame {
                     JSONObject readingsOnTime = readingsPerDay.getJSONObject(j);
                     int time = readingsOnTime.getInt("time");
                     String id = readingsOnTime.getString("id");
-                    Reading reading = new Reading(date, time, id);
+                    ContaminantReading reading = new ContaminantReading(date, time, id);
                     readingsOnDay.add(reading);
                     JSONObject contaminants = readingsOnTime.getJSONObject("contaminants");
                     Iterator<String> contaminantIter = (Iterator<String>) contaminants.keys();
@@ -58,19 +61,41 @@ public class TrackingGame {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        int anomaly = readings.entrySet().stream().mapToInt(d -> d.getValue().stream().map(Reading::getTotal).max(Integer::compareTo).get()).max().getAsInt();
-        Reading anomalyReading = readings.entrySet().stream().flatMap(d -> d.getValue().stream()).filter(r -> r.getTotal() == anomaly).findFirst().get();
+        int anomaly = readings.entrySet().stream().mapToInt(d -> d.getValue().stream().map(ContaminantReading::getTotal).max(Integer::compareTo).get()).max().getAsInt();
+        ContaminantReading anomalyReading = readings.entrySet().stream().flatMap(d -> d.getValue().stream()).filter(r -> r.getTotal() == anomaly).findFirst().get();
         for (int i = 0; i <= anomalyReading.id.length() - 2; i += 2) {
             System.out.print((char)Integer.parseInt(anomalyReading.id.substring(i, i + 2), 16));
         }
         System.out.println();
     }
 
-
-//    double total = r.contaminants.values().stream().mapToInt(Integer::valueOf).sum();
-//    double average = total / r.contaminants.size();
-//    double deviation = r.contaminants.values().stream().mapToDouble(v -> Math.pow(v.doubleValue() - average, 2)).sum() / (r.contaminants.size() - 1);
-//                System.out.printf("%s (%s) = %.0f (%f)\n", d.getKey(), r.id, total, deviation);
+    private static void puzzle3() {
+        try {
+            JSONObject readingAsJson = new JSONObject(new Scanner(TrackingGame.class.getResourceAsStream("./../../tracking-game/flood.json")).nextLine());
+            JSONArray regionsData = readingAsJson.getJSONArray("regions");
+            List<Region> regions = new ArrayList<>();
+            for (int i = 0; i < regionsData.length(); i++) {
+                JSONObject regionData = regionsData.getJSONObject(i);
+                Region region = new Region(regionData.getString("regionID"));
+                regions.add(region);
+                JSONArray regionReadings = regionData.getJSONArray("readings");
+                for (int j = 0; j < regionReadings.length(); j++) {
+                    JSONObject readingData = regionReadings.getJSONObject(j);
+                    String id = readingData.getString("readingID");
+                    String date = readingData.getString("date");
+                    LevelReading reading = new LevelReading(id, date);
+                    region.readings.add(reading);
+                    JSONArray readingValues = readingData.getJSONArray("reading");
+                    for (int k = 0; k < readingValues.length(); k++) {
+                        reading.readings.add(readingValues.getInt(k));
+                    }
+                }
+                System.out.println(region);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static boolean containsValidChars(String message) {
         for (char c : message.toCharArray()) {
