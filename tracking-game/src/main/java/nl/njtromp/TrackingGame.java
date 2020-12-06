@@ -1,10 +1,16 @@
-package nl.njtromp.adventofcode_2020;
+package nl.njtromp;
 
-import java.util.Base64;
+import nl.njtromp.model.Reading;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.*;
 
 public class TrackingGame {
     public static void main(String[] args) {
         puzzle1();
+        puzzle2();
     }
 
     private static void puzzle1() {
@@ -16,6 +22,55 @@ public class TrackingGame {
             }
         }
     }
+
+    private static void puzzle2() {
+        Scanner readingLog = new Scanner(TrackingGame.class.getResourceAsStream("./../../tracking-game/ppb.bin.log"));
+        StringBuilder rawReading = new StringBuilder();
+        while (readingLog.hasNextLine()) {
+            for (String ec : readingLog.nextLine().split(" ")) {
+                rawReading.append((char)Integer.parseInt(ec, 2));
+            }
+        }
+        Map<String, List<Reading>> readings = new HashMap<>();
+        try {
+            JSONArray readingsForInterval = new JSONArray(rawReading.toString());
+            for (int i = 0; i < readingsForInterval.length(); i++) {
+                String date = ((JSONObject) readingsForInterval.get(i)).get("date").toString();
+                List<Reading> readingsOnDay = new ArrayList<>();
+                readings.put(date, readingsOnDay);
+
+                JSONArray readingsPerDay = readingsForInterval.getJSONObject(i).getJSONArray("readings");
+                for (int j = 0; j < readingsPerDay.length(); j++) {
+                    JSONObject readingsOnTime = readingsPerDay.getJSONObject(j);
+                    int time = readingsOnTime.getInt("time");
+                    String id = readingsOnTime.getString("id");
+                    Reading reading = new Reading(date, time, id);
+                    readingsOnDay.add(reading);
+                    JSONObject contaminants = readingsOnTime.getJSONObject("contaminants");
+                    Iterator<String> contaminantIter = (Iterator<String>) contaminants.keys();
+                    while (contaminantIter.hasNext()) {
+                        String contaminant =  contaminantIter.next();
+                        int value = contaminants.getInt(contaminant);
+                        reading.contaminants.put(contaminant, value);
+                    };
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        int anomaly = readings.entrySet().stream().mapToInt(d -> d.getValue().stream().map(Reading::getTotal).max(Integer::compareTo).get()).max().getAsInt();
+        Reading anomalyReading = readings.entrySet().stream().flatMap(d -> d.getValue().stream()).filter(r -> r.getTotal() == anomaly).findFirst().get();
+        for (int i = 0; i <= anomalyReading.id.length() - 2; i += 2) {
+            System.out.print((char)Integer.parseInt(anomalyReading.id.substring(i, i + 2), 16));
+        }
+        System.out.println();
+    }
+
+
+//    double total = r.contaminants.values().stream().mapToInt(Integer::valueOf).sum();
+//    double average = total / r.contaminants.size();
+//    double deviation = r.contaminants.values().stream().mapToDouble(v -> Math.pow(v.doubleValue() - average, 2)).sum() / (r.contaminants.size() - 1);
+//                System.out.printf("%s (%s) = %.0f (%f)\n", d.getKey(), r.id, total, deviation);
 
     private static boolean containsValidChars(String message) {
         for (char c : message.toCharArray()) {
