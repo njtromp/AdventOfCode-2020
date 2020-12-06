@@ -29,6 +29,7 @@ public class Puzzle06 {
 
     public static void main(String[] args) {
         System.out.printf("Answer part 1: %d\n", Puzzle06.solvePart1(answers));
+        System.out.printf("Answer part 2: %d\n", Puzzle06.solvePart2(answers));
     }
 
     static String[] answers = {
