@@ -41,8 +41,8 @@ public class Puzzle06 {
                 }
             }
         }
-        int finalPassengerCount1 = passengerCount;
-        totalAnseredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount1).count();
+        int finalPassengerCount = passengerCount;
+        totalAnseredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount).count();
         return totalAnseredYes;
     }
 
