@@ -22,6 +22,11 @@ public class Puzzle06 {
         return totalAnseredYes;
     }
 
+    public static int solvePart2(String[] answers) {
+        return -1;
+    }
+
+
     public static void main(String[] args) {
         System.out.printf("Answer part 1: %d\n", Puzzle06.solvePart1(answers));
     }
