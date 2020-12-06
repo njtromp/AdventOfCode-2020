@@ -1,6 +1,8 @@
 package nl.njtromp.adventofcode_2020;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Puzzle06 {
@@ -23,7 +25,25 @@ public class Puzzle06 {
     }
 
     public static int solvePart2(String[] answers) {
-        return -1;
+        int totalAnseredYes = 0;
+        int passengerCount = 0;
+        Map<Character, Integer> answeredYes = new HashMap<>();
+        for (String answer : answers) {
+            if (answer.length() == 0) {
+                int finalPassengerCount = passengerCount;
+                totalAnseredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount).count();
+                answeredYes = new HashMap<>();
+                passengerCount = 0;
+            } else {
+                passengerCount++;
+                for (char a : answer.toCharArray()) {
+                    answeredYes.put(a, 1 + answeredYes.getOrDefault(a,0));
+                }
+            }
+        }
+        int finalPassengerCount1 = passengerCount;
+        totalAnseredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount1).count();
+        return totalAnseredYes;
     }
 
 
