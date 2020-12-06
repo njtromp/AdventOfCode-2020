@@ -1,8 +1,25 @@
 package nl.njtromp.adventofcode_2020;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Puzzle06 {
+
     static int solvePart1(String[] answers) {
-        return -1;
+        int totalAnseredYes = 0;
+        Set<Character> answeredYes = new HashSet<>();
+        for (String answer : answers) {
+            if (answer.length() == 0) {
+                totalAnseredYes += answeredYes.size();
+                answeredYes = new HashSet<>();
+            } else {
+                for (char a : answer.toCharArray()) {
+                    answeredYes.add(a);
+                }
+            }
+        }
+        totalAnseredYes += answeredYes.size();
+        return totalAnseredYes;
     }
 
     public static void main(String[] args) {
