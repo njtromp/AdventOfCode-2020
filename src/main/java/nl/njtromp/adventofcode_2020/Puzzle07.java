@@ -37,7 +37,6 @@ public class Puzzle07 {
         });
         bags.get(SHINY_GOLD).leadsToGold = true;
         for (Bag bag : bags.values()) {
-            System.out.println();
             checkbag(bags, bag);
         }
         return (int) bags.values().stream().filter(b -> b.leadsToGold && !SHINY_GOLD.equals(b.color)).count();
