@@ -15,6 +15,10 @@ public class Puzzle07 {
             this.color = color;
         }
 
+        int totalNumberOfBags() {
+            return content.stream().mapToInt(b -> counts.get(b) + counts.get(b) * b.totalNumberOfBags()).sum();
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -31,15 +35,28 @@ public class Puzzle07 {
 
     static int solvePart1(String[] rules) {
         Map<String, Bag> bags = processRules(rules);
+        prepareBagsForProcessing(bags);
+        for (Bag bag : bags.values()) {
+            checkbag(bags, bag);
+        }
+        return (int) bags.values().stream().filter(b -> b.leadsToGold && !SHINY_GOLD.equals(b.color)).count();
+    }
+
+    static int solvePart2(String[] rules) {
+        Map<String, Bag> bags = processRules(rules);
+        prepareBagsForProcessing(bags);
+        for (Bag bag : bags.values()) {
+            checkbag(bags, bag);
+        }
+        return bags.get(SHINY_GOLD).totalNumberOfBags();
+    }
+
+    private static void prepareBagsForProcessing(Map<String, Bag> bags) {
         bags.values().forEach(b -> {
             b.checked = false;
             b.leadsToGold = false;
         });
         bags.get(SHINY_GOLD).leadsToGold = true;
-        for (Bag bag : bags.values()) {
-            checkbag(bags, bag);
-        }
-        return (int) bags.values().stream().filter(b -> b.leadsToGold && !SHINY_GOLD.equals(b.color)).count();
     }
 
     private static boolean checkbag(Map<String, Bag> bags, Bag bag) {
@@ -58,13 +75,14 @@ public class Puzzle07 {
                         return b;
                     })
                     .filter(b -> b.leadsToGold).count() > 0;
+            return bag.leadsToGold;
         }
-        return bag.leadsToGold;
     }
 
     public static void main(String[] args) {
         String[] rules = readInput();
         System.out.printf("Answer part 1: %d\n", solvePart1(rules));
+        System.out.printf("Answer part 2: %d\n", solvePart2(rules));
     }
 
     private static Map<String, Bag> processRules(String[] rules) {
