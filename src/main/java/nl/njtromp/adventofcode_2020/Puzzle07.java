@@ -38,7 +38,8 @@ public class Puzzle07 {
         for (Bag bag : bags.values()) {
             checkBag(bags, bag);
         }
-        return (int) bags.values().stream().filter(b -> b.leadsToGold && !SHINY_GOLD.equals(b.color)).count();
+        bags.remove(SHINY_GOLD);
+        return (int) bags.values().stream().filter(b -> b.leadsToGold).count();
     }
 
     static int solvePart2(String[] rules) {
