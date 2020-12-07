@@ -25,13 +25,13 @@ public class Puzzle06 {
     }
 
     public static int solvePart2(String[] answers) {
-        int totalAnseredYes = 0;
+        int totalAnsweredYes = 0;
         int passengerCount = 0;
         Map<Character, Integer> answeredYes = new HashMap<>();
         for (String answer : answers) {
             if (answer.length() == 0) {
                 int finalPassengerCount = passengerCount;
-                totalAnseredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount).count();
+                totalAnsweredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount).count();
                 answeredYes = new HashMap<>();
                 passengerCount = 0;
             } else {
@@ -42,8 +42,8 @@ public class Puzzle06 {
             }
         }
         int finalPassengerCount = passengerCount;
-        totalAnseredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount).count();
-        return totalAnseredYes;
+        totalAnsweredYes += answeredYes.values().stream().filter(n -> n == finalPassengerCount).count();
+        return totalAnsweredYes;
     }
 
 
