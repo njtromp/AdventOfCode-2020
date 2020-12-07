@@ -117,11 +117,12 @@ public class Puzzle07 {
     }
 
     private static String[] readInput() {
-        Scanner input = new Scanner(Puzzle07.class.getResourceAsStream("/input-day07.txt"));
-        List<String> rules = new ArrayList<>();
-        while (input.hasNextLine()) {
-            rules.add(input.nextLine());
+        List<String> lines = new ArrayList<>();
+        String fileName = String.format("/input-%s.txt", Puzzle07.class.getSimpleName()).toLowerCase();
+        Scanner inputFile = new Scanner(Puzzle07.class.getResourceAsStream(fileName));
+        while (inputFile.hasNextLine()) {
+            lines.add(inputFile.nextLine());
         }
-        return rules.toArray(new String[rules.size()]);
+        return lines.toArray(new String[lines.size()]);
     }
 }
