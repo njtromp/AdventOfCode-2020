@@ -8,7 +8,6 @@ public class Puzzle07 {
         final String color;
         final List<Bag> content = new ArrayList<>();
         final Map<Bag, Integer> counts = new HashMap<>();
-        boolean checked;
         boolean leadsToGold;
 
         public Bag(String color) {
@@ -35,7 +34,7 @@ public class Puzzle07 {
 
     static int solvePart1(String[] rules) {
         Map<String, Bag> bags = processRules(rules);
-        prepareBagsForProcessing(bags);
+        bags.get(SHINY_GOLD).leadsToGold = true;
         for (Bag bag : bags.values()) {
             checkBag(bags, bag);
         }
@@ -44,7 +43,7 @@ public class Puzzle07 {
 
     static int solvePart2(String[] rules) {
         Map<String, Bag> bags = processRules(rules);
-        prepareBagsForProcessing(bags);
+        bags.get(SHINY_GOLD).leadsToGold = true;
         for (Bag bag : bags.values()) {
             checkBag(bags, bag);
         }
@@ -57,31 +56,17 @@ public class Puzzle07 {
         System.out.printf("Answer part 2: %d\n", solvePart2(rules));
     }
 
-    private static void prepareBagsForProcessing(Map<String, Bag> bags) {
-        bags.values().forEach(b -> {
-            b.checked = false;
-            b.leadsToGold = false;
-        });
-        bags.get(SHINY_GOLD).leadsToGold = true;
-    }
-
     private static boolean checkBag(Map<String, Bag> bags, Bag bag) {
         if (SHINY_GOLD.equals(bag.color)) {
             return true;
         } else {
-            if (bag.checked) {
-                return bag.leadsToGold;
+            if (!bag.leadsToGold) {
+                bag.leadsToGold = bag.content.stream()
+                        .peek(b -> b.leadsToGold = checkBag(bags, b))
+                        // IntelliJ suggests to replace this with anyMatch but that might lead to lazy evaluation
+                        // and we need ALL bags to be checked so we don't do that.
+                        .filter(b -> b.leadsToGold).count() > 0;
             }
-            bag.checked = true;
-            bag.leadsToGold = bag.content.stream()
-                    .peek(b -> {
-                        if (!b.checked) {
-                            b.leadsToGold = checkBag(bags, b);
-                        }
-                    })
-                    // IntelliJ suggests to replace this with anyMatch but that might lead to lazy evaluation
-                    // and we need ALL bags to be checked so we don't do that.
-                    .filter(b -> b.leadsToGold).count() > 0;
             return bag.leadsToGold;
         }
     }
