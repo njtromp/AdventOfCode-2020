@@ -8,8 +8,8 @@ object Day01 extends App {
     numbers += line.toInt
   }
   val answerPart1 = numbers.filter(n => numbers.contains(2020 - n)).product
-  println(s"Answer part 1: $answerPart1");
+  println(s"Answer part 1: $answerPart1")
   val answerPart2 = numbers.filter(n => numbers.filter(m => numbers.contains(2020 - n - m)).size > 0).product
-  println(s"Answer part 2: $answerPart2");
+  println(s"Answer part 2: $answerPart2")
 
 }

@@ -22,6 +22,6 @@ object Day02 extends App {
       }
     }
   }
-  println(s"Answer part 1: $validPasswordsPart1");
-  println(s"Answer part 2: $validPasswordsPart2");
+  println(s"Answer part 1: $validPasswordsPart1")
+  println(s"Answer part 2: $validPasswordsPart2")
 }

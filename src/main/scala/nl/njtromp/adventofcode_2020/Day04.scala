@@ -63,6 +63,6 @@ object Day04 extends App {
     }
   }
 
-  println(s"Answer part 1: ${passports.size}");
-  println(s"Answer part 2: ${passports.filter(p => fieldChecks(p)).size}");
+  println(s"Answer part 1: ${passports.size}")
+  println(s"Answer part 2: ${passports.filter(p => fieldChecks(p)).size}")
 }

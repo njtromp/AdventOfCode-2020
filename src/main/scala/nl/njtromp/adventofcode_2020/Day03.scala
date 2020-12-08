@@ -9,7 +9,7 @@ object Day03 extends App {
     numberOfTrees += (if (line.charAt(column) == '#') 1 else 0)
     column = (column + 3) % line.length
   }
-  println(s"Answer part 1: $numberOfTrees");
+  println(s"Answer part 1: $numberOfTrees")
 
   var totalTreeCount: Long = 1
   val slopes = Array(Array(1,1), Array(3, 1), Array(5, 1), Array(7, 1), Array(1, 2))
@@ -26,6 +26,6 @@ object Day03 extends App {
     }
     totalTreeCount *= numberOfTrees
   }
-  println(s"Answer part 2: $totalTreeCount");
+  println(s"Answer part 2: $totalTreeCount")
 
 }
