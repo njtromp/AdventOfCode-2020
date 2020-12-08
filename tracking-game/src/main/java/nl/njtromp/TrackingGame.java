@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TrackingGame {
     public static void main(String[] args) {
@@ -83,15 +84,36 @@ public class TrackingGame {
                     JSONObject readingData = regionReadings.getJSONObject(j);
                     String id = readingData.getString("readingID");
                     String date = readingData.getString("date");
-                    LevelReading reading = new LevelReading(id, date);
+                    LevelReading reading = new LevelReading(id, date.length() == 10 ? "0" + date : date);
                     region.readings.add(reading);
                     JSONArray readingValues = readingData.getJSONArray("reading");
                     for (int k = 0; k < readingValues.length(); k++) {
                         reading.readings.add(readingValues.getInt(k));
                     }
                 }
-                System.out.println(region);
             }
+            String solution = regions.stream().filter(r -> {
+                LevelReading last = r.readings.get(0);
+                boolean keep = false;
+                for (LevelReading current : r.readings) {
+                    if (current.getFloodDanger() - last.getFloodDanger() > 1000) {
+                        current.keep = true;
+                        keep = true;
+                    }
+                    last = current;
+                }
+                return keep;
+//            }).sorted((r1, r2) -> r1.readings.stream().filter(r -> r.keep).findFirst().get().date
+//                            .compareTo(r2.readings.stream().filter(r -> r.keep).findFirst().get().date)
+
+            }).sorted((r1, r2) -> r1.readings.stream().filter(r -> r.keep).findFirst().get().id
+                            .compareTo(r2.readings.stream().filter(r -> r.keep).findFirst().get().id)
+            )
+
+            .map(r -> r.id).collect(Collectors.joining());
+
+            System.out.println(solution);
+            System.out.println(new String(Base64.getDecoder().decode(solution)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
