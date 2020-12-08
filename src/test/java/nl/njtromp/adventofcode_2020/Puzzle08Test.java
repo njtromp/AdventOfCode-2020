@@ -24,7 +24,6 @@ class Puzzle08Test {
         assertEquals(5, Puzzle08.solvePart1(example));
     }
 
-    @Disabled("Enable after part 1 has been solved!")
     @Test
     void checkExamplePart2() {
         assertEquals(0, Puzzle08.solvePart2(example));
