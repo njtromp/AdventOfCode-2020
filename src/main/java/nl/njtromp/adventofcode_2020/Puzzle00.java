@@ -21,8 +21,7 @@ public class Puzzle00 {
 
     private static String[] readInput() {
         List<String> lines = new ArrayList<>();
-        String fileName = String.format("/input-%s.txt", Puzzle00.class.getSimpleName()).toLowerCase();
-        Scanner inputFile = new Scanner(Puzzle00.class.getResourceAsStream(fileName));
+        Scanner inputFile = new Scanner(Puzzle00.class.getResourceAsStream("/input-puzzle00.txt"));
         while (inputFile.hasNextLine()) {
             lines.add(inputFile.nextLine());
         }
