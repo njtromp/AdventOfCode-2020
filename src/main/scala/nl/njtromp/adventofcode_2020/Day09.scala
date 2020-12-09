@@ -8,7 +8,6 @@ object Day09 extends App {
     numbers = line.toLong +: numbers
   }
   numbers = numbers.reverse
-
   val preamble = 25
 
   println(s"Answer part 1: ${solvePart1}")
@@ -27,13 +26,9 @@ object Day09 extends App {
   def solvePart2(valueToConstruct: Long): Long = {
     for (i <- numbers.indices) {
       var j = i
-      while (numbers.slice(i, j).sum < valueToConstruct) {
-        j += 1
-      }
-      if (numbers.slice(i, j).sum == valueToConstruct) {
-        val ns = numbers.slice(i, j)
-        return ns.min + ns.max
-      }
+      while (numbers.slice(i, j).sum < valueToConstruct) j += 1
+      if (numbers.slice(i, j).sum == valueToConstruct)
+        return numbers.slice(i, j).min + numbers.slice(i, j).max
     }
     -1
   }
