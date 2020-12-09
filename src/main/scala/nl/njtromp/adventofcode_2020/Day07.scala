@@ -10,12 +10,12 @@ object Day07 extends App {
   for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle07.txt")).getLines) {
     line match {
       case outerBagInfo(outerColor, innerBagsInfo) => {
-        var innerBags: List[(String, Int)] = bags.get(outerColor).getOrElse(List.empty)
+        var innerBags: List[(String, Int)] = bags.getOrElse(outerColor, List.empty)
         for (innerBag <- innerBagsInfo.split(", ")) {
           innerBag match {
             case innerBagInfo(number, innerColor, _) => innerBags = (innerColor, number.toInt) +: innerBags
-            case "no other bags" => {} // Nothing
-            case _ => println(s"No match for inner bag ${innerBag}")
+            case "no other bags" => // Nothing
+            case _ => println(s"No match for inner bag [${innerBag}]")
           }
         }
         bags += (outerColor -> innerBags)
@@ -38,7 +38,7 @@ object Day07 extends App {
   def leadsToShinyGold(bagColor: String): Boolean = {
     bagColor match {
       case "shiny gold" => true
-      case _ => bags(bagColor).filter(b => leadsToShinyGold(b._1)).size > 0
+      case _ => bags(bagColor).exists(b => leadsToShinyGold(b._1))
     }
   }
 
