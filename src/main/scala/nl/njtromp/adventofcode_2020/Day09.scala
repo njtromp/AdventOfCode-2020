@@ -9,12 +9,10 @@ object Day09 extends App {
   }
   numbers = numbers.reverse
 
-//  numbers = Array(35, 20 ,15 ,25 ,47 ,40 ,62 ,55 ,65 ,95 ,102 ,117 ,150 ,182 ,127 ,219 ,299 ,277 ,309 ,576)
   val preamble = 25
 
   println(s"Answer part 1: ${solvePart1}")
-  val answerPart2 = -1
-  println(s"Answer part 2: $answerPart2")
+  println(s"Answer part 2: ${solvePart2(solvePart1)}")
 
   def solvePart1: Long = {
     for (i <- preamble to numbers.length) {
@@ -26,4 +24,17 @@ object Day09 extends App {
     -1
   }
 
+  def solvePart2(valueToConstruct: Long): Long = {
+    for (i <- numbers.indices) {
+      var j = i
+      while (numbers.slice(i, j).sum < valueToConstruct) {
+        j += 1
+      }
+      if (numbers.slice(i, j).sum == valueToConstruct) {
+        val ns = numbers.slice(i, j)
+        return ns.min + ns.max
+      }
+    }
+    -1
+  }
 }
