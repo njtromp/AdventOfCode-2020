@@ -7,6 +7,7 @@ object Day09 extends App {
   for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle09.txt")).getLines) {
     numbers = line.toLong +: numbers
   }
+  numbers = numbers.reverse
 
 //  numbers = Array(35, 20 ,15 ,25 ,47 ,40 ,62 ,55 ,65 ,95 ,102 ,117 ,150 ,182 ,127 ,219 ,299 ,277 ,309 ,576)
   val preamble = 25
@@ -17,8 +18,8 @@ object Day09 extends App {
 
   def solvePart1: Long = {
     for (i <- preamble to numbers.length) {
-      val partial = numbers.slice(i -  preamble, i)
-      if (!partial.flatMap(n => partial.filter(m => n != m).map(m => (n, m))).map(a => a._1 + a._2).contains(numbers(i))) {
+      val partial = numbers.slice(i - preamble, i)
+      if (!partial.flatMap(n => partial.filter(m => n != m).map(m => n + m)).contains(numbers(i))) {
         return numbers(i)
       }
     }
