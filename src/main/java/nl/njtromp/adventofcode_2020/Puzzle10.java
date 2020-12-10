@@ -25,17 +25,17 @@ public class Puzzle10 {
     }
 
     static long solvePart2(String[] lines) {
-        List<Integer> adepters = Arrays.stream(lines).map(Integer::parseInt).collect(Collectors.toList());
-        adepters.add(0);
-        Collections.sort(adepters);
-        adepters.add(adepters.get(adepters.size() - 1) + 3);
+        List<Integer> adapters = Arrays.stream(lines).map(Integer::parseInt).collect(Collectors.toList());
+        adapters.add(0);
+        Collections.sort(adapters);
+        adapters.add(adapters.get(adapters.size() - 1) + 3);
 
         int low = 0;
         int high = 0;
         long answer = 1;
         Map<Integer, Long> mulipliers = Map.of(0, 1L, 1, 1L, 2, 1L, 3, 2L, 4, 4L, 5, 7L);
-        while (low < adepters.size() - 1 && high < adepters.size() - 1) {
-            while (adepters.get(high) + 3 != adepters.get(high + 1)) {
+        while (low < adapters.size() - 1 && high < adapters.size() - 1) {
+            while (adapters.get(high) + 3 != adapters.get(high + 1)) {
                 high++;
             }
             high++;
