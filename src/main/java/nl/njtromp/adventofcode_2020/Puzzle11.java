@@ -59,7 +59,7 @@ public class Puzzle11 {
     }
 
     private static int countOccupiedSeats(String[] seats, int row, int column) {
-        int occupiedSeats = getSeat(seats, row - 1, column - 1) +
+        return getSeat(seats, row - 1, column - 1) +
                 getSeat(seats, row - 1, column) +
                 getSeat(seats, row - 1, column + 1) +
                 getSeat(seats, row, column - 1) +
@@ -67,7 +67,6 @@ public class Puzzle11 {
                 getSeat(seats, row + 1, column - 1) +
                 getSeat(seats, row + 1, column) +
                 getSeat(seats, row + 1, column + 1);
-        return occupiedSeats;
     }
 
     private static int getSeat(String[] seats, int row, int column) {
