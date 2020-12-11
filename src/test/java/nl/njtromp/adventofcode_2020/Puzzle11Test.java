@@ -25,10 +25,9 @@ class Puzzle11Test {
         assertEquals(37, Puzzle11.solvePart1(example));
     }
 
-    @Disabled("Enable after part 1 has been solved!")
     @Test
-    void checkExamplePart2() {
-        assertEquals(0, Puzzle11.solvePart2(example));
+    void checkExample1Part2() {
+        assertEquals(26, Puzzle11.solvePart2(example));
     }
 
 }
