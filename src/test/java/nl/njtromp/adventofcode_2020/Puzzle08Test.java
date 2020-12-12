@@ -26,7 +26,7 @@ class Puzzle08Test {
 
     @Test
     void checkExamplePart2() {
-        assertEquals(0, Puzzle08.solvePart2(example));
+        assertEquals(8, Puzzle08.solvePart2(example));
     }
 
 }
