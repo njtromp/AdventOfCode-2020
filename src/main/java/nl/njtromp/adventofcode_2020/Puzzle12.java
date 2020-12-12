@@ -51,7 +51,6 @@ public class Puzzle12 {
     }
 
     static int solvePart2(String[] lines) {
-        int heading = 0;
         int x = 0;
         int y = 0;
         int wx = 10;
