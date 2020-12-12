@@ -13,9 +13,9 @@ object Day12 extends App {
 
   for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle12.txt")).getLines) {
     line match {
-      case EW(d, dx) => x += (if ("E".equals(d)) 1 else -1) * dx.toInt
-      case NS(d, dy) => y += (if ("N".equals(d)) 1 else -1) * dy.toInt
-      case LR(r, dh) => heading = (360 + heading + (if ("L".equals(r)) 1 else -1) * dh.toInt) % 360
+      case EW(d, dx) => x += (if (d == "E") 1 else -1) * dx.toInt
+      case NS(d, dy) => y += (if (d == "N") 1 else -1) * dy.toInt
+      case LR(r, dh) => heading = (360 + heading + (if (r == "L") 1 else -1) * dh.toInt) % 360
       case F(_, f) => heading match {
         case 0 => x += f.toInt
         case 90 => y += f.toInt
@@ -32,14 +32,14 @@ object Day12 extends App {
   var wy = 1
   for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle12.txt")).getLines) {
     line match {
-      case EW(d, dx) => wx += (if ("E".equals(d)) 1 else -1) * dx.toInt
-      case NS(d, dy) => wy += (if ("N".equals(d)) 1 else -1) * dy.toInt
+      case EW(d, dx) => wx += (if (d == "E") 1 else -1) * dx.toInt;
+      case NS(d, dy) => wy += (if ( d == "N") 1 else -1) * dy.toInt
       case LR(r, dh) =>
-        if (("L".equals(r) && dh.toInt == 90) || ("R".equals(r) && dh.toInt == 270)) {
+        if ((r == "L" && dh.toInt == 90) || (r == "R" && dh.toInt == 270)) {
           val temp = wy
           wy = wx
           wx = -temp
-        } else if (("R".equals(r) && dh.toInt == 90) || ("L".equals(r) && dh.toInt == 270)) {
+        } else if ((r == "R" && dh.toInt == 90) || (r == "L" && dh.toInt == 270)) {
           val temp = wy
           wy = -wx
           wx = temp
