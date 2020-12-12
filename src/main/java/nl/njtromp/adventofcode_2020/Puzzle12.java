@@ -1,14 +1,12 @@
 package nl.njtromp.adventofcode_2020;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Puzzle12 {
     public static void main(String[] args) {
         String[] input = readInput();
         System.out.printf("Answer part 1: %d\n", solvePart1(input));
-//        System.out.printf("Answer part 2: %d\n", solvePart2(input));
+        System.out.printf("Answer part 2: %d\n", solvePart2(input));
     }
 
     static int solvePart1(String[] lines) {
@@ -53,7 +51,40 @@ public class Puzzle12 {
     }
 
     static int solvePart2(String[] lines) {
-        return -1;
+        int heading = 0;
+        int x = 0;
+        int y = 0;
+        int wx = 10;
+        int wy = 1;
+        for (String line : lines) {
+            if (line.charAt(0) == 'N') {
+                wy += Integer.parseInt(line.substring(1));
+            } else if (line.charAt(0) == 'S') {
+                wy -= Integer.parseInt(line.substring(1));
+            } else if (line.charAt(0) == 'E') {
+                wx += Integer.parseInt(line.substring(1));
+            } else if (line.charAt(0) == 'W') {
+                wx -= Integer.parseInt(line.substring(1));
+            } else if (line.charAt(0) == 'L') {
+                for (int i = 0; i < Integer.parseInt(line.substring(1)) / 90; i++) {
+                    int temp = wy;
+                    wy = wx;
+                    wx = -temp;
+                }
+            } else if (line.charAt(0) == 'R') {
+                for (int i = 0; i < Integer.parseInt(line.substring(1)) / 90; i++) {
+                    int temp = wy;
+                    wy = -wx;
+                    wx = temp;
+                }
+            } else if (line.charAt(0) == 'F') {
+                x += Integer.parseInt(line.substring(1)) * wx;
+                y += Integer.parseInt(line.substring(1)) * wy;
+            } else {
+                System.out.printf("Unknown instruction [%s]!\n", line);
+            }
+        }
+        return Math.abs(x) + Math.abs(y);
     }
 
     private static String[] readInput() {
