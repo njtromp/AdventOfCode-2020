@@ -7,11 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Puzzle12Test {
 
-    static String[] example = {};
+    static String[] example = {
+            "F10",
+            "N3",
+            "F7",
+            "R90",
+            "F11"
+    };
 
     @Test
     void checkExamplePart1() {
-        assertEquals(0, Puzzle12.solvePart1(example));
+        assertEquals(25, Puzzle12.solvePart1(example));
     }
 
     @Disabled("Enable after part 1 has been solved!")
