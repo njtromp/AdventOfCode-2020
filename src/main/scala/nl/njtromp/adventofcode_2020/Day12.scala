@@ -10,6 +10,9 @@ object Day12 extends App {
   val NS = "([NS])(\\d+)".r
   val LR = "([LR])(\\d+)".r
   val F = "(F)(\\d+)".r
+  val COUTER_CLOCKWISE = "(L90)|(R270)".r
+  val CLOCKWISE = "(R90)|(L270)".r
+  val REVERSE = "(L180)|(RL180)".r
 
   for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle12.txt")).getLines) {
     line match {
@@ -34,19 +37,17 @@ object Day12 extends App {
     line match {
       case EW(d, dx) => wx += (if (d == "E") 1 else -1) * dx.toInt;
       case NS(d, dy) => wy += (if ( d == "N") 1 else -1) * dy.toInt
-      case LR(r, dh) =>
-        if ((r == "L" && dh.toInt == 90) || (r == "R" && dh.toInt == 270)) {
+      case COUTER_CLOCKWISE() =>
           val temp = wy
           wy = wx
           wx = -temp
-        } else if ((r == "R" && dh.toInt == 90) || (r == "L" && dh.toInt == 270)) {
+      case CLOCKWISE() =>
           val temp = wy
           wy = -wx
           wx = temp
-        } else { // dh = 180
+      case REVERSE() =>
           wx = -wx
           wy = -wy
-        }
       case F(_, f) =>
         x += wx * f.toInt
         y += wy * f.toInt
