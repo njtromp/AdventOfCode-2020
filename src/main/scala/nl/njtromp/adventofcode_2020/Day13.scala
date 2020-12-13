@@ -13,9 +13,11 @@ object Day13 extends App {
 
   def solvePart2(lines: List[String]): Long = {
     val busses = lines(1).split(",").zipWithIndex.filter(b => b._1 != "x").map(b => (b._1.toInt, b._2))
+    val dt = busses.head._1
+    val tail = busses.tail
     var t: Long = 0
-    while (t >= 0 && !busses.tail.forall(b => b._1 - (t % b._1) == b._2)) {
-      t += busses.head._1
+    while (t >= 0 && !tail.forall(b => b._1 - (t % b._1) == b._2)) {
+      t += dt
     }
     t
   }
