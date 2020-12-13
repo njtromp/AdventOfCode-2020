@@ -9,6 +9,7 @@ class Puzzle00Test {
 
     static String[] example = {};
 
+    @Disabled
     @Test
     void checkExamplePart1() {
         assertEquals(0, Puzzle00.solvePart1(example));

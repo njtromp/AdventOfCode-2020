@@ -4,7 +4,7 @@ import scala.io.Source
 import scala.util.{Success, Try}
 
 object Day13 extends App {
-  val lines: List[String] = Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle13.txt")).getLines().toList
+  val lines: List[String] = Source.fromInputStream(Day13.getClass.getResourceAsStream("/input-puzzle13.txt")).getLines().toList
 
   def solvePart1(lines: List[String]):Int = {
     val time = lines.head.toInt
