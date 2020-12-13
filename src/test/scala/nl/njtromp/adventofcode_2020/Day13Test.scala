@@ -25,7 +25,7 @@ class Day13Test extends AnyFlatSpec {
 
   "Part 2 " should "solve also extra example 3 correct" in {
     val example = List("", "67,x,7,59,61")
-    assert(Day13.solvePart2(example) == 7792100)
+    assert(Day13.solvePart2(example) == 779210)
   }
 
   "Part 2 " should "solve also extra example 4 correct" in {
