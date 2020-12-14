@@ -16,22 +16,21 @@ object Day08 extends App {
   var usedInstructions: Set[Int] = Set.empty
   var acc = 0
   var ip = 0
-  simulate
+  simulate()
   println(s"Answer part 1: $acc")
 
   fixBug
   println(s"Answer part 2: $acc")
 
-  private def simulate = {
-    while (!usedInstructions.contains(ip) && ip < instructions.size) {
+  private def simulate(): Unit = {
+    while (!usedInstructions.contains(ip) && ip < instructions.length) {
       usedInstructions += ip
       instructions(ip) match {
         case NOP(_) => ip += 1
         case JMP(deltaIp) => ip += deltaIp.toInt
-        case ACC(deltaAcc) => {
+        case ACC(deltaAcc) =>
           acc += deltaAcc.toInt
           ip += 1
-        }
       }
     }
   }
@@ -39,7 +38,7 @@ object Day08 extends App {
   private def fixBug: Int = {
     var bugIp = 0
     ip = 0
-    while (ip != instructions.size) {
+    while (ip != instructions.length) {
       while (instructions(bugIp).startsWith("acc ")) {
         bugIp += 1
       }
@@ -51,8 +50,8 @@ object Day08 extends App {
       ip = 0
       acc = 0
       usedInstructions = Set.empty
-      simulate
-      if (ip == instructions.size) {
+      simulate()
+      if (ip == instructions.length) {
         return acc
       }
       instructions(bugIp) = originalInstruction
