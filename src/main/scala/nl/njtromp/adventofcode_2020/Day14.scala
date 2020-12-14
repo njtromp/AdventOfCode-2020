@@ -37,8 +37,37 @@ object Day14 extends App {
     total
   }
 
-  def solvePart2(lines: List[String]): Int = {
-    -1
+  def solvePart2(lines: List[String]): Long = {
+    val Mask = "mask = ([X01]{36})".r
+    val Mem = "mem\\[(\\d+)\\] = (\\d+)".r
+
+    var mem: Map[Long, Long] = Map.empty
+    var mask: String = ""
+    for (line <- lines) {
+      line match {
+        case Mask(m) => mask = m
+        case Mem(address, value) =>
+          val a: String = padLeft(address.toLong.toBinaryString)
+          val am: List[(Char, Char)] = a.zip(mask).toList
+          val nam = am.map(a => if (a._2 == '0') a._1 else if (a._2 == '1') '1' else 'X').mkString
+          val xs = nam.replaceAll("[01]", "").length
+          val ba = java.lang.Long.parseLong(nam.replaceAll("X","0"), 2)
+          for (bm <- 0 to (1 << xs) - 1) {
+            var fa: Long = ba
+            var b = 0L
+            nam.zipWithIndex.filter(_._1 == 'X').map(_._2).foreach(i => {
+              fa = fa | (((bm.toLong >>> b) & 1L) << (35 - i))
+              b += 1
+            })
+            mem += (fa -> value.toLong)
+          }
+      }
+    }
+    var total: Long = 0
+    for ((_, v) <- mem) {
+      total += v
+    }
+    total
   }
 
   println(s"Answer part 1: ${solvePart1(lines)}")
