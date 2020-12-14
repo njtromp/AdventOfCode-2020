@@ -2,57 +2,58 @@ package nl.njtromp.adventofcode_2020
 
 import scala.io.Source
 
-object Day12 extends App {
-  var heading = 0
-  var x = 0
-  var y = 0
-  val EW = "([EW])(\\d+)".r
-  val NS = "([NS])(\\d+)".r
-  val LR = "([LR])(\\d+)".r
-  val F = "(F)(\\d+)".r
-  val COUTER_CLOCKWISE = "(L90)|(R270)".r
-  val CLOCKWISE = "(R90)|(L270)".r
-  val REVERSE = "(L180)|(RL180)".r
+class Day12 {
+  private val EW = "([EW])(\\d+)".r
+  private val NS = "([NS])(\\d+)".r
+  private val LR = "([LR])(\\d+)".r
+  private val F = "(F)(\\d+)".r
 
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle12.txt")).getLines) {
-    line match {
-      case EW(d, dx) => x += (if (d == "E") 1 else -1) * dx.toInt
-      case NS(d, dy) => y += (if (d == "N") 1 else -1) * dy.toInt
-      case LR(r, dh) => heading = (360 + heading + (if (r == "L") 1 else -1) * dh.toInt) % 360
-      case F(_, f) => heading match {
-        case 0 => x += f.toInt
-        case 90 => y += f.toInt
-        case 180 => x -= f.toInt
-        case 270 => y -= f.toInt
+  def solvePart1(lines: List[String]): Int = {
+    var heading: Int = 0
+    var pos: (Int, Int) = (0, 0)
+    for (line <- lines) {
+      line match {
+        case EW(d, dx) => pos = (pos._1 + (if (d == "E") 1 else -1) * dx.toInt, pos._2)
+        case NS(d, dy) => pos = (pos._1, pos._2 + (if (d == "N") 1 else -1) * dy.toInt)
+        case LR(r, dh) => heading = (360 + heading + (if (r == "L") 1 else -1) * dh.toInt) % 360
+        case F(_, f) => heading match {
+          case 0 => pos = (pos._1 + f.toInt, pos._2)
+          case 90 => pos =(pos._1, pos._2 + f.toInt)
+          case 180 => pos = (pos._1 - f.toInt, pos._2)
+          case 270 => pos =(pos._1, pos._2 - f.toInt)
+        }
       }
     }
+    Math.abs(pos._1) + Math.abs(pos._2)
   }
-  println(s"Answer part 1: ${Math.abs(x) + Math.abs(y)}")
 
-  x = 0
-  y = 0
-  var wx = 10
-  var wy = 1
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle12.txt")).getLines) {
-    line match {
-      case EW(d, dx) => wx += (if (d == "E") 1 else -1) * dx.toInt;
-      case NS(d, dy) => wy += (if ( d == "N") 1 else -1) * dy.toInt
-      case COUTER_CLOCKWISE() =>
-          val temp = wy
-          wy = wx
-          wx = -temp
-      case CLOCKWISE() =>
-          val temp = wy
-          wy = -wx
-          wx = temp
-      case REVERSE() =>
-          wx = -wx
-          wy = -wy
-      case F(_, f) =>
-        x += wx * f.toInt
-        y += wy * f.toInt
+  private val COUNTER_CLOCKWISE = "(L90)|(R270)".r
+  private val CLOCKWISE = "(R90)|(L270)".r
+  private val REVERSE = "(L180)|(R180)".r
+
+  def solvePart2(lines: List[String]): Int = {
+    var pos = (0, 0)
+    var waypoint = (10, 1)
+    for (line <- lines) {
+      line match {
+        case EW(d, dx) => waypoint = (waypoint._1 + (if (d == "E") 1 else -1) * dx.toInt, waypoint._2)
+        case NS(d, dy) => waypoint = (waypoint._1, waypoint._2 + (if (d == "N") 1 else -1) * dy.toInt)
+        case COUNTER_CLOCKWISE(_,_) => waypoint = (-waypoint._2, waypoint._1)
+        case CLOCKWISE(_, _) => waypoint = (waypoint._2, -waypoint._1)
+        case REVERSE(_, _) => waypoint = (-waypoint._1, -waypoint._2)
+        case F(_, f) => pos = (pos._1 + waypoint._1 * f.toInt, pos._2 + waypoint._2 * f.toInt)
+      }
     }
+    Math.abs(pos._1) + Math.abs(pos._2)
   }
-  println(s"Answer part 2: ${Math.abs(x) + Math.abs(y)}")
 
+  def solvePuzzles(): Unit = {
+    val lines = Source.fromInputStream(getClass.getResourceAsStream("/input-puzzle12.txt")).getLines.toList
+    println(s"Answer part 1: ${solvePart1(lines)}")
+    println(s"Answer part 2: ${solvePart2(lines)}")
+  }
+}
+
+object Day12 extends App {
+  new Day12().solvePuzzles()
 }

@@ -3,8 +3,7 @@ package nl.njtromp.adventofcode_2020
 import scala.io.Source
 import scala.util.{Success, Try}
 
-object Day13 extends App {
-  val lines: List[String] = Source.fromInputStream(Day13.getClass.getResourceAsStream("/input-puzzle13.txt")).getLines().toList
+class Day13 {
 
   def solvePart1(lines: List[String]):Int = {
     val time = lines.head.toInt
@@ -17,8 +16,11 @@ object Day13 extends App {
     chineseRemainder(busses.map(b => b._1), busses.map(b => b._2)).get
   }
 
-  println(s"Answer part 1: ${solvePart1(lines)}")
-  println(s"Answer part 2: ${solvePart2(lines)}")
+  def solvePuzzles(): Unit = {
+    val lines: List[String] = Source.fromInputStream(Day13.getClass.getResourceAsStream("/input-puzzle13.txt")).getLines().toList
+    println(s"Answer part 1: ${solvePart1(lines)}")
+    println(s"Answer part 2: ${solvePart2(lines)}")
+  }
 
   // Thanks to Jari for the pointer ;-)
   // https://rosettacode.org/wiki/Chinese_remainder_theorem#Scala
@@ -53,4 +55,8 @@ object Day13 extends App {
       case _          => None
     }
   }
+}
+
+object Day13 extends App {
+  new Day13().solvePuzzles()
 }
