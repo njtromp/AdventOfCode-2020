@@ -47,19 +47,16 @@ object Day14 extends App {
       line match {
         case Mask(m) => mask = m
         case Mem(address, value) =>
-          val a: String = padLeft(address.toLong.toBinaryString)
-          val am: List[(Char, Char)] = a.zip(mask).toList
-          val nam = am.map(a => if (a._2 == '0') a._1 else if (a._2 == '1') '1' else 'X').mkString
-          val xs = nam.replaceAll("[01]", "").length
-          val ba = java.lang.Long.parseLong(nam.replaceAll("X","0"), 2)
-          for (bm <- 0 to (1 << xs) - 1) {
-            var fa: Long = ba
-            var b = 0L
+          val nam = padLeft(address.toLong.toBinaryString).zip(mask).toList.map(a => if (a._2 == '0') a._1 else if (a._2 == '1') '1' else 'X').mkString
+          val baseAddress = java.lang.Long.parseLong(nam.replaceAll("X","0"), 2)
+          for (bits <- 0 until 1 << nam.replaceAll("[01]", "").length) {
+            var floatingAddress: Long = baseAddress
+            var bitSelector = 0L
             nam.zipWithIndex.filter(_._1 == 'X').map(_._2).foreach(i => {
-              fa = fa | (((bm.toLong >>> b) & 1L) << (35 - i))
-              b += 1
+              floatingAddress = floatingAddress | (((bits.toLong >>> bitSelector) & 1L) << (35 - i))
+              bitSelector += 1
             })
-            mem += (fa -> value.toLong)
+            mem += (floatingAddress -> value.toLong)
           }
       }
     }
