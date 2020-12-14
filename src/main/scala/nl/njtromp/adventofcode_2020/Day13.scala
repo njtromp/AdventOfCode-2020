@@ -6,12 +6,12 @@ class Day13 extends Puzzle {
 
   def solvePart1(lines: List[String]): Long = {
     val time = lines.head.toInt
-    lines(1).split(",").filter(id => id != "x").map(id => (id.toInt, id.toInt - time % id.toInt)).sortBy(i => i._2).toList.map(b => b._1 * b._2).head
+    lines(1).split(",").filter(id => id != "x").map(id => (id.toInt, id.toInt - time % id.toInt)).sortBy(_._2).toList.map(b => b._1 * b._2).head
   }
 
   def solvePart2(lines: List[String]): Long = {
-    val busses = lines(1).split(",").zipWithIndex.filter(b => b._1 != "x").map(b => (b._1.toLong, (b._1.toLong - b._2.toLong) % b._1.toLong)).toList
-    chineseRemainder(busses.map(b => b._1), busses.map(b => b._2)).get
+    val busses = lines(1).split(",").zipWithIndex.filter(_._1 != "x").map(b => (b._1.toLong, (b._1.toLong - b._2.toLong) % b._1.toLong)).toList
+    chineseRemainder(busses.map(_._1), busses.map(_._2)).get
   }
 
   // Thanks to Jari for the pointer ;-)
