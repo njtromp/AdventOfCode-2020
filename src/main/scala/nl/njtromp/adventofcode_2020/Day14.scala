@@ -1,8 +1,8 @@
 package nl.njtromp.adventofcode_2020
 
 class Day14 extends Puzzle {
-  val Mask = "mask = ([X01]{36})".r
-  val Mem = "mem\\[(\\d+)\\] = (\\d+)".r
+  private val Mask = "mask = ([X01]{36})".r
+  private val Mem = "mem\\[(\\d+)\\] = (\\d+)".r
 
   def solvePart1(lines: List[String]):Long = {
     var mem: Map[Long, Long] = Map.empty
