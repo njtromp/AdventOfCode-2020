@@ -1,11 +1,10 @@
 package nl.njtromp.adventofcode_2020
 
-import scala.io.Source
 import scala.util.{Success, Try}
 
-class Day13 {
+class Day13 extends Puzzle {
 
-  def solvePart1(lines: List[String]):Int = {
+  def solvePart1(lines: List[String]): Long = {
     val time = lines.head.toInt
     val bus = lines(1).split(",").filter(id => id != "x").map(id => (id.toInt, id.toInt - time % id.toInt)).sortBy(i => i._2).toList.head
     bus._1 * bus._2
@@ -14,12 +13,6 @@ class Day13 {
   def solvePart2(lines: List[String]): Long = {
     val busses = lines(1).split(",").zipWithIndex.filter(b => b._1 != "x").map(b => (b._1.toLong, (b._1.toLong - b._2.toLong) % b._1.toLong)).toList
     chineseRemainder(busses.map(b => b._1), busses.map(b => b._2)).get
-  }
-
-  def solvePuzzles(): Unit = {
-    val lines: List[String] = Source.fromInputStream(Day13.getClass.getResourceAsStream("/input-puzzle13.txt")).getLines().toList
-    println(s"Answer part 1: ${solvePart1(lines)}")
-    println(s"Answer part 2: ${solvePart2(lines)}")
   }
 
   // Thanks to Jari for the pointer ;-)
@@ -58,5 +51,5 @@ class Day13 {
 }
 
 object Day13 extends App {
-  new Day13().solvePuzzles()
+  new Day13().solvePuzzles("/input-puzzle13.txt")
 }
