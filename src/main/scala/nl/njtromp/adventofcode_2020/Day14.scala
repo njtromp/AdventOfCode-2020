@@ -6,14 +6,6 @@ import scala.util.{Success, Try}
 object Day14 extends App {
   val lines: List[String] = Source.fromInputStream(Day14.getClass.getResourceAsStream("/input-puzzle14.txt")).getLines().toList
 
-  def padLeft(s: String): String = {
-    var p: String = s
-    while (p.length < 36) {
-      p = "0" + p
-    }
-    p
-  }
-
   def solvePart1(lines: List[String]):Long = {
     val Mask = "mask = ([X01]{36})".r
     val Mem = "mem\\[(\\d+)\\] = (\\d+)".r
@@ -65,6 +57,14 @@ object Day14 extends App {
       total += v
     }
     total
+  }
+
+  def padLeft(s: String): String = {
+    var p: String = s
+    while (p.length < 36) {
+      p = "0" + p
+    }
+    p
   }
 
   println(s"Answer part 1: ${solvePart1(lines)}")
