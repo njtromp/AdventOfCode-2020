@@ -6,8 +6,7 @@ class Day13 extends Puzzle {
 
   def solvePart1(lines: List[String]): Long = {
     val time = lines.head.toInt
-    val bus = lines(1).split(",").filter(id => id != "x").map(id => (id.toInt, id.toInt - time % id.toInt)).sortBy(i => i._2).toList.head
-    bus._1 * bus._2
+    lines(1).split(",").filter(id => id != "x").map(id => (id.toInt, id.toInt - time % id.toInt)).sortBy(i => i._2).toList.map(b => b._1 * b._2).head
   }
 
   def solvePart2(lines: List[String]): Long = {
