@@ -12,13 +12,9 @@ class Day15 extends Puzzle {
 
   private def solve(lines: List[String], maxTurns: Long): Long = {
     val numbers = lines.head.split(",").map(_.toLong)
-    var spokenInTurn: Map[Long, (Long, Long)] = Map.empty
+    var spokenInTurn: Map[Long, (Long, Long)] = numbers.zipWithIndex.map({case (n, i) => (n, (i + 1L, 0L))}).toMap
     var turn: Long = numbers.length
-    var lastSpoken: Long = 0L
-    numbers.zipWithIndex.foreach({case (n, i) =>
-      spokenInTurn += (n.toLong -> (i + 1L, 0L))
-      lastSpoken = n
-    })
+    var lastSpoken: Long = numbers.reverse.head
     while (turn < maxTurns) {
       turn += 1L
       spokenInTurn.get(lastSpoken) match {
