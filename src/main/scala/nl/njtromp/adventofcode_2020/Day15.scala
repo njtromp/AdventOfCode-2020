@@ -18,7 +18,7 @@ class Day15 extends Puzzle {
     while (turn < maxTurns) {
       turn += 1L
       spokenInTurn.get(lastSpoken) match {
-        case Some((t, 0L)) => lastSpoken = 0L
+        case Some((_, 0L)) => lastSpoken = 0L
         case Some((t, p)) => lastSpoken = t - p
         case None => lastSpoken = 0L
       }
