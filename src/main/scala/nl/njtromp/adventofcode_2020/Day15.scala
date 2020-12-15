@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import scala.collection.mutable.HashMap
+
 class Day15 extends Puzzle {
 
   def solvePart1(lines: List[String]): Long = {
@@ -12,20 +14,21 @@ class Day15 extends Puzzle {
 
   private def solve(lines: List[String], maxTurns: Long): Long = {
     val numbers = lines.head.split(",").map(_.toLong)
-    var spokenInTurn: Map[Long, (Long, Long)] = numbers.zipWithIndex.map({case (n, i) => (n, (i + 1L, 0L))}).toMap
+    var spokenInTurn: HashMap[Long, (Long, Long)] = HashMap.empty
+    spokenInTurn = spokenInTurn ++ numbers.zipWithIndex.map({case (n, i) => (n, (i + 1L, 0L))}).toMap
     var turn: Long = numbers.length
     var lastSpoken: Long = numbers.reverse.head
     while (turn < maxTurns) {
       turn += 1L
-      spokenInTurn.get(lastSpoken) match {
-        case Some((_, 0L)) => lastSpoken = 0L
-        case Some((t, p)) => lastSpoken = t - p
-        case None => lastSpoken = 0L
+      lastSpoken = spokenInTurn.get(lastSpoken) match {
+        case Some((_, 0L)) => 0L
+        case Some((t, p)) => t - p
+        case None => 0L
       }
-      spokenInTurn.get(lastSpoken) match {
-        case Some((t, _)) => spokenInTurn += (lastSpoken -> (turn, t))
-        case None => spokenInTurn += (lastSpoken -> (turn, 0L))
-      }
+      spokenInTurn += (spokenInTurn.get(lastSpoken) match {
+        case Some((t, _)) => (lastSpoken -> (turn, t))
+        case None => (lastSpoken -> (turn, 0L))
+      })
     }
     lastSpoken
   }

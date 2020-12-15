@@ -14,6 +14,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>central-2</id>
+            <name>central-2</name>
+            <url>https://mvnrepository.com/artifact/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -36,6 +44,13 @@
             <artifactId>scalatest_2.12</artifactId>
             <version>3.2.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-json_2.12</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
