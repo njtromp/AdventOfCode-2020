@@ -9,7 +9,7 @@ class Day16 extends Puzzle {
 
   private var rules: mutable.HashMap[String, List[(Int, Int)]] = mutable.HashMap.empty
   private var myTicket: List[Int] = List.empty
-  private var nearbyTickets: List[List[Int]] = List(List.empty)
+  private var nearbyTickets: List[List[Int]] = List()
 
   def solvePart1(lines: List[String]): Long = {
     processData(lines)
@@ -23,8 +23,8 @@ class Day16 extends Puzzle {
 
   def determineFieldOrder(lines: List[String]): List[String] = {
     processData(lines)
-    val validTickets = nearbyTickets.filter(ns => ns.forall(n => rules.values.toList.flatten.exists(r => n >= r._1 && n <= r._2))).filter(_.nonEmpty)
-    val possibleFields = myTicket.indices.map(i =>
+    val validTickets: List[List[Int]] = nearbyTickets.filter(ns => ns.forall(n => rules.values.flatten.exists(r => n >= r._1 && n <= r._2)))
+    var possibleFields: Array[List[String]] = myTicket.indices.map(i =>
       rules.filter(r =>
         validTickets.forall(t =>
           r._2.exists(
@@ -33,14 +33,14 @@ class Day16 extends Puzzle {
         )
       ).keys.toList
     ).toArray
-    val knownFields: mutable.Set[Int] = mutable.Set.empty
-    while (knownFields.size != rules.size) {
-      possibleFields.zipWithIndex.filter(pf => pf._1.size == 1).foreach({case (names, pos) =>
-        if (!knownFields.contains(pos)) {
-          knownFields += pos
-          possibleFields.zipWithIndex.foreach({case (fields, i) => if (i != pos) possibleFields(i) = fields.filter(_ != names.head)})
+    val knownFields: mutable.Set[String] = mutable.Set.empty
+    while (possibleFields.exists(_.size > 1)) {
+      possibleFields.filter(pf => pf.size == 1 && !knownFields.contains(pf.head))
+        .foreach(kf => {
+          knownFields += kf.head
+          possibleFields = possibleFields.map(fs => if (fs.size == 1) fs else fs.filterNot(_ == kf.head))
         }
-      })
+        )
     }
     possibleFields.flatten.toList
   }
@@ -48,7 +48,7 @@ class Day16 extends Puzzle {
   private def processData(lines: List[String]): Unit = {
     rules = mutable.HashMap.empty
     myTicket = List.empty
-    nearbyTickets = List(List.empty)
+    nearbyTickets = List()
     var scanningState: Int = 0;
     for (line <- lines) {
       if (line.nonEmpty) {
