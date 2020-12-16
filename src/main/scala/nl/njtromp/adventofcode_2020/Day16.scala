@@ -7,10 +7,26 @@ class Day16 extends Puzzle {
   private val MyTicket = "your ticket:".r
   private val NearbyTickets = "nearby tickets:".r
 
+  private var rules: mutable.HashMap[String, List[(Int, Int)]] = mutable.HashMap.empty
+  private var myTicket: List[Int] = List.empty
+  private var nearbyTickets: List[List[Int]] = List(List.empty)
+
   def solvePart1(lines: List[String]): Long = {
-    var rules: mutable.HashMap[String, List[(Int, Int)]] = mutable.HashMap.empty
-    var myTicket: List[Int] = List.empty
-    var nearbyTickets: List[List[Int]] = List(List.empty)
+    processData(lines)
+    val rs: List[(Int, Int)] = rules.values.toList.flatten
+    val ns: List[Int] = nearbyTickets.flatten
+    ns.filter(n => !rs.exists(r => n >= r._1 && n <= r._2)).sum
+  }
+
+  def solvePart2(lines: List[String]): Long = {
+    processData(lines)
+    -1
+  }
+
+  private def processData(lines: List[String]): Unit = {
+    rules = mutable.HashMap.empty
+    myTicket = List.empty
+    nearbyTickets = List(List.empty)
     var scanningState: Int = 0;
     for (line <- lines) {
       if (line.nonEmpty) {
@@ -30,13 +46,6 @@ class Day16 extends Puzzle {
         }
       }
     }
-    val rs: List[(Int, Int)] = rules.values.toList.flatMap(rs => rs)
-    val ns: List[Int] = nearbyTickets.flatMap(ns => ns)
-    ns.filter(n => !rs.exists(r => n >= r._1 && n <= r._2)).sum
-  }
-
-  def solvePart2(lines: List[String]): Long = {
-    -1
   }
 
 }
