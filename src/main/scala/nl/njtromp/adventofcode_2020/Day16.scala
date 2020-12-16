@@ -13,14 +13,36 @@ class Day16 extends Puzzle {
 
   def solvePart1(lines: List[String]): Long = {
     processData(lines)
-    val rs: List[(Int, Int)] = rules.values.toList.flatten
-    val ns: List[Int] = nearbyTickets.flatten
-    ns.filter(n => !rs.exists(r => n >= r._1 && n <= r._2)).sum
+    nearbyTickets.flatten.filter(n => !rules.values.toList.flatten.exists(r => n >= r._1 && n <= r._2)).sum
   }
 
   def solvePart2(lines: List[String]): Long = {
+    val fieldOrder: List[String] = determineFieldOrder(lines)
+    fieldOrder.zipWithIndex.filter(f => f._1.startsWith("departure")).map(f => myTicket(f._2).toLong).product
+  }
+
+  def determineFieldOrder(lines: List[String]): List[String] = {
     processData(lines)
-    -1
+    val validTickets = nearbyTickets.filter(ns => ns.forall(n => rules.values.toList.flatten.exists(r => n >= r._1 && n <= r._2))).filter(_.nonEmpty)
+    val possibleFields = myTicket.indices.map(i =>
+      rules.filter(r =>
+        validTickets.forall(t =>
+          r._2.exists(
+            range => t(i) >= range._1 && t(i) <= range._2
+          )
+        )
+      ).keys.toList
+    ).toArray
+    val knownFields: mutable.Set[Int] = mutable.Set.empty
+    while (knownFields.size != rules.size) {
+      possibleFields.zipWithIndex.filter(pf => pf._1.size == 1).foreach({case (names, pos) =>
+        if (!knownFields.contains(pos)) {
+          knownFields += pos
+          possibleFields.zipWithIndex.foreach({case (fields, i) => if (i != pos) possibleFields(i) = fields.filter(_ != names.head)})
+        }
+      })
+    }
+    possibleFields.flatten.toList
   }
 
   private def processData(lines: List[String]): Unit = {
