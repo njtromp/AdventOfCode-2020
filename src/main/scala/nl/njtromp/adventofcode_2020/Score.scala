@@ -17,7 +17,14 @@ object Score extends App {
     )
   }).toList
 
-  contenders.sortWith(sortBySpeedOfSecondPart).foreach(c => println(s"${stars(c)} stars ${timeNeededForSecondPart(c) / Math.max(1, stars(c)) / 60} (minutes) avg. for part two -> ${c._1}"))
+  private val orderedLeaders: List[(String, List[(Int, Int)])] = contenders.sortWith(sortBySpeedOfSecondPart)
+  orderedLeaders.foreach(c => println(s"${stars(c)} stars ${timeNeededForSecondPart(c) / Math.max(1, stars(c)) / 60} (minutes) avg. for part two -> ${c._1}"))
+
+  println("\n------- cheater -------\n")
+  val suspects = List("coward-948063", "coward-1208804")
+//  contenders.filter(c => suspects.contains(c._1))
+//    .map(c => ((c._1, c._2.sortBy(s => s._1)), orderedLeaders.takeWhile(_ != c).sortBy(s => s._2)))
+//    .foreach(println(_))
 
   def stars(c: (String, List[(Int, Int)])) : Int = {
     c._2.flatMap(s => List(s._1, s._2)).count(_ > 0)

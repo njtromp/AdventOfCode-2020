@@ -27,8 +27,8 @@ class Day18 extends Puzzle with RegexParsers {
   private def eval2(expr: String): Long = {
     def factor: Parser[Long] = number | "(" ~> expression <~ ")"
     def term: Parser[Long] = factor ~ rep( "+" ~ factor) ^^ {
-      case number ~ list => (number /: list) { case (x, "+" ~ y) => x + y
-      case (x, "+" ~ y) => x * y
+      case number ~ list => (number /: list) {
+        case (x, "+" ~ y) => x + y
       }
     }
     def expression: Parser[Long] = term ~ rep( "*" ~ term) ^^ {
@@ -44,4 +44,3 @@ class Day18 extends Puzzle with RegexParsers {
 object Day18 extends App {
   new Day18().solvePuzzles("/input-puzzle18.txt")
 }
-
