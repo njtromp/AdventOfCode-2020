@@ -16,7 +16,7 @@ class Day18 extends Puzzle with RegexParsers {
   private def eval1(expr: String): Long = {
     def factor: Parser[Long] = number | "(" ~> expression <~ ")"
     def expression: Parser[Long] = factor ~ rep( ("*" | "+") ~ factor) ^^ {
-      case number ~ list => (number /: list) {
+      case number ~ list => (list foldLeft number) {
         case (x, "+" ~ y) => x + y
         case (x, "*" ~ y) => x * y
       }
@@ -27,12 +27,12 @@ class Day18 extends Puzzle with RegexParsers {
   private def eval2(expr: String): Long = {
     def factor: Parser[Long] = number | "(" ~> expression <~ ")"
     def term: Parser[Long] = factor ~ rep( "+" ~ factor) ^^ {
-      case number ~ list => (number /: list) {
+      case number ~ list => (list foldLeft number) {
         case (x, "+" ~ y) => x + y
       }
     }
     def expression: Parser[Long] = term ~ rep( "*" ~ term) ^^ {
-      case number ~ list => (number /: list) {
+      case number ~ list => (list foldLeft number) {
         case (x, "*" ~ y) => x * y
       }
     }
