@@ -1,13 +1,15 @@
 package nl.njtromp.adventofcode_2020
 
 import java.util.Objects
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.util.matching.Regex
 
 class Day20 extends Puzzle {
-  case class Tile(id: Long, top: String, right: String, bottom: String, left: String) {
+  case class Tile(id: Long, orientation: String, top: String, right: String, bottom: String, left: String) {
     override def equals(obj: Any): Boolean = {
       obj match {
-        case Tile(oId, oTop, oRight, oBottom, oLeft) =>
+        case Tile(oId, _, oTop, oRight, oBottom, oLeft) =>
           id == oId && top.equals(oTop) && right.equals(oRight) && bottom.equals(oBottom) && left.equals(oLeft)
         case _ => false
       }
@@ -22,22 +24,25 @@ class Day20 extends Puzzle {
     }
   }
 
+  private var tileData: List[(Long, List[String])] = null
+  private var image: Array[Array[Tile]] = null
+
   override def solvePart1(lines: List[String]): Long = {
-    val tileData = readTiles(lines)
+    tileData = readTiles(lines)
     val tiles: Set[Tile] = rotateAndFlip(tileData)
     val tops: Map[String, Set[Tile]] = tiles.groupBy(_.top)
     val lefts: Map[String, Set[Tile]] = tiles.groupBy(_.left)
     val dim = Math.sqrt(tileData.size).toInt
-    val image: Array[Array[Tile]] = Array.ofDim(dim, dim)
+    image = Array.ofDim(dim, dim)
 
     def createImage(tileNr: Int, usedTiles: Set[Long]): Boolean = {
       if (tileNr >= dim * dim) {
-        for (row <- image) {
-          for (tile <- row) {
-            print(s"${tile.id} ")
-          }
-          println
-        }
+//        for (row <- image) {
+//          for (tile <- row) {
+//            print(s"${tile.id} (${tile.orientation}) ")
+//          }
+//          println
+//        }
         true
       } else {
         val x = tileNr % dim
@@ -61,7 +66,119 @@ class Day20 extends Puzzle {
   }
 
   override def solvePart2(lines: List[String]): Long = {
-    -1
+    solvePart1(lines)
+
+    def antiClockwise(matrix: Array[String]): Array[String] = {
+      val N = matrix.length
+      def rotateAntiClockwise(mat: Array[Array[Char]]): Unit = {
+        // Consider all squares one by one
+        for (x <- 0 until N / 2) { // Consider elements in group
+          // of 4 in current square
+          for (y <- x until N - x - 1) { // Store current cell in
+            // temp variable
+            val temp = mat(x)(y)
+            // Move values from right to top
+            mat(x)(y) = mat(y)(N - 1 - x)
+            // Move values from bottom to right
+            mat(y)(N - 1 - x) = mat(N - 1 - x)(N - 1 - y)
+            // Move values from left to bottom
+            mat(N - 1 - x)(N - 1 - y) = mat(N - 1 - y)(x)
+            // Assign temp to left
+            mat(N - 1 - y)(x) = temp
+          }
+        }
+      }
+      val m = matrix.map(_.toArray)
+      rotateAntiClockwise(m)
+      m.map(_.mkString)
+    }
+
+    def clockwise(matrix: Array[String]): Array[String] = {
+      val N = matrix.length
+      // Traverse each cycle
+      def rotateClockwise(a: Array[Array[Char]]): Unit = {
+        var i = 0
+        while ( {
+          i < N / 2
+        }) {
+          var j = i
+          while ( {
+            j < N - i - 1
+          }) { // Swap elements of each cycle
+            // in clockwise direction
+            val temp = a(i)(j)
+            a(i)(j) = a(N - 1 - j)(i)
+            a(N - 1 - j)(i) = a(N - 1 - i)(N - 1 - j)
+            a(N - 1 - i)(N - 1 - j) = a(j)(N - 1 - i)
+            a(j)(N - 1 - i) = temp
+
+            j += 1
+          }
+
+          i += 1
+        }
+      }
+      val m = matrix.map(_.toArray)
+      rotateClockwise(m)
+      m.map(_.mkString)
+    }
+
+    def flipRotate(orientation: String, image: Array[String]): Array[String] = {
+      val temp = if (orientation.startsWith("F")) image.map(_.reverse) else image
+      orientation.charAt(1) match {
+        case '0' => temp
+        case '1' => antiClockwise(temp)
+        case '2' => temp.reverse.map(_.reverse)
+        case '3' => clockwise(temp)
+      }
+    }
+
+    val tilesById: Map[Long, List[String]] = tileData.toMap
+
+    def extractImage(tile: Tile): Array[String] = {
+      // Remove upper and lower border and the left and right border
+      flipRotate(tile.orientation, tilesById(tile.id).tail.reverse.tail.reverse.map(_.substring(1, 9)).toArray)
+    }
+
+    val rawImage: Array[Array[Array[String]]] = image.map(_.map(extractImage))
+
+    val finalImage: Array[String] = Array.ofDim(rawImage.length * 8)
+    var i = 0
+    for (y <- rawImage.indices) {
+      for (l <- rawImage(y)(0).indices) {
+        finalImage(i) = rawImage(y).map(_(l)).mkString
+        i += 1
+      }
+    }
+//    finalImage.foreach(println(_))
+    val monster: Array[String] = Array(
+        "                  # ",
+        "#    ##    ##    ###",
+        " #  #  #  #  #  #   "
+    )
+    // Rotating and flipping should have been build into the code, but just rotating the map 180 degrees solved part 2!
+    val nrOfMonsters = countMonsters(antiClockwise(antiClockwise(finalImage)), monster)
+    if (nrOfMonsters > 0) finalImage.map(_.count(_ == '#')).sum - nrOfMonsters * monster.map(_.count(_ == '#')).sum else -1
+  }
+
+  def countMonsters(finalImage: Array[String], monster: Array[String]): Int = {
+    val patterns: Array[String] = monster.map(m => m.replaceAll(" ", "."))
+    var monsters = 0
+    for (l <- 0 until finalImage.length - monster.length) {
+
+      var matchStarts: mutable.Set[Int] = mutable.Set.empty ++ finalImage(l).indices.toSet
+      for (p <- patterns.indices) {
+        val starts: mutable.Set[Int] = mutable.Set.empty
+        for (i <- 0 to finalImage(l + p).length - monster(p).length) {
+          if (finalImage(l + p).substring(i, i + monster(p).length).matches(patterns(p))) {
+            starts += i
+          }
+        }
+        matchStarts = matchStarts & starts
+      }
+      monsters += matchStarts.size
+    }
+    monsters
   }
 
   def readTiles(lines: List[String]): List[(Long, List[String])] = {
@@ -90,14 +207,14 @@ class Day20 extends Puzzle {
     val right = tile.map(_.reverse.head).mkString
     val bottom = tile.reverse.head
     val left = tile.map(_.head).mkString
-    rotate(id, (top, right, bottom, left)) ++ rotate(id, (top.reverse, left, bottom.reverse, right))
+    rotate(id, "R",(top, right, bottom, left)) ++ rotate(id, "F", (top.reverse, left, bottom.reverse, right))
   }
 
-  def rotate(id: Long, tile: (String, String, String, String)): Set[Tile] = {
-    Set(Tile(id, tile._1, tile._2, tile._3, tile._4),
-      Tile(id, tile._2, tile._3.reverse, tile._4, tile._1.reverse),
-      Tile(id, tile._3.reverse, tile._4.reverse, tile._1.reverse, tile._2.reverse),
-      Tile(id, tile._4.reverse, tile._1, tile._2.reverse, tile._3))
+  def rotate(id: Long, orientation: String, tile: (String, String, String, String)): Set[Tile] = {
+    Set(Tile(id, orientation + "0", tile._1, tile._2, tile._3, tile._4),
+      Tile(id, orientation + "1", tile._2, tile._3.reverse, tile._4, tile._1.reverse),
+      Tile(id, orientation + "2", tile._3.reverse, tile._4.reverse, tile._1.reverse, tile._2.reverse),
+      Tile(id, orientation + "3", tile._4.reverse, tile._1, tile._2.reverse, tile._3))
   }
 
 }
