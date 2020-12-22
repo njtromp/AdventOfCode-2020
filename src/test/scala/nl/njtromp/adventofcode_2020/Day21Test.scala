@@ -17,7 +17,7 @@ class Day21Test extends AnyFlatSpec {
 
 
   "Part 2" should "solve example correct" in {
-    assert(new Day21().solvePart2(example) === 0)
+    assert(new Day21().solvePart2(example) === 3)
   }
 
 }

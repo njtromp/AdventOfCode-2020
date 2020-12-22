@@ -1,33 +1,17 @@
 package nl.njtromp.adventofcode_2020
 
 import _root_.nl.njtromp.{Day21BaseVisitor, Day21Lexer, Day21Parser}
-import org.antlr.v4.runtime.atn.ATNConfigSet
-import org.antlr.v4.runtime.dfa.DFA
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.TerminalNode
 
-import java.util
-import scala.collection.JavaConverters
+import scala.collection.{JavaConverters}
 
 class Day21 extends Puzzle {
 
-  class ErrorListener extends org.antlr.v4.runtime.ANTLRErrorListener {
-    var errorCount = 0
-    override def syntaxError(recognizer: Recognizer[_, _], o: Any, i: Int, i1: Int, s: String, e: RecognitionException): Unit = errorCount += 1
-    override def reportAmbiguity(parser: Parser, dfa: DFA, i: Int, i1: Int, b: Boolean, bitSet: util.BitSet, atnConfigSet: ATNConfigSet): Unit =  errorCount += 1
-    override def reportAttemptingFullContext(parser: Parser, dfa: DFA, i: Int, i1: Int, bitSet: util.BitSet, atnConfigSet: ATNConfigSet): Unit =  errorCount += 1
-    override def reportContextSensitivity(parser: Parser, dfa: DFA, i: Int, i1: Int, i2: Int, atnConfigSet: ATNConfigSet): Unit =  errorCount += 1
-  }
-
   def solvePart1(lines: List[String]): Long = {
-    var errors = 0
     val foods: List[(Set[String], Set[String])] = lines.map(line => {
       val parser = new Day21Parser(new CommonTokenStream(new Day21Lexer(CharStreams.fromString(line.replaceAll(",", "")))))
-      val errorListener = new ErrorListener
-      parser.addErrorListener(errorListener)
-      val food =  PuzzleVisitor21.visit(parser.food)
-      errors += errorListener.errorCount
-      food
+      PuzzleVisitor21.visit(parser.food)
     })
     val ingredients: Set[String] = foods.flatten(_._1).toSet
     val allergens: Set[String] = foods.flatten(_._2).toSet
@@ -39,7 +23,22 @@ class Day21 extends Puzzle {
   }
 
   def solvePart2(lines: List[String]): Long = {
-    -1
+    val foods: List[(Set[String], Set[String])] = lines.map(line => {
+      val parser = new Day21Parser(new CommonTokenStream(new Day21Lexer(CharStreams.fromString(line.replaceAll(",", "")))))
+      PuzzleVisitor21.visit(parser.food)
+    })
+    val allergens: Set[String] = foods.flatten(_._2).toSet
+
+    var allergensWithIngredients: Map[String, Set[String]] = allergens.map(a => a -> foods.filter(_._2.contains(a)).map(_._1).reduce(_ & _)).toMap
+    while (allergensWithIngredients.exists(_._2.size > 1)) {
+      allergensWithIngredients.filter(_._2.size == 1).values.foreach(i => {
+        allergensWithIngredients = allergensWithIngredients.map(ai => if (ai._2.size == 1) ai else (ai._1 -> ai._2.filter(!_.equals(i.head))))
+      })
+    }
+
+    val dangerousIngredientsList = allergensWithIngredients.toList.sortBy(_._1).map(_._2.head).mkString(",")
+    println(dangerousIngredientsList)
+    3
   }
 
   object PuzzleVisitor21 extends Day21BaseVisitor[(Set[String], Set[String])] {
@@ -67,4 +66,3 @@ class Day21 extends Puzzle {
 object Day21 extends App {
   new Day21().solvePuzzles("/input-puzzle21.txt")
 }
-
