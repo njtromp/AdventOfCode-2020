@@ -63,7 +63,7 @@ class Day19 extends Puzzle {
       }
     }
   }
-  }
+}
 
 object Day19 extends App {
   new Day19().solvePuzzles("/input-puzzle19.txt")
