@@ -7,15 +7,8 @@ class Day22 extends Puzzle {
   override def solvePart1(lines: List[String]): Long = {
     val deck1: mutable.Queue[Long] = mutable.Queue.empty
     val deck2: mutable.Queue[Long] = mutable.Queue.empty
-    var deck = deck1
-    for (line <- lines) {
-      if (line.isEmpty) {
-        deck = deck2
-      } else if (line.startsWith("Player")) {
-      } else {
-        deck.enqueue(line.toLong)
-      }
-    }
+    createDecks(lines, deck1, deck2)
+
     while (deck1.nonEmpty && deck2.nonEmpty) {
       val card1 = deck1.dequeue()
       val card2 = deck2.dequeue()
@@ -27,13 +20,19 @@ class Day22 extends Puzzle {
         deck2.enqueue(card1)
       }
     }
-    deck = if (deck1.nonEmpty) deck1 else deck2
-    deck.reverse.zipWithIndex.map(c => c._1 * (c._2 + 1)).sum
+    (if (deck1.nonEmpty) deck1 else deck2).reverse.zipWithIndex.map(c => c._1 * (c._2 + 1)).sum
   }
 
   override def solvePart2(lines: List[String]): Long = {
     val deck1: mutable.Queue[Long] = mutable.Queue.empty
     val deck2: mutable.Queue[Long] = mutable.Queue.empty
+    createDecks(lines, deck1, deck2)
+
+    recursiveCombat(deck1, deck2)
+    (if (deck1.nonEmpty) deck1 else deck2).reverse.zipWithIndex.map(c => c._1 * (c._2 + 1)).sum
+  }
+
+  def createDecks(lines: List[String], deck1: mutable.Queue[Long], deck2: mutable.Queue[Long]): Unit = {
     var deck = deck1
     for (line <- lines) {
       if (line.isEmpty) {
@@ -43,14 +42,12 @@ class Day22 extends Puzzle {
         deck.enqueue(line.toLong)
       }
     }
-    recursiveCombat(deck1, deck2)
-    (if (deck1.nonEmpty) deck1 else deck2).reverse.zipWithIndex.map(c => c._1 * (c._2 + 1)).sum
   }
 
   // Returns true if player 1 wins
   private def recursiveCombat(deck1: mutable.Queue[Long], deck2: mutable.Queue[Long]): Boolean = {
-    var configs1: mutable.HashSet[List[Long]] = mutable.HashSet.empty
-    var configs2: mutable.HashSet[List[Long]] = mutable.HashSet.empty
+    val configs1: mutable.HashSet[List[Long]] = mutable.HashSet.empty
+    val configs2: mutable.HashSet[List[Long]] = mutable.HashSet.empty
 
     while (deck1.nonEmpty && deck2.nonEmpty) {
       if (configs1.contains(deck1.toList) || configs2.contains(deck2.toList)) {
