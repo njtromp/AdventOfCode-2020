@@ -6,15 +6,16 @@ class Day23Test extends AnyFlatSpec {
   val example = List("389125467")
 
   "Part 1" should "solve example with 10 moves correct" in {
-    assert(new Day23(10).solvePart1(example) === 92658374L)
+    assert(new Day23(9, 10, 0, 0).solvePart1(example) === 92658374L)
   }
 
   "Part 1" should "solve example with 100 moves correct" in {
-    assert(new Day23(100).solvePart1(example) === 67384529L)
+    assert(new Day23(9, 100, 0, 0).solvePart1(example) === 67384529L)
   }
 
   "Part 2" should "solve example correct" in {
-    assert(new Day23(0).solvePart2(example) === 0)
+    val example2 = List("389125467")
+    assert(new Day23(0, 0, 1000000L,10000000L).solvePart2(example2) === 149245887792L)
   }
 
 }

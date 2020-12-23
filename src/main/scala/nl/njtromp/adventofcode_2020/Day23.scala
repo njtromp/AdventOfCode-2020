@@ -1,47 +1,31 @@
 package nl.njtromp.adventofcode_2020
 
-class Day23(var moves: Int) extends Puzzle {
+import scala.annotation.tailrec
+import scala.collection.mutable
+
+class Day23(limit1: Long, moves1: Long, limit2: Long, moves2: Long) extends Puzzle {
   class Cup(value: Long) {
     var next: Cup = null;
-    def last: Cup = if (next == null) this else next.last
-    def find(nr: Long): Cup = if (value == nr) this else next.find(nr)
-    def skip(nr: Int): Cup = if (nr == 0) this else next.skip(nr - 1)
-    def cut(tail: Cup): Unit = if (next == tail) next = null else next.cut(tail)
-    def exists(nr: Long): Boolean = {
-      def exists(nr: Long, head: Cup, cur: Cup): Boolean = {
-        if (nr == cur.label)
-          true
-        else if (cur == head) false else exists(nr, head, cur.next)
-      }
-      exists(nr, this, this.next)
-    }
-    def label: Long = value.toChar
+    @tailrec
+    final def last: Cup = if (next == null) this else next.last
+    @tailrec
+    final def skip(nr: Int): Cup = if (nr == 0) this else next.skip(nr - 1)
+    @tailrec
+    final def cut(tail: Cup): Unit = if (next == tail) next = null else next.cut(tail)
+    @tailrec
+    final def exists(nr: Long): Boolean = if (nr == value) true else if (next == null) false else next.exists(nr)
+    def label: Long = value
     override def toString: String = value.toString
   }
 
+  private val MAP_SIZE = 50000L
+  private val cups: Array[mutable.HashMap[Int, Cup]] = Array.ofDim(200)
+
   override def solvePart1(lines: List[String]): Long = {
-    var current: Cup = createCups(lines.head.toList)
+    var current: Cup = createCups(lines.head.toList, limit1)
     current.last.next = current
-    while (moves > 0) {
-      val removed = current.next
-      val gap = removed.skip(3)
-      removed.cut(gap)
-      current.next = gap
-
-      var value = current.label
-      do {
-        value -= 1
-        if (value == 0) value = 9
-      }
-      while (!current.exists(value));
-
-      removed.last.next = current.find(value).next
-      current.find(value).next = removed
-
-      current = current.next
-      moves -= 1
-    }
-    val one = current.find(1)
+    letCrabPlay(current, limit1, moves1)
+    val one = cups(0)(1)
     val result: StringBuilder = new StringBuilder()
     current = one.next
     while (current != one) {
@@ -52,22 +36,63 @@ class Day23(var moves: Int) extends Puzzle {
   }
 
   override def solvePart2(lines: List[String]): Long = {
-    -1
+    val current: Cup = createCups(lines.head.toList, limit2)
+    current.last.next = current
+    letCrabPlay(current, limit2, moves2)
+    val firstStar = cups(0)(1).next
+    firstStar.label * firstStar.next.label
   }
 
-  def createCups(labels: List[Char]): Cup = {
-    labels match {
-      case Nil => null
-      case label :: tail => {
-        val cup = new Cup(label.toString.toLong)
-        cup.next = createCups(tail)
-        cup
+  def letCrabPlay(start: Cup, limit: Long, maxMoves: Long): Unit = {
+    var current = start
+    var moves = maxMoves
+    while (moves > 0) {
+      val removed = current.next
+      val gap = removed.skip(3)
+      removed.cut(gap)
+      current.next = gap
+
+      var value = current.label
+      do {
+        value -= 1
+        if (value == 0) value = limit
       }
+      while (removed.exists(value));
+
+      removed.last.next = cups((value / MAP_SIZE).toInt)((value % MAP_SIZE).toInt).next
+      cups((value / MAP_SIZE).toInt)((value % MAP_SIZE).toInt).next = removed
+
+      current = current.next
+      moves -= 1
     }
+
+  }
+
+  def createCups(labels: List[Char], limit: Long): Cup = {
+    for (i <- cups.indices) {
+      cups(i) = mutable.HashMap.empty
+    }
+    val head = new Cup(labels.head.toString.toLong)
+    cups((head.label / MAP_SIZE).toInt) += ((head.label % MAP_SIZE ).toInt -> head)
+    var last = head
+    var label: Long = 2
+    for (l <- labels.tail) {
+      last.next = new Cup(l.toString.toLong)
+      last = last.next
+      cups((last.label / MAP_SIZE).toInt) += ((last.label % MAP_SIZE ).toInt -> last)
+      label += 1
+    }
+    while (label <= limit) {
+      last.next = new Cup(label)
+      last = last.next
+      cups((last.label / MAP_SIZE).toInt) += ((last.label % MAP_SIZE ).toInt -> last)
+      label += 1
+    }
+    head
   }
 
 }
 
 object Day23 extends App {
-  new Day23(100).solvePuzzles("/input-puzzle23.txt")
+  new Day23(9, 100, 1000000L, 10000000L).solvePuzzles("/input-puzzle23.txt")
 }
