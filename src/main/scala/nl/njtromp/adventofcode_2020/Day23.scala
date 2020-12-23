@@ -18,14 +18,13 @@ class Day23(limit1: Long, moves1: Long, limit2: Long, moves2: Long) extends Puzz
     override def toString: String = value.toString
   }
 
-  private val MAP_SIZE = 50000L
-  private val cups: Array[mutable.HashMap[Int, Cup]] = Array.ofDim(200)
+  private val cups: mutable.HashMap[Long, Cup] = mutable.HashMap.empty
 
   override def solvePart1(lines: List[String]): Long = {
     var current: Cup = createCups(lines.head.toList, limit1)
     current.last.next = current
     letCrabPlay(current, limit1, moves1)
-    val one = cups(0)(1)
+    val one = cups(1)
     val result: StringBuilder = new StringBuilder()
     current = one.next
     while (current != one) {
@@ -39,7 +38,7 @@ class Day23(limit1: Long, moves1: Long, limit2: Long, moves2: Long) extends Puzz
     val current: Cup = createCups(lines.head.toList, limit2)
     current.last.next = current
     letCrabPlay(current, limit2, moves2)
-    val firstStar = cups(0)(1).next
+    val firstStar = cups(1).next
     firstStar.label * firstStar.next.label
   }
 
@@ -59,8 +58,8 @@ class Day23(limit1: Long, moves1: Long, limit2: Long, moves2: Long) extends Puzz
       }
       while (removed.exists(value));
 
-      removed.last.next = cups((value / MAP_SIZE).toInt)((value % MAP_SIZE).toInt).next
-      cups((value / MAP_SIZE).toInt)((value % MAP_SIZE).toInt).next = removed
+      removed.last.next = cups(value).next
+      cups(value).next = removed
 
       current = current.next
       moves -= 1
@@ -69,23 +68,20 @@ class Day23(limit1: Long, moves1: Long, limit2: Long, moves2: Long) extends Puzz
   }
 
   def createCups(labels: List[Char], limit: Long): Cup = {
-    for (i <- cups.indices) {
-      cups(i) = mutable.HashMap.empty
-    }
     val head = new Cup(labels.head.toString.toLong)
-    cups((head.label / MAP_SIZE).toInt) += ((head.label % MAP_SIZE ).toInt -> head)
+    cups += (head.label -> head)
     var last = head
     var label: Long = 2
     for (l <- labels.tail) {
       last.next = new Cup(l.toString.toLong)
       last = last.next
-      cups((last.label / MAP_SIZE).toInt) += ((last.label % MAP_SIZE ).toInt -> last)
+      cups += (last.label -> last)
       label += 1
     }
     while (label <= limit) {
       last.next = new Cup(label)
       last = last.next
-      cups((last.label / MAP_SIZE).toInt) += ((last.label % MAP_SIZE ).toInt -> last)
+      cups += (last.label -> last)
       label += 1
     }
     head
