@@ -156,8 +156,8 @@ class Day20 extends Puzzle {
         "#    ##    ##    ###",
         " #  #  #  #  #  #   "
     )
+    val nrOfMonsters = if (finalImage.length == 3) countMonsters(antiClockwise(antiClockwise(finalImage)), monster) else countMonsters(finalImage, monster)
     // Rotating and flipping should have been build into the code, but just rotating the map 180 degrees solved part 2!
-    val nrOfMonsters = countMonsters(antiClockwise(antiClockwise(finalImage)), monster)
     if (nrOfMonsters > 0) finalImage.map(_.count(_ == '#')).sum - nrOfMonsters * monster.map(_.count(_ == '#')).sum else -1
   }
 

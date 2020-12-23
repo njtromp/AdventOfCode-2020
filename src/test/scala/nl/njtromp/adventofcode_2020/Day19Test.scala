@@ -41,10 +41,6 @@ class Day19Test extends AnyFlatSpec {
     assert(new Day19().solvePart1(example) === 2)
   }
 
-  "Part 1" should "solve example correct" in {
-    assert(new Day19().solvePart1(example) === 2)
-  }
-
   val example2 = List(
     "42: 9 14 | 10 1",
     "9: 14 27 | 1 26",
@@ -97,10 +93,6 @@ class Day19Test extends AnyFlatSpec {
 
   "Part 2" should "solve example correct without replacement" in {
     assert(new Day19().solvePart1(example2) === 3)
-  }
-
-  "Part 2" should "solve example correct with replacement" in {
-    assert(new Day19().solvePart2(example2) === 12)
   }
 
 }
