@@ -31,7 +31,7 @@ class Day24Test extends AnyFlatSpec {
   }
 
   "Part 2" should "solve example correct" in {
-    assert(new Day24().solvePart2(example) === 0)
+    assert(new Day24().solvePart2(example) === 2208)
   }
 
 }
