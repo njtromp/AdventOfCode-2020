@@ -3,80 +3,54 @@ package nl.njtromp.adventofcode_2020
 import nl.njtromp.{Day24BaseVisitor, Day24Lexer, Day24Parser}
 import org.antlr.v4.runtime.{CharStreams, CommonTokenStream}
 
-import scala.collection.{JavaConverters, mutable}
+import scala.annotation.tailrec
+import scala.collection.JavaConverters
 
 class Day24 extends Puzzle {
 
   override def solvePart1(lines: List[String]): Long = {
-    val instructions = lines.map(parseInstructions)
-    val diameter = 3 * instructions.map(_.size).max
-    val floor: Array[Array[Boolean]] = Array.ofDim(diameter, diameter)
-
-    flipTiles(floor, instructions, diameter)
-
-    floor.map(_.count(_ == true)).sum
+    flipTiles(lines.map(parseInstructions)).size
   }
 
   override def solvePart2(lines: List[String]): Long = {
-    val instructions = lines.map(parseInstructions)
-    val diameter = 3 * instructions.map(_.size).max + 400 // 400 is every day expanding is each direction plus safety margin
-    var floor: Array[Array[Boolean]] = Array.ofDim(diameter, diameter)
+    proceed(flipTiles(lines.map(parseInstructions)), 100).size
+  }
 
-    flipTiles(floor, instructions, diameter)
+  @tailrec
+  private def proceed(floor: Set[(Int, Int)], days: Int): Set[(Int, Int)] = {
+    if (days == 0) floor else
+      proceed(
+          floor.filter(tile => (1 to 2).contains((floor intersect neighbors(tile)).size)) // Black tiles staying black
+        union
+          floor.flatten(tile => (neighbors(tile) diff floor).filter(w => (floor intersect neighbors(w)).size == 2)) // White tiles becoming black
+        , days - 1
+      )
+  }
 
-    var days = 100
-    while (days > 0) {
-      val newFloor: Array[Array[Boolean]] = Array.ofDim(diameter, diameter)
-      var y = 1
-      while (y < floor.length - 1) {
-        var x = 2 + (y % 2)
-        while (x < floor(y).length - 3) {
-          newFloor(y)(x) = if (floor(y)(x)) (1 to 2).contains(countBlackNeighbors(floor, x, y)) else countBlackNeighbors(floor, x, y) == 2
-          x += 2
+  private def neighbors(pos: (Int, Int)): Set[(Int, Int)] = {
+    Set(
+      (pos._1 + 1, pos._2 + 1), // ne
+      (pos._1 + 2, pos._2),     // e
+      (pos._1 + 1, pos._2 - 1), // se
+      (pos._1 - 1, pos._2 - 1), // sw
+      (pos._1 - 2, pos._2),     // w
+      (pos._1 - 1, pos._2 + 1)  // nw
+    )
+  }
+
+  private def flipTiles(tilePattern: List[List[String]]): Set[(Int, Int)] = {
+    tilePattern.foldLeft(Set.empty[(Int, Int)])((floor, tileInstructions) => {
+      val tile = tileInstructions.foldLeft((0, 0))((pos, instruction) =>
+        instruction match {
+          case "ne" => (pos._1 + 1, pos._2 + 1)
+          case "e" => (pos._1 + 2, pos._2)
+          case "se" => (pos._1 + 1, pos._2 - 1)
+          case "sw" => (pos._1 - 1, pos._2 - 1)
+          case "w" => (pos._1 - 2, pos._2)
+          case "nw" => (pos._1 - 1, pos._2 + 1)
         }
-        y += 1
-      }
-      floor = newFloor
-      days -= 1
-    }
-
-    floor.map(_.count(_ == true)).sum
-  }
-
-  def countBlackNeighbors(floor: Array[Array[Boolean]], x: Int, y: Int): Int = {
-    List(
-      floor(y + 1)(x + 1),  // ne
-      floor(y)(x + 2),      // e
-      floor(y - 1)(x + 1),  // se
-      floor(y - 1)(x - 1),  // sw
-      floor(y)(x - 2),      // w
-      floor(y + 1)(x - 1)   //nw
-    ).count(_ == true)
-  }
-
-  private def flipTiles(floor: Array[Array[Boolean]], instructions: List[List[String]], diameter: Int): Unit = {
-    instructions.foreach(instruction => {
-      var x = diameter / 2
-      var y = diameter / 2
-      instruction.foreach {
-        case "ne" =>
-          x += 1
-          y += 1
-        case "e" =>
-          x += 2
-        case "se" =>
-          x += 1
-          y -= 1
-        case "sw" =>
-          x -= 1
-          y -= 1
-        case "w" =>
-          x -= 2
-        case "nw" =>
-          x -= 1
-          y += 1
-      }
-      floor(y)(x) = !floor(y)(x)
+      )
+      if (floor.contains(tile)) floor - tile else floor + tile
     })
   }
 
