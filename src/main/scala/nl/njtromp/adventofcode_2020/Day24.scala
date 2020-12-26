@@ -40,7 +40,7 @@ class Day24 extends Puzzle {
 
   private def flipTiles(tilePattern: List[List[String]]): Set[(Int, Int)] = {
     def flip(floor: Set[(Int, Int)], tile: (Int, Int)): Set[(Int, Int)] = if (floor.contains(tile)) floor - tile else floor + tile
-    tilePattern.foldLeft(Set.empty[(Int, Int)])((floor, tileInstructions) => {
+    tilePattern.foldLeft(Set.empty[(Int, Int)])((floor, tileInstructions) =>
       flip(floor, tileInstructions.foldLeft((0, 0))((pos, instruction) =>
         instruction match {
           case "ne" => (pos._1 + 1, pos._2 + 1)
@@ -51,7 +51,7 @@ class Day24 extends Puzzle {
           case "nw" => (pos._1 - 1, pos._2 + 1)
         }
       ))
-    })
+    )
   }
 
   private def parseInstructions(line: String): List[String] = {
