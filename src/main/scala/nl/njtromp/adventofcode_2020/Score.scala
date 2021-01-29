@@ -3,7 +3,7 @@ package nl.njtromp.adventofcode_2020
 import play.api.libs.json.{JsObject, Json}
 
 object Score extends App {
-  val leaderBoard = Json.parse(getClass.getResourceAsStream("/leaderboard.json"))
+  val leaderBoard = Json.parse(getClass.getResourceAsStream("/2020/leaderboard.json"))
   val fields = (leaderBoard \ "members").as[JsObject].values
   val contenders: List[(String, List[(Int, Int)])] = fields.map(field => {
     val name = if (field.as[JsObject].values.count(_.toString() == "null") == 1) s"coward-${(field \ "id").as[String]}" else (field \ "name").as[String]

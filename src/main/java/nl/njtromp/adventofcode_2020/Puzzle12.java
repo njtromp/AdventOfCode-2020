@@ -88,7 +88,7 @@ public class Puzzle12 {
 
     private static String[] readInput() {
         List<String> lines = new ArrayList<>();
-        Scanner inputFile = new Scanner(Puzzle12.class.getResourceAsStream("/input-puzzle12.txt"));
+        Scanner inputFile = new Scanner(Puzzle12.class.getResourceAsStream("/2020/input-puzzle12.txt"));
         while (inputFile.hasNextLine()) {
             lines.add(inputFile.nextLine());
         }

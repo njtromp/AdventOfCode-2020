@@ -90,5 +90,5 @@ class Day23(limit1: Long, moves1: Long, limit2: Long, moves2: Long) extends Puzz
 }
 
 object Day23 extends App {
-  new Day23(9, 100, 1000000L, 10000000L).solvePuzzles("/input-puzzle23.txt")
+  new Day23(9, 100, 1000000L, 10000000L).solvePuzzles("/2020/input-puzzle23.txt")
 }

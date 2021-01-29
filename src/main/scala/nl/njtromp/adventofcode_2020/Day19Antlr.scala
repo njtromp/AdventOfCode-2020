@@ -40,5 +40,5 @@ class Day19Antlr extends Puzzle {
 }
 
 object Day19Antlr extends App {
-  new Day19Antlr().solvePuzzles("/input-puzzle19-antlr.txt");
+  new Day19Antlr().solvePuzzles("/2020/input-puzzle19-antlr.txt");
 }

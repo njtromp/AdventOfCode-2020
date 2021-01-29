@@ -5,7 +5,7 @@ import scala.io.Source
 object Day03 extends App {
   var numberOfTrees: Long = 0
   var column = 0
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle03.txt")).getLines) {
+  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle03.txt")).getLines) {
     numberOfTrees += (if (line.charAt(column) == '#') 1 else 0)
     column = (column + 3) % line.length
   }
@@ -17,7 +17,7 @@ object Day03 extends App {
     column = 0
     numberOfTrees = 0
     var lineNr = 0
-    for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle03.txt")).getLines) {
+    for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle03.txt")).getLines) {
       if (lineNr % slope(1) == 0) {
         numberOfTrees += (if (line.charAt(column) == '#') 1 else 0)
         column = (column + slope(0)) % line.length

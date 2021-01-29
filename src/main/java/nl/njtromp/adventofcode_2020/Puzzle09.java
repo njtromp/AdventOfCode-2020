@@ -57,7 +57,7 @@ public class Puzzle09 {
 
     private static String[] readInput() {
         List<String> lines = new ArrayList<>();
-        Scanner inputFile = new Scanner(Puzzle09.class.getResourceAsStream("/input-puzzle09.txt"));
+        Scanner inputFile = new Scanner(Puzzle09.class.getResourceAsStream("/2020/input-puzzle09.txt"));
         while (inputFile.hasNextLine()) {
             lines.add(inputFile.nextLine());
         }

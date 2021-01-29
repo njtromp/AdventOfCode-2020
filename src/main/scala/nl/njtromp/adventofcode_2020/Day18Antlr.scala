@@ -43,5 +43,5 @@ class Day18Antlr extends Puzzle {
 }
 
 object Day18Antlr extends App {
-  new Day18Antlr().solvePuzzles("/input-puzzle18.txt")
+  new Day18Antlr().solvePuzzles("/2020/input-puzzle18.txt")
 }

@@ -48,7 +48,7 @@ object Day04 extends App {
     })
   }
 
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle04.txt")).getLines) {
+  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle04.txt")).getLines) {
     if (line.trim.isEmpty) {
       if (isValidPassport) {
         passports = passportData +: passports

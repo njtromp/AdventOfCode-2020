@@ -131,7 +131,7 @@ public class Puzzle11 {
 
     private static String[] readInput() {
         List<String> lines = new ArrayList<>();
-        Scanner inputFile = new Scanner(Puzzle11.class.getResourceAsStream("/input-puzzle11.txt"));
+        Scanner inputFile = new Scanner(Puzzle11.class.getResourceAsStream("/2020/input-puzzle11.txt"));
         while (inputFile.hasNextLine()) {
             lines.add(inputFile.nextLine());
         }

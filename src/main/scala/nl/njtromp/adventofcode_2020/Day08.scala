@@ -4,7 +4,7 @@ import scala.io.Source
 
 object Day08 extends App {
   var instructions: Array[String] = Array.empty
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle08.txt")).getLines) {
+  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle08.txt")).getLines) {
     instructions = line +: instructions
   }
   instructions = instructions.reverse

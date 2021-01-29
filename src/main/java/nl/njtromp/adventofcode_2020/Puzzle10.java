@@ -2,7 +2,6 @@ package nl.njtromp.adventofcode_2020;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Puzzle10 {
     public static void main(String[] args) {
@@ -47,7 +46,7 @@ public class Puzzle10 {
 
     private static String[] readInput() {
         List<String> lines = new ArrayList<>();
-        Scanner inputFile = new Scanner(Puzzle10.class.getResourceAsStream("/input-puzzle10.txt"));
+        Scanner inputFile = new Scanner(Puzzle10.class.getResourceAsStream("/2020/input-puzzle10.txt"));
         while (inputFile.hasNextLine()) {
             lines.add(inputFile.nextLine());
         }

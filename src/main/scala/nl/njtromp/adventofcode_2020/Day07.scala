@@ -7,7 +7,7 @@ object Day07 extends App {
   var bags: mutable.Map[String, List[(String, Int)]] = mutable.Map.empty
   val outerBagInfo = "(.+) bags contain (.+)\\.".r
   val innerBagInfo = "(\\d+) (.+) bag(s?)".r
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle07.txt")).getLines) {
+  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle07.txt")).getLines) {
     line match {
       case outerBagInfo(outerColor, innerBagsInfo) => {
         var innerBags: List[(String, Int)] = bags.getOrElse(outerColor, List.empty)

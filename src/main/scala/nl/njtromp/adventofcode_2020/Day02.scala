@@ -7,7 +7,7 @@ object Day02 extends App {
   var validPasswordsPart1 = 0
   var validPasswordsPart2 = 0
   val pattern: Regex = "(\\d+)-(\\d+) (.): (.+)".r
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/input-puzzle02.txt")).getLines) {
+  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle02.txt")).getLines) {
     for (parts <- pattern.findAllMatchIn(line)) {
       val min = parts.group(1).toInt
       val max = parts.group(2).toInt

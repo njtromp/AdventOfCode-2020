@@ -52,5 +52,5 @@ class Day14 extends Puzzle {
 }
 
 object Day14 extends App {
-  new Day14().solvePuzzles("/input-puzzle14.txt")
+  new Day14().solvePuzzles("/2020/input-puzzle14.txt")
 }
