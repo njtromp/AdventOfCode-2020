@@ -9,11 +9,11 @@ class Day02Test extends AnyFlatSpec {
   val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream("/2021/day02-test.txt")).getLines().toList
 
   "Part 1" should "solve example correct" in {
-    assert(new Day01().solvePart1(example) === 0)
+    assert(new Day02().solvePart1(example) === 150)
   }
 
   "Part 2" should "solve example correct" in {
-    assert(new Day01().solvePart2(example) === 0)
+    assert(new Day02().solvePart2(example) === 0)
   }
 
 
