@@ -5,29 +5,31 @@ import nl.njtromp.adventofcode_2020.Puzzle
 import scala.annotation.tailrec
 
 class Day04 extends Puzzle {
-  type Board = Array[Array[Int]]
+  private type Board = Array[Array[Int]]
+  private val BOARD_SIZE = 5
 
-  def createBoards(lines: List[Array[Int]]): List[Board] = {
+  private def createBoards(lines: List[Array[Int]]): List[Board] = {
     if (lines.isEmpty)
       List.empty
     else {
-      lines.splitAt(5)._1.toArray :: createBoards(lines.splitAt(5)._2)
+      lines.splitAt(BOARD_SIZE)._1.toArray :: createBoards(lines.splitAt(BOARD_SIZE)._2)
     }
+  }
+
+  private def isWinner(drown: List[Int], board: Board): Boolean = {
+    def matchingRow(row: Array[Int]): Boolean = {
+      row.count(drown.contains(_)) == BOARD_SIZE
+    }
+    def matchingColumns(): Int = {
+      val columns: Seq[Array[Int]] = (0 until BOARD_SIZE).map(c => board.map(_(c)))
+      columns.count(matchingRow)
+    }
+    board.count(matchingRow) > 0 || matchingColumns() > 0
   }
 
   @tailrec
   private def winningBoardPart1(drown: List[Int], numbers: Array[Int], boards: List[Board]): Long = {
-    def isWinner(board: Board): Boolean = {
-      def matchingRow(row: Array[Int]): Boolean = {
-        row.count(drown.contains(_)) == 5
-      }
-      def matchingColumns(): Int = {
-        val columns: Seq[Array[Int]] = (0 to 4).map(c => board.map(_(c)))
-        columns.count(matchingRow)
-      }
-      board.count(matchingRow) > 0 || matchingColumns() > 0
-    }
-    val winningBoards = boards.filter(isWinner)
+    val winningBoards = boards.filter(isWinner(drown, _))
     if (winningBoards.length == 1) {
       val winningBoard: Board = winningBoards.head
       winningBoard.flatMap(_.toList).filter(n => !drown.contains(n)).sum * drown.head
@@ -45,17 +47,7 @@ class Day04 extends Puzzle {
   override def solvePart2(lines: List[String]): Long = {
     @tailrec
     def winningBoard(drown: List[Int], numbers: Array[Int], boards: List[Board]): Long = {
-      def isWinner(board: Board): Boolean = {
-        def matchingRow(row: Array[Int]): Boolean = {
-          row.count(drown.contains(_)) == 5
-        }
-        def matchingColumns(): Int = {
-          val columns: Seq[Array[Int]] = (0 to 4).map(c => board.map(_(c)))
-          columns.count(matchingRow)
-        }
-        board.count(matchingRow) > 0 || matchingColumns() > 0
-      }
-      val winningBoards = boards.filter(isWinner)
+      val winningBoards = boards.filter(isWinner(drown, _))
       if (winningBoards.length == boards.length - 1) {
         winningBoardPart1(drown, numbers, boards.filterNot(winningBoards.contains(_)))
       } else {
