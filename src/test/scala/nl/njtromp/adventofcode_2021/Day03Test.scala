@@ -5,7 +5,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import scala.io.Source
 
 class Day03Test extends AnyFlatSpec {
-  val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream("/2021/day03-test.txt")).getLines().toList
+  val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream("/2021/day03-example.txt")).getLines().toList
 
   "Part 1" should "solve example correct" in {
     assert(new Day03().solvePart1(example) === 198)
