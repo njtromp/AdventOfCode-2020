@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import nl.njtromp.adventofcode.Puzzle
+
 import scala.collection.mutable.HashMap
 
 class Day15 extends Puzzle {

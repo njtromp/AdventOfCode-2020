@@ -1,4 +1,4 @@
-package nl.njtromp.adventofcode_2020
+package nl.njtromp.adventofcode
 
 import scala.io.Source
 
@@ -11,5 +11,6 @@ trait Puzzle {
   }
 
   def solvePart1(lines: List[String]): Long;
+
   def solvePart2(lines: List[String]): Long;
 }

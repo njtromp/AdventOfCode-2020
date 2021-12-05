@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import nl.njtromp.adventofcode.Puzzle
+
 import scala.util.{Success, Try}
 
 class Day13 extends Puzzle {

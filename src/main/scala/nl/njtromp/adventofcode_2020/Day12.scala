@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import nl.njtromp.adventofcode.Puzzle
+
 class Day12 extends Puzzle {
   private val EW = "([EW])(\\d+)".r
   private val NS = "([NS])(\\d+)".r

@@ -1,6 +1,6 @@
 package nl.njtromp.adventofcode_2021
 
-import nl.njtromp.adventofcode_2020.Puzzle
+import nl.njtromp.adventofcode.Puzzle
 
 class Day01 extends Puzzle {
   def zip(depths: List[Int]): List[(Int, Int)] = depths.zip(depths.tail)

@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import nl.njtromp.adventofcode.Puzzle
+
 import java.util.Objects
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

@@ -1,6 +1,6 @@
 package nl.njtromp.adventofcode_2018
 
-import nl.njtromp.adventofcode_2020.Puzzle
+import nl.njtromp.adventofcode.Puzzle
 
 import scala.annotation.tailrec
 

@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import nl.njtromp.adventofcode.Puzzle
+
 class Day25 extends Puzzle {
 
   override def solvePart1(lines: List[String]): Long = {

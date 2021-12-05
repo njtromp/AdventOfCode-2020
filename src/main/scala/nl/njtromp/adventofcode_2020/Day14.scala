@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode_2020
 
+import nl.njtromp.adventofcode.Puzzle
+
 class Day14 extends Puzzle {
   private val Mask = "mask = ([X01]{36})".r
   private val Mem = "mem\\[(\\d+)\\] = (\\d+)".r

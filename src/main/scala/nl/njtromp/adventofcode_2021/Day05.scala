@@ -1,6 +1,6 @@
 package nl.njtromp.adventofcode_2021
 
-import nl.njtromp.adventofcode_2020.Puzzle
+import nl.njtromp.adventofcode.Puzzle
 
 class Day05 extends Puzzle {
   type Pos = (Int, Int)
