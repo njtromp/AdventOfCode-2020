@@ -31,18 +31,13 @@ class Day05 extends Puzzle {
     val lineInfo = lines.map(beginEndPoint)
     val vhLines = lineInfo.filter(l => l._1._1 == l._2._1 || l._1._2 == l._2._2)
     val points = vhLines.flatMap(coveringPositions)
-    points.foldLeft(Map.empty[Pos, Int]) { (m, c) =>
-      m + (c -> (m.getOrElse(c, 0) + 1))
-    }.count(_._2 > 1)
+    points.groupBy(p => p).count(_._2.size > 1)
   }
 
   override def solvePart2(lines: List[String]): Long = {
     val lineInfo = lines.map(beginEndPoint)
     val points = lineInfo.flatMap(coveringPositions)
-    points.foldLeft(Map.empty[Pos, Int]) { (m, c) =>
-      m + (c -> (m.getOrElse(c, 0) + 1))
-    }.count(_._2 > 1)
-
+    points.groupBy(p => p).count(_._2.size > 1)
   }
 }
 
