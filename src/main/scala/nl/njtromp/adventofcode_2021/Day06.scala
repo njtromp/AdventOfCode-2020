@@ -18,6 +18,7 @@ class Day06 extends Puzzle {
     evolve(80, lines.head.split(",").map(_.toInt).toList)
   }
 
+  @tailrec
   private def evolve(day: Int, fish: Map[Int, Long]): Long = {
     if (day == 0)
       fish.values.sum
