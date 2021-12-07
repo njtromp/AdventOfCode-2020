@@ -13,7 +13,8 @@ class Day07 extends Puzzle {
   }
 
   private def costs2(aligned: Int, squids: List[Int]): Long = {
-    squids.map(s => Math.abs((Math.min(aligned, s) to Math.max(aligned, s)).map(s => Math.abs(aligned -s )).sum)).sum
+    def singleSquid(aligned: Int, pos: Int): Int = (Math.abs(aligned - pos) + 1) * Math.abs(aligned - pos) / 2
+    squids.map(s => singleSquid(aligned, s)).sum
   }
 
   override def solvePart2(lines: List[String]): Long = {
