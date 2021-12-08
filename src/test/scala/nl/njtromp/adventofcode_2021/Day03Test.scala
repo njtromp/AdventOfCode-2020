@@ -15,5 +15,4 @@ class Day03Test extends AnyFlatSpec {
     assert(new Day03().solvePart2(example) === 230)
   }
 
-
 }

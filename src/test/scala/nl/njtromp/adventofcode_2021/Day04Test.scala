@@ -15,5 +15,4 @@ class Day04Test extends AnyFlatSpec {
     assert(new Day04().solvePart2(example) === 1924)
   }
 
-
 }
