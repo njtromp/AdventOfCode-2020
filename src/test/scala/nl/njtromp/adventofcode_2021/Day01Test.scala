@@ -2,9 +2,6 @@ package nl.njtromp.adventofcode_2021
 
 import org.scalatest.flatspec.AnyFlatSpec
 
-import scala.io.Source
-
-
 class Day01Test extends AnyFlatSpec {
   val example = List("199", "200", "208", "210", "200", "207", "240", "269", "260", "263")
 
