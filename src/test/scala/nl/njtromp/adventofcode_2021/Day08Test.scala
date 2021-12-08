@@ -4,7 +4,6 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 import scala.io.Source
 
-
 class Day08Test extends AnyFlatSpec {
   val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream("/2021/day08-example.txt")).getLines().toList
 
