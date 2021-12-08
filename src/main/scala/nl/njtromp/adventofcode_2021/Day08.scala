@@ -7,8 +7,11 @@ import scala.annotation.tailrec
 class Day08 extends Puzzle {
 
   override def solvePart1(lines: List[String]): Long = {
-    val bla = lines.map(_.split("\\|")(1).split(" ").map(_.trim).filterNot(_.isBlank))
-    bla.flatMap(_.map(_.length)).count(List(2, 4, 3, 7).contains(_))
+    lines.map(_.split(" \\|")(1))
+      .flatMap(_.split(" "))
+      .map(_.trim)
+      .filterNot(_.isBlank)
+      .count(w => List(2, 4, 3, 7).contains(w.length))
   }
 
   private val segment = "abcdefg"
