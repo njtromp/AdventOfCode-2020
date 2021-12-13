@@ -2,7 +2,6 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.Puzzle
 
-import scala.::
 import scala.util.matching.Regex
 
 class Day13 extends Puzzle {
