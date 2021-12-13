@@ -18,9 +18,9 @@ class Day13 extends Puzzle {
     (dots, instructions.filterNot(_.isBlank).reverse)
   }
 
-  private def printPaper(ps: Set[(Int, Int)]): Unit = {
-    (ps.map(_._2).min to ps.map(_._2).max).foreach(y => {
-      (ps.map(_._1).min to ps.map(_._1).max).foreach(x => if (ps.contains((x, y))) print('#') else print('.'))
+  private def printPaper(dots: Set[(Int, Int)]): Unit = {
+    (dots.map(_._2).min to dots.map(_._2).max).foreach(y => {
+      (dots.map(_._1).min to dots.map(_._1).max).foreach(x => if (dots.contains((x, y))) print('#') else print('.'))
       println
     })
   }
