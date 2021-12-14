@@ -20,28 +20,24 @@ class Day14 extends Puzzle {
   def solve(steps: Int, lines: List[String]): Long = {
     val templatePattern = createPatterns(lines.head)
     val insertions = lines.tail.filterNot(_.isBlank).map({case Instruction(a, b, c) => s"$a$b" -> List(s"$a$c", s"$c$b")}).toMap
-    val patterns: Set[String] = insertions.keys.flatMap(k => k :: insertions(k)).toSet
-    val patternCount: mutable.HashMap[String, Long] = new mutable.HashMap[String, Long]() ++ patterns.map(c => c -> 0L).toMap
 
     @tailrec
     def evolve(step: Int, patternCount: mutable.HashMap[String, Long]): mutable.HashMap[String, Long] = {
-      if (step == 0)
+      if (step == 0) {
         patternCount
-      else {
-        val pattern = patternCount.filter(_._2 > 0).keys.toSet
+      } else {
         val newPatternCount = mutable.HashMap[String, Long]()
         patternCount.keys.foreach(k => {
-          if (pattern.contains(k)) {
-            insertions(k).foreach(p => {
-              newPatternCount.update(p, patternCount(k) + newPatternCount.getOrElse(p, 0L))
-            })
-          }
+          insertions(k).foreach(p => {
+            newPatternCount.update(p, patternCount(k) + newPatternCount.getOrElse(p, 0L))
+          })
         })
-        evolve(step -1, newPatternCount)
+        evolve(step - 1, newPatternCount)
       }
     }
 
-    templatePattern.foreach(p => patternCount.update(p, patternCount(p) + 1L))
+    val patternCount = new mutable.HashMap[String, Long]()
+    templatePattern.foreach(p => patternCount.update(p, patternCount.getOrElse(p, 0L) + 1L))
     val finalPattern = evolve(steps, patternCount)
     val charCount = finalPattern.toList.map(x => (x._1(0), x._2)).groupBy(_._1).mapValues(_.map(_._2).sum)
     charCount.values.max - charCount.values.min
@@ -52,7 +48,7 @@ class Day14 extends Puzzle {
   }
 
   override def solvePart2(lines: List[String]): Long = {
-    solve(40, lines) + 1L
+    solve(40, lines) + 1L // Some oddities with 'B' count
   }
 
 }
