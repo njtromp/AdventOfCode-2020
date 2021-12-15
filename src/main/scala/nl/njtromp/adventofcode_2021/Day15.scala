@@ -38,7 +38,20 @@ class Day15 extends Puzzle {
     weights.reverse.head.reverse.head
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  override def solvePart2(lines: List[String]): Long = {
+    def enlarge(m: Array[Array[Int]]): Array[Array[Int]] = m.map(_.map(n => Math.max(1, (n + 1) % 10)))
+    def expandeHorizontal(m1: Array[Array[Int]], m2: Array[Array[Int]]): Array[Array[Int]] = m1.zip(m2).map(rs => rs._1 ++ rs._2)
+    val riskMap = lines.map(_.toArray.map(_.asDigit)).toArray
+    val verticalRiskMap = (1 until 5).foldLeft((riskMap, riskMap))((acc, n) => {
+      val newTile = enlarge(acc._2)
+      (acc._1 ++ newTile, newTile)
+    })._1
+    val expandedRiskMap = (1 until 5).foldLeft((verticalRiskMap, verticalRiskMap))((acc, n) => {
+      val tileRow = enlarge(acc._2)
+      (expandeHorizontal(acc._1, tileRow), tileRow)
+    })._1
+    solvePart1(expandedRiskMap.map(_.mkString).toList)
+  }
 }
 
 case class WeightedPos(weight: Long, pos: (Int, Int))
