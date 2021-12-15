@@ -2,6 +2,8 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.Puzzle
 
+import scala.annotation.tailrec
+
 class Day15 extends Puzzle {
 
   type Pos = (Int, Int) // (X, Y)
@@ -10,31 +12,39 @@ class Day15 extends Puzzle {
 
   override def solvePart1(lines: List[String]): Long = {
     val riskMap = lines.map(_.toArray.map(_.asDigit)).toArray
+    val from = riskMap.map(_ => new Array[Pos](riskMap.head.length))
+    val weights = riskMap.map(_.map(_ => Long.MaxValue))
+    val moves = List((-1, 0), (1, 0), (0, -1), (0, 1))
 
-    def findPath(bestRiskLevel: Long, bestPath: List[Pos], riskLevel: Long, path: List[Pos]): (Long, List[Pos]) = {
-      val currentPos = path.head
-      if (x(currentPos) == riskMap.head.length - 1 && y(currentPos) == riskMap.length - 1) {
-        // Found the exit
-        if (riskLevel < bestRiskLevel) (riskLevel, path) else (bestRiskLevel, bestPath)
-      } else {
-        // try right and down
-        val pos = path.head
-        List((1, 0), (0, 1)).foldLeft((bestRiskLevel, bestPath))((acc, d) => {
-          val newPos = (x(pos) + x(d), y(pos) + y(d))
-          if (x(newPos) < riskMap.head.length && y(newPos) < riskMap.length && riskLevel <= acc._1)
-            findPath(acc._1, acc._2, riskLevel + riskMap(y(newPos))(x(newPos)), newPos :: path)
-          else
-            acc
+    def move(p: Pos, d: Pos): Pos = (p._1 + d._1, p._2 + d._2)
+    def onMap(p: Pos): Boolean = x(p) >= 0 && x(p) < riskMap.head.length && y(p) >= 0 && y(p) < riskMap.length
+    @tailrec
+    def findPath(visited: Set[Pos], queue: Set[WeightedPos]): Unit = {
+      if (queue.nonEmpty) {
+        val wp = queue.min(WeightedPosOrdering)
+        val newNodes = moves.map(move(wp.pos, _)).filter(onMap).filterNot(visited.contains).foldLeft(List.empty[WeightedPos])((newNodes, p) => {
+          val lowerWeight = wp.weight + riskMap(y(p))(x(p))
+          if (lowerWeight < weights(y(p))(x(p))) {
+            weights(y(p))(x(p)) = lowerWeight
+            from(y(p))(x(p)) = wp.pos
+          }
+          WeightedPos(lowerWeight, p) :: newNodes
         })
+        findPath(visited + wp.pos, queue.filterNot(_.pos == wp.pos) ++ newNodes)
       }
     }
-
-    val maxRiskLevel = 9L * riskMap.length * riskMap.head.length
-    val (lowestRiskLevel, bestPath) = findPath(maxRiskLevel, List.empty[(Int, Int)], 0L, List((0, 0)))
-    lowestRiskLevel
+    weights(0)(0) = 0
+    findPath(Set.empty[Pos], Set(WeightedPos(0, (0,0))))
+    weights.reverse.head.reverse.head
   }
 
   override def solvePart2(lines: List[String]): Long = ???
+}
+
+case class WeightedPos(weight: Long, pos: (Int, Int))
+
+object WeightedPosOrdering extends Ordering[WeightedPos] {
+  override def compare(x: WeightedPos, y: WeightedPos): Int = (x.weight - y.weight).toInt
 }
 
 object Day15 extends App {
