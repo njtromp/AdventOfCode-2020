@@ -5,16 +5,16 @@ import nl.njtromp.adventofcode.Puzzle
 class Day17 extends Puzzle {
   type Pos = (Int, Int) // (X, Y)
   type Velocity = (Int, Int) // (X-direction, Y-direction)
-  type TargetRange = (Range, Range) // (X-range, Y-range)
+  type Target = (Range, Range) // (X-range, Y-range)
 
   private val TargetArea = "target area: x=(\\d+)..(\\d+), y=(-\\d+)..(-\\d+)".r // (X-range, Y-range)
 
-  def isOnTarget(p: Pos, t: TargetRange): Boolean = t._1.contains(p._1) && t._2.contains(p._2)
-  def hasOverShoot(p: Pos, t: TargetRange): Boolean = p._1 > t._1.max || p._2 < t._2.min
+  def isOnTarget(p: Pos, t: Target): Boolean = t._1.contains(p._1) && t._2.contains(p._2)
+  def hasOverShoot(p: Pos, t: Target): Boolean = p._1 > t._1.max || p._2 < t._2.min
   def drag(x: Int): Int = if (x > 0) x - 1 else if (x < 0) x + 1 else 0
   def oneStep(p: Pos, v: Velocity): (Pos, Velocity) = ((p._1 + v._1, p._2 + v._2), (drag(v._1), v._2 - 1))
 
-  def shootProbe(v: Velocity, t: TargetRange): List[Pos] = {
+  def shootProbe(v: Velocity, t: Target): List[Pos] = {
     def shootProbe(p: Pos, v: Velocity): List[Pos] = {
       val (pos, velocity) = oneStep(p, v)
       if (isOnTarget(pos, t))
