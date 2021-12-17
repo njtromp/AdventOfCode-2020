@@ -12,7 +12,7 @@ class Day17Test extends AnyFlatSpec {
   }
 
   "Part 2" should "solve example correct" in {
-    assert(new Day17().solvePart2(example) === 0)
+    assert(new Day17().solvePart2(example) === 112)
   }
 
 }

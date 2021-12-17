@@ -40,7 +40,14 @@ class Day17 extends Puzzle {
     trajectories.filterNot(_.isEmpty).map(_.maxBy(_._2)._2).max
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  override def solvePart2(lines: List[String]): Long = {
+    val targetArea = lines.map({
+      case TargetArea(minX, maxX, minY, maxY) => (minX.toInt to maxX.toInt, -minY.toInt to -maxY.toInt)
+    }).head
+    val trajectories = (1 to 200).flatMap(x => (-1000 to 1000).map(y => shootProbe((x, y), targetArea)))
+    trajectories.count(_.nonEmpty)
+  }
+
 }
 
 object Day17 extends App {
