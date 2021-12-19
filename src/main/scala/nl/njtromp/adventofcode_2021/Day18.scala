@@ -13,7 +13,7 @@ class Day18 extends Puzzle with RegexParsers {
   }
 
   // Don't be alarmed when the compiler warns about matches not being exhaustive on lines 92, 95, 104 and 127.
-  // The possible cases the compiler 'sees' can occur in real life.
+  // The possible cases the compiler 'sees' can't occur in real life.
   sealed abstract class Number {
     def value: Long
     def isLeaf = false
