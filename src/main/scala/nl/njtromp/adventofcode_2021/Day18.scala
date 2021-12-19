@@ -141,11 +141,12 @@ class Day18 extends Puzzle with RegexParsers {
     val sum = reduce(lines.map(l => reduce(parseSnailfishNumber(l))).reduce((a, b) => {
       reduce(Node(a, b))
     }))
-    println(sum)
     sum.magnitude
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  override def solvePart2(lines: List[String]): Long = {
+    lines.flatMap(l1 => lines.filterNot(_ == l1).map(l2 => List(l1, l2))).foldLeft(0L)((acc, ls) => Math.max(acc, solvePart1(ls)))
+  }
 }
 
 object Day18 extends App {
