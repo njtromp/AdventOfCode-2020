@@ -2,6 +2,7 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.Puzzle
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.parsing.combinator.RegexParsers
 
@@ -11,10 +12,10 @@ class Day18 extends Puzzle with RegexParsers {
     case l ~ _ ~ r => Node(l, r)
   }
 
+  // Don't be alarmed when the compiler warns about matches not being exhaustive on lines 92, 95, 104 and 127.
+  // The possible cases the compiler 'sees' can occur in real life.
   sealed abstract class Number {
     def value: Long
-    def lhs: Number = null
-    def rhs: Number = null
     def isLeaf = false
     def canExplode = false
     def parent(child: Number): Option[Number]
@@ -29,8 +30,7 @@ class Day18 extends Puzzle with RegexParsers {
     override def parent(child: Number): Option[Number] = None
     override def asList(exploding: Number): List[Number] = List(this)
     override def replace(mapping: mutable.ArrayBuffer[(Number, Number)]): Number = {
-      val replaceCandidates = mapping.filter(m => m._1.eq(this))
-      replaceCandidates.headOption match {
+      mapping.find(m => m._1.eq(this)) match {
         case None => this
         case Some(m) => m._2
       }
@@ -45,8 +45,6 @@ class Day18 extends Puzzle with RegexParsers {
   case class Node(left: Number, right: Number) extends Number {
     // A Node should never be asked for its value (for now), If it happens it indicates a major problem in the algorithm.
     override def value: Long = ???
-    override def lhs: Number = left
-    override def rhs: Number = right
     override def canExplode: Boolean = left.isLeaf && right.isLeaf
     override def parent(child: Number): Option[Number] = if (left.eq(child) || right.eq(child))
       Some(this)
@@ -59,8 +57,7 @@ class Day18 extends Puzzle with RegexParsers {
     override def asList(exploding: Number): List[Number] =
       if (this.eq(exploding)) List(this) else left.asList(exploding) ++ right.asList(exploding)
     override def replace(mapping: mutable.ArrayBuffer[(Number, Number)]): Number = {
-      val replaceCandidates = mapping.filter(m => m._1.eq(this))
-      replaceCandidates.headOption match {
+      mapping.find(m => m._1.eq(this)) match {
         case None => Node(left.replace(mapping), right.replace(mapping))
         case Some(m) => m._2
       }
@@ -92,22 +89,31 @@ class Day18 extends Puzzle with RegexParsers {
       }
     }
     def explode(exploding: Number): Number = {
+      def leftValue(node: Number): Long = node match {
+        case Node(l, _) => l.value
+      }
+      def rightValue(node: Number): Long = node match {
+        case Node(_, r) => r.value
+      }
+      // Get all the leafs and the exploding node in a list. The order is in pre-order. The Leaf
+      // that can participate in the explosion is in front of the exploding node while the Leaf on the right
+      // is the first one behind the exploding node.
       val values = root.asList(exploding)
-      val inFront = values.takeWhile(!_.eq(exploding)).reverse // In Reverse order for easy access the 'last' number
+      val inFront = values.takeWhile(!_.eq(exploding)).reverse // In Reverse order for easy access the right-most number
       val behind = values.dropWhile(!_.eq(exploding))
       val mapping: mutable.ArrayBuffer[(Number, Number)] = (inFront.take(1).headOption, behind.tail.take(1).headOption) match {
         case (None, Some(r)) => mutable.ArrayBuffer(
           (exploding, Leaf(0)),
-          (r, Leaf(r.value + exploding.rhs.value))
+          (r, Leaf(r.value + rightValue(exploding)))
         )
         case (Some(l), None) => mutable.ArrayBuffer(
           (exploding, Leaf(0)),
-          (l, Leaf(l.value + exploding.lhs.value))
+          (l, Leaf(l.value + leftValue(exploding)))
         )
         case (Some(l), Some(r)) => mutable.ArrayBuffer(
           (exploding, Leaf(0)),
-          (l, Leaf(l.value + exploding.lhs.value)),
-          (r, Leaf(r.value + exploding.rhs.value)))
+          (l, Leaf(l.value + leftValue(exploding))),
+          (r, Leaf(r.value + rightValue(exploding))))
       }
       root.replace(mapping)
     }
@@ -122,7 +128,9 @@ class Day18 extends Puzzle with RegexParsers {
       case Success(n, _) => n
     }
   }
-  def reduce(root: Number): Number = {
+
+  @tailrec
+  private def reduce(root: Number): Number = {
     val exploded = root.explode
     if (exploded.equals(root)) {
       val splitted = root.split
@@ -135,7 +143,6 @@ class Day18 extends Puzzle with RegexParsers {
       reduce(exploded)
     }
   }
-
 
   override def solvePart1(lines: List[String]): Long = {
     val sum = reduce(lines.map(l => reduce(parseSnailfishNumber(l))).reduce((a, b) => {
