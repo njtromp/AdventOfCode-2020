@@ -19,7 +19,7 @@ class Day18 extends Puzzle with RegexParsers {
     def canExplode = false
     def parent(child: Number): Option[Number]
     def asList(exploding: Number): List[Number]
-    def replace(mapping: mutable.ArrayBuffer[(Number, Number, Int)]): Number
+    def replace(mapping: mutable.ArrayBuffer[(Number, Number)]): Number
     def split: Number
     def explode: Number = explodeNested(this)
     def magnitude: Long
@@ -28,14 +28,8 @@ class Day18 extends Puzzle with RegexParsers {
     override def isLeaf = true
     override def parent(child: Number): Option[Number] = None
     override def asList(exploding: Number): List[Number] = List(this)
-    override def replace(mapping: mutable.ArrayBuffer[(Number, Number, Int)]): Number = {
-      mapping.indices.foreach(i =>
-        if (mapping(i)._1 == this)
-          mapping(i) = (mapping(i)._1, mapping(i)._2, mapping(i)._3 - 1)
-      )
-      val replaceCandidates = mapping.filter(m => m._1 == this && m._3 == 0)
-      if (replaceCandidates.size > 1)
-        println("OEPSIE")
+    override def replace(mapping: mutable.ArrayBuffer[(Number, Number)]): Number = {
+      val replaceCandidates = mapping.filter(m => m._1.eq(this))
       replaceCandidates.headOption match {
         case None => this
         case Some(m) => m._2
@@ -54,7 +48,7 @@ class Day18 extends Puzzle with RegexParsers {
     override def lhs: Number = left
     override def rhs: Number = right
     override def canExplode: Boolean = left.isLeaf && right.isLeaf
-    override def parent(child: Number): Option[Number] = if (left == child || right == child)
+    override def parent(child: Number): Option[Number] = if (left.eq(child) || right.eq(child))
       Some(this)
     else {
       left.parent(child) match {
@@ -63,15 +57,9 @@ class Day18 extends Puzzle with RegexParsers {
       }
     }
     override def asList(exploding: Number): List[Number] =
-      if (this == exploding) List(this) else left.asList(exploding) ++ right.asList(exploding)
-    override def replace(mapping: mutable.ArrayBuffer[(Number, Number, Int)]): Number = {
-      mapping.indices.foreach(i =>
-        if (mapping(i)._1 == this)
-          mapping(i) = (mapping(i)._1, mapping(i)._2, mapping(i)._3 - 1)
-      )
-      val replaceCandidates = mapping.filter(m => m._1 == this && m._3 == 0)
-      if (replaceCandidates.size > 1)
-        println("OEPSIE")
+      if (this.eq(exploding)) List(this) else left.asList(exploding) ++ right.asList(exploding)
+    override def replace(mapping: mutable.ArrayBuffer[(Number, Number)]): Number = {
+      val replaceCandidates = mapping.filter(m => m._1.eq(this))
       replaceCandidates.headOption match {
         case None => Node(left.replace(mapping), right.replace(mapping))
         case Some(m) => m._2
@@ -79,7 +67,7 @@ class Day18 extends Puzzle with RegexParsers {
     }
     def split: Node = {
       val lSplitted = left.split
-      if (lSplitted == left)
+      if (lSplitted.equals(left))
         Node(left, right.split)
       else
         Node(lSplitted, right)
@@ -105,22 +93,21 @@ class Day18 extends Puzzle with RegexParsers {
     }
     def explode(exploding: Number): Number = {
       val values = root.asList(exploding)
-      // TODO Problem, the first node that matches the exploding node is not guaranteed to be the exploding node :-(
-      val inFront = values.takeWhile(_ != exploding).reverse // In Reverse order for easy access the 'last' number
-      val behind = values.dropWhile(_ != exploding)
-      val mapping: mutable.ArrayBuffer[(Number, Number, Int)] = (inFront.take(1).headOption, behind.tail.take(1).headOption) match {
+      val inFront = values.takeWhile(!_.eq(exploding)).reverse // In Reverse order for easy access the 'last' number
+      val behind = values.dropWhile(!_.eq(exploding))
+      val mapping: mutable.ArrayBuffer[(Number, Number)] = (inFront.take(1).headOption, behind.tail.take(1).headOption) match {
         case (None, Some(r)) => mutable.ArrayBuffer(
-          (exploding, Leaf(0), 1),
-          (r, Leaf(r.value + exploding.rhs.value), 1 + inFront.count(_ == r))
+          (exploding, Leaf(0)),
+          (r, Leaf(r.value + exploding.rhs.value))
         )
         case (Some(l), None) => mutable.ArrayBuffer(
-          (exploding, Leaf(0), 1),
-          (l, Leaf(l.value + exploding.lhs.value), inFront.count(_ == l))
+          (exploding, Leaf(0)),
+          (l, Leaf(l.value + exploding.lhs.value))
         )
         case (Some(l), Some(r)) => mutable.ArrayBuffer(
-          (exploding, Leaf(0), 1),
-          (l, Leaf(l.value + exploding.lhs.value), inFront.count(_ == l)),
-          (r, Leaf(r.value + exploding.rhs.value), 1 + inFront.count(_ == r)))
+          (exploding, Leaf(0)),
+          (l, Leaf(l.value + exploding.lhs.value)),
+          (r, Leaf(r.value + exploding.rhs.value)))
       }
       root.replace(mapping)
     }
@@ -131,24 +118,20 @@ class Day18 extends Puzzle with RegexParsers {
   }
 
   private def parseSnailfishNumber(snailfishNumber: String): Number = {
-    println(s"Parsing: $snailfishNumber")
     parse(node, snailfishNumber) match {
       case Success(n, _) => n
     }
   }
   def reduce(root: Number): Number = {
     val exploded = root.explode
-    if (exploded == root) {
+    if (exploded.equals(root)) {
       val splitted = root.split
-      if (splitted == root) {
-        println(s"Reduced: $root")
+      if (splitted.equals(root)) {
         root
       } else {
-        println(s"Splitted: $splitted")
         reduce(splitted)
       }
     } else {
-      println(s"Exploded: $exploded")
       reduce(exploded)
     }
   }
@@ -156,11 +139,7 @@ class Day18 extends Puzzle with RegexParsers {
 
   override def solvePart1(lines: List[String]): Long = {
     val sum = reduce(lines.map(l => reduce(parseSnailfishNumber(l))).reduce((a, b) => {
-      val toReduce = Node(a, b)
-      println(s"Reducing $toReduce")
-      val c = reduce(toReduce)
-      println(s"Reduced to: $c")
-      c
+      reduce(Node(a, b))
     }))
     println(sum)
     sum.magnitude
