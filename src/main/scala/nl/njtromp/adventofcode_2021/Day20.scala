@@ -16,9 +16,9 @@ class Day20 extends Puzzle {
       (-1, 0), (0, 0), (1, 0),
       (-1, 1), (0, 1), (1, 1)
     )
-    def onMap(n: Int): Int = if (n < 0) n + SIZE else if (n > (SIZE - 1)) n - SIZE else n
+    def wrapAroundInfinity(n: Int): Int = if (n < 0) n + SIZE else if (n > (SIZE - 1)) n - SIZE else n
     def isLit(p: (Int, Int)): Boolean = {
-      val neighbors = deltas.map(n => (p._1 + n._1, p._2 + n._2)).map(p => (onMap(p._1), onMap(p._2)))
+      val neighbors = deltas.map(n => (p._1 + n._1, p._2 + n._2)).map(p => (wrapAroundInfinity(p._1), wrapAroundInfinity(p._2)))
       val binary = neighbors.map(p => if (image.contains(p)) "1" else "0").mkString
       val index = Integer.parseInt(binary, 2)
       enhancements.contains(index)
