@@ -34,7 +34,7 @@ class Day21 extends Puzzle {
     val moves = rolls.map(_.faceValue).sum
     val newPos = (activePlayer.pos + moves) % 10
     val player = Player(activePlayer.id, newPos, activePlayer.score + newPos + 1)
-//    println(s"Player ${player.id} rolls ${rolls.reverse.map(_.faceValue).mkString("+")} and moves to space ${activePlayer.score + newPos + 1} for a total score of ${player.score}.")
+//    println(s"Player ${player.id} rolls ${rolls.reverse.map(_.faceValue).mkString("+")} and moves to space ${newPos + 1} for a total score of ${player.score}.")
     val playersForNextRound = players.tail ++ List(player)
     if (player.score >= winningScore)
       (rolls.head, playersForNextRound)
