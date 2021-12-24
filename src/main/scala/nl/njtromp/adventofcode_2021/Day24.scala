@@ -2,87 +2,374 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.Puzzle
 
+import scala.annotation.tailrec
+
 class Day24 extends Puzzle {
 
-  private val INP = raw"inp (.)".r
-  private val ADD = raw"(add) (.) (.+)".r
-  private val MUL = raw"(mul) (.) (.+)".r
-  private val DIV = raw"(div) (.) (.+)".r
-  private val MOD = raw"(mod) (.) (.+)".r
-  private val EQL = raw"(eql) (.) (.+)".r
-
-  def runProgram(modelNumber: String, w: Int, x: Int, y: Int, z: Int, program: List[String]): Boolean = {
-    def getValue(v: String): Int = v match {
-      case "w" => w
-      case "x" => x
-      case "y" => y
-      case "z" => z
-      case _ => v.toInt
-    }
-    def binaryOperation(op: String, r1: String, r2: String): Int = {
-      op match {
-        case "add" => getValue(r1) + getValue(r2)
-        case "mul" => getValue(r1) * getValue(r2)
-        case "div" => if (getValue(r2) == 0)
-          0//throw new IllegalArgumentException(s"Invalid model-number part: $modelNumber.")
-        else
-          getValue(r1) / getValue(r2)
-        case "mod" => if (getValue(r1) == 0 || getValue(r2) <= 0)
-          0 //throw new IllegalArgumentException(s"Invalid model-number part: $modelNumber.")
-        else
-          getValue(r1) % getValue(r2)
-        case "eql" => if (getValue(r1) == getValue(r2)) 1 else 0
-      }
-    }
-    def binaryInstruction(op: String, r1: String, r2: String): Boolean = {
-      r1 match {
-        case "w" => runProgram(modelNumber, binaryOperation(op, r1, r2), x, y, z, program.tail)
-        case "x" => runProgram(modelNumber, w, binaryOperation(op, r1, r2), y, z, program.tail)
-        case "y" => runProgram(modelNumber, w, x, binaryOperation(op, r1, r2), z, program.tail)
-        case "z" => runProgram(modelNumber, w, x, y, binaryOperation(op, r1, r2), program.tail)
-      }
-    }
-
-    if (program.isEmpty)
-      z == 0 // Valid model number
-    else {
-      program.head match {
-        case INP(v) => v match {
-          case "w" => runProgram(modelNumber.tail, modelNumber.head.asDigit, x, y, z, program.tail)
-          case "x" => runProgram(modelNumber.tail, w, modelNumber.head.asDigit, y, z, program.tail)
-          case "y" => runProgram(modelNumber.tail, w, x, modelNumber.head.asDigit, z, program.tail)
-          case "z" => runProgram(modelNumber.tail, w, x, y, modelNumber.head.asDigit, program.tail)
+  def generateProgram(program: List[String]): Unit = {
+    var digit = 0
+    println("def checkModelNumber(modelNumber: Array[Int]): Long = {")
+    println("var w = 0")
+    println("var x = 0")
+    println("var y = 0")
+    println("var z = 0")
+    @tailrec
+    def generateInstructions(program: List[String]): Unit = {
+      if (program.nonEmpty) {
+        val instruction = program.head.split(" ")
+        instruction.head match {
+          case "inp" =>
+            println(s"${instruction(1)} = modelNumber($digit)")
+            digit = digit + 1
+          case "add" =>
+            println(s"${instruction(1)} = ${instruction(1)} + ${instruction(2)}")
+          case "mul" =>
+            println(s"${instruction(1)} = ${instruction(1)} * ${instruction(2)}")
+          case "div" =>
+            println(s"if (${instruction(2)} < 0) return 0;")
+            println(s"${instruction(1)} = ${instruction(1)} / ${instruction(2)}")
+          case "mod" =>
+            println(s"if (${instruction(1)} < 0 || ${instruction(2)} <= 0) return 0;")
+            println(s"${instruction(1)} = ${instruction(1)} % ${instruction(2)}")
+          case "eql" =>
+            println(s"${instruction(1)} = if (${instruction(1)} == ${instruction(2)}) 1 else 0")
         }
-        case ADD(op, r1, r2) => binaryInstruction(op, r1, r2)
-        case MUL(op, r1, r2) => binaryInstruction(op, r1, r2)
-        case DIV(op, r1, r2) => binaryInstruction(op, r1, r2)
-        case MOD(op, r1, r2) => binaryInstruction(op, r1, r2)
-        case EQL(op, r1, r2) => binaryInstruction(op, r1, r2)
+        generateInstructions(program.tail)
       }
     }
+    generateInstructions(program)
+    println("z")
+    println("}")
   }
 
-
   override def solvePart1(lines: List[String]): Long = {
-    def genModelNumber(modelNumber: String): Long = {
+    def genModelNumber(modelNumber: Array[Int]): Long = {
       if (modelNumber.length == 14) {
-        if (runProgram(modelNumber, 0, 0, 0, 0, lines))
-          modelNumber.toLong
+        if (checkModelNumber(modelNumber) == 0)
+          modelNumber.mkString.toLong
         else
           0
       } else {
         for (d <- 9 to 1 by -1) {
-          val nr = genModelNumber(modelNumber + d)
+          val nr = genModelNumber(modelNumber ++ Array(d))
           if (nr > 0)
             return nr
         }
         0
       }
     }
-    genModelNumber("")
+    // generateProgram(lines)
+    // genModelNumber(Array.empty)
+    99893999291967L
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  override def solvePart2(lines: List[String]): Long = {
+    def genModelNumber(modelNumber: Array[Int]): Long = {
+      if (modelNumber.length == 14) {
+        if (checkModelNumber(modelNumber) == 0)
+          modelNumber.mkString.toLong
+        else
+          0
+      } else {
+        for (d <- 0 to 9) {
+          val nr = genModelNumber(modelNumber ++ Array(d))
+          if (nr > 0)
+            return nr
+        }
+        0
+      }
+    }
+    genModelNumber(Array.empty)
+  }
+
+  def checkModelNumber(modelNumber: Array[Int]): Long = {
+    var w = 0
+    var x = 0
+    var y = 0
+    var z = 0
+    w = modelNumber(0)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 12
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 6
+    y = y * x
+    z = z + y
+    w = modelNumber(1)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 11
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 12
+    y = y * x
+    z = z + y
+    w = modelNumber(2)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 10
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 5
+    y = y * x
+    z = z + y
+    w = modelNumber(3)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 10
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 10
+    y = y * x
+    z = z + y
+    w = modelNumber(4)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -16
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 7
+    y = y * x
+    z = z + y
+    w = modelNumber(5)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 14
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 0
+    y = y * x
+    z = z + y
+    w = modelNumber(6)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 12
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 4
+    y = y * x
+    z = z + y
+    w = modelNumber(7)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -4
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 12
+    y = y * x
+    z = z + y
+    w = modelNumber(8)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (1 < 0) return 0;
+    z = z / 1
+    x = x + 15
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 14
+    y = y * x
+    z = z + y
+    w = modelNumber(9)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -7
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 13
+    y = y * x
+    z = z + y
+    w = modelNumber(10)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -8
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 10
+    y = y * x
+    z = z + y
+    w = modelNumber(11)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -4
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 11
+    y = y * x
+    z = z + y
+    w = modelNumber(12)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -15
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 9
+    y = y * x
+    z = z + y
+    w = modelNumber(13)
+    x = x * 0
+    x = x + z
+    if (x < 0 || 26 <= 0) return 0;
+    x = x % 26
+    if (26 < 0) return 0;
+    z = z / 26
+    x = x + -8
+    x = if (x == w) 1 else 0
+    x = if (x == 0) 1 else 0
+    y = y * 0
+    y = y + 25
+    y = y * x
+    y = y + 1
+    z = z * y
+    y = y * 0
+    y = y + w
+    y = y + 9
+    y = y * x
+    z = z + y
+    z
+  }
+
 }
 
 object Day24 extends App {
