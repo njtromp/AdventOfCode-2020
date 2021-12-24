@@ -27,6 +27,7 @@ case class Matrix(elems: List[List[Double]]) {
   def rotate(angleX: Double, angleY: Double, angelZ: Double): Matrix = rotation(angleX, angleY, angelZ) * this
   def round: Matrix = Matrix(elems.map(_.map(Math.round(_).toDouble)))
   def clean: Matrix = Matrix(elems.map(_.map(n => if (n == -0.0) 0 else if (Math.abs(n) < 1.0E-10) 0 else n)))
+  def toTuple: (Int, Int, Int) = (elems.head.head.toInt, elems(1).head.toInt, elems(2).head.toInt)
 }
 
 object Matrix extends App {
