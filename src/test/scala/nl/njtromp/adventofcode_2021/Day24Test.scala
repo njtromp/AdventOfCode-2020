@@ -8,7 +8,7 @@ class Day24Test extends AnyFlatSpec {
   val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream("/2021/day24-example.txt")).getLines().toList
 
   "Part 1" should "solve example correct" in {
-    assert(new Day24().solvePart1(example) === 0)
+    assert(new Day24().solvePart1(example) === 99893999291967L)
   }
 
   "Part 2" should "solve example correct" in {
