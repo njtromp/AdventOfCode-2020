@@ -48,11 +48,20 @@ class Day21 extends Puzzle {
     val result = playDiracDice(players, DiracDice(1, 1), winningScore)
     val losingPlayer = result._2.find(_.score < winningScore).get
     val dice = result._1
-    println(s"Game finished dice: $dice and player $losingPlayer lost")
+//    println(s"Game finished dice: $dice and player $losingPlayer lost")
     dice.numberOrRolls *  losingPlayer.score
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  def pow(n: Long, p: Int): Long =
+    if (p == 0) 1L else n * pow(n, p - 1)
+
+  override def solvePart2(lines: List[String]): Long = {
+    val players = readStartPositions(lines)
+    val winningScore = 21
+    val result = playDiracDice(players, DiracDice(1, 1), winningScore)
+    val dice = result._1
+    pow(3L*3L*3L, dice.numberOrRolls - 1)
+  }
 }
 
 object Day21 extends App {
