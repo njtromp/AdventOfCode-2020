@@ -36,71 +36,58 @@ class Day19 extends Puzzle {
     })._1
   }
 
-  def findTransformations(base: Scanner, scanners: List[Scanner]): List[(Scanner, Scanner, Option[Matrix])] = {
-    val conversionForScanner = scanners.filterNot(_ == base).map(s => {
-      (base, s, Matrix.permutations.map(_.round.clean).find(p => s.beacons.map(p * _).map(_.round.clean).intersect(base.beacons).size >= 100))
-    })
-    conversionForScanner
+  def sameDistance(b1_1: Matrix, b1_2: Matrix, b2_1: Matrix, b2_2: Matrix): Boolean = b1_1 - b1_2 == b2_1 - b2_2
+
+  def findMatching(other: List[Matrix], b1_1: Matrix, b1_2: Matrix): List[(Matrix, Matrix)] = {
+    other.flatMap(b2_1 => other.filterNot(b2_1.eq(_)).filter(b2_2 => sameDistance(b1_1, b1_2, b2_1, b2_2)).map((b2_1, _)))
   }
 
-  def findScannerMappings(connectedScanners: List[Scanner], scanners: List[Scanner]): List[(Int, Int, Matrix)] = {
-    if (scanners.isEmpty)
+  def haveSameBeacons(beacons: List[Matrix], others: List[Matrix]): List[((Matrix, Matrix), (Matrix, Matrix))] = {
+    beacons
+      .flatMap(b1_1 => beacons.filterNot(b1_1.eq(_)).map(b1_2 => ((b1_1, b1_2), findMatching(others, b1_1, b1_2))))
+      .filter(_._2.nonEmpty)
+      .map(m => (m._1, m._2.head))
+  }
+
+  def findTransformations(base: Scanner, scanners: List[Scanner]): List[(Scanner, Scanner, Option[Matrix])] = {
+    scanners.filterNot(_ == base).map(s => {
+      (base, s, Matrix.perpendicularPermutations.find(p => {
+        val mappedBeacons = haveSameBeacons(base.beacons.toList, s.beacons.map(p * _).toList)
+        if (mappedBeacons.size >= 24) {
+          println(s"${base.id} -> ${s.id}")
+          mappedBeacons.foreach(m => {
+            println(s"${(m._2._1 - m._1._1).toTuple}")
+            println(s"${(m._2._2 - m._1._2).toTuple}")
+          })
+//          mappedBeacons
+//            .map(m => ((m._1._1.toTuple, m._1._2.toTuple), (m._2._1.toTuple, m._2._2.toTuple)))
+//            .foreach(m => println(s"${m._1} -> ${m._2}"))
+        }
+        mappedBeacons.size >= 24
+      }))
+    })
+  }
+
+  def findScannerMappings(connectedScanners: Set[Int], needInvestigation: List[Int], scanners: List[Scanner]): List[(Int, Int, Matrix)] = {
+    if (needInvestigation.isEmpty)
       List.empty
     else {
-      val correctedScanners = connectedScanners.flatMap(s => findTransformations(s, scanners))
+      val base = scanners.find(_.id == needInvestigation.head).get
+      val unmapped = scanners.filterNot(s => connectedScanners.contains(s.id) || needInvestigation.contains(s.id))
+      val matchedScanners = findTransformations(base, unmapped)
         .filter(_._3.isDefined)
         .map(s => (s._1, s._2, s._3.get))
-        .map(s => (s._1, s._2.transform(s._3), s._3)
-        ).distinct
-      val remainingScanners = scanners.filterNot(s => correctedScanners.exists(_._2.id == s.id))
-      correctedScanners.map(s => (s._1.id, s._2.id, s._3)) ++ findScannerMappings(correctedScanners.map(_._2), remainingScanners)
+        .map(s => (s._1, s._2.transform(s._3), s._3))
+      val findConnectionsFor = (needInvestigation.tail ++ matchedScanners.map(_._2.id)).filterNot(connectedScanners.contains)
+      matchedScanners.map(s => (s._1.id, s._2.id, s._3)) ++
+        findScannerMappings(connectedScanners + needInvestigation.head, findConnectionsFor, scanners)
     }
   }
 
-  def sqr(n: Int): Int = n * n
-
-  def error(beacons1: List[(Int, Int, Int)], beacons2: List[(Int, Int, Int)]): Long =
-    beacons1.flatMap(b0 => beacons2.map(b1 => sqr(b0._1 - b1._1) + sqr(b0._2 - b1._2) + sqr(b0._3 - b1._3))).sum
-
-  def findMinimum(beacons1: List[(Int, Int, Int)], beacons2: List[(Int, Int, Int)]): Unit = {
-    // 58, 55, 129
-    val delta = (1, 0, 0)
-    var beacons = beacons2.map(b => (b._1 - 55, b._2 + 52, b._3 + 129))
-    println(beacons1)
-    println(beacons)
-    var previousError = 0L
-    var lastError = Long.MaxValue
-    do {
-      previousError = lastError
-      beacons = beacons.map(b => (b._1 + delta._1, b._2 + delta._2, b._3 + delta._3))
-      lastError = error(beacons1, beacons)
-      println(s"$lastError - $previousError")
-    } while (lastError < previousError)
-    println(beacons2.head._1 - beacons.head._1)
-
-  }
-
   override def solvePart1(lines: List[String]): Long = {
-    val scanners = parseScannerInfo(lines)
-    val relativeScanners = scanners.map(s => Scanner(s.id, s.relativeLocations))
-    val mappings = findScannerMappings(relativeScanners.filter(_.id == 0), relativeScanners.filterNot(_.id == 0))
-    val edges = mappings.map(m => (m._1, m._2))
-    val correctedScanners = scanners.map(s => if (s.id == 0) s else s.transform(mappings.filter(_._2 == s.id).head._3))
-    println(edges)
-    println(correctedScanners.size)
-    correctedScanners.foreach(s => println(s"${s.id} - ${s.beacons.size} (${s.beacons.size * (s.beacons.size - 1)}) ${s.relativeLocations.size}"))
-    // 699 is to high
-    // 934 should also be too high, that is the total number of beacons found in the scans assuming they don't overlap!
-//    val bla: List[List[(Int, Int, Int)]] = correctedScanners.map(_.beacons.toList.map(_.toTuple))
-//    val s0 = bla.head
-//    val s1 = bla(1)
-//    val s2 = (correctedScanners(1).beacons.map(b => b + Matrix(List(List(-1), List(1), List(1))))).toList.map(_.toTuple)
-//    val e01 = s0.flatMap(b0 => s1.map(b1 => sqr(b0._1 - b1._1) + sqr(b0._2 - b1._2) + sqr(b0._3 - b1._3))).sum
-//    val e02 = s0.flatMap(b0 => s2.map(b2 => sqr(b0._1 - b2._1) + sqr(b0._2 - b2._2) + sqr(b0._3 - b2._3))).sum
-//    if (e02 < e01) println("Better") else if (e02 > e01) println("Worst") else println("equal")
-//    println(s"$e01 : $e02")
-//    findMinimum(s0, s1)
-
+    val scanners = parseScannerInfo(lines).reverse
+    val transformations = findScannerMappings(Set.empty, List(0), scanners)
+    transformations.foreach(t => println(s"${t._1} -> ${t._2} = ${t._3}"))
     -1
   }
 

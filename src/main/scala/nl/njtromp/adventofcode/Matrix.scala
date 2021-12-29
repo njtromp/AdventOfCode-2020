@@ -3,7 +3,6 @@ package nl.njtromp.adventofcode
 import nl.njtromp.adventofcode.Matrix.{rotation, xRotation, yRotation, zRotation}
 
 case class Matrix(elems: List[List[Double]]) {
-  def rowsToColums: Matrix = Matrix(elems.head.indices.map(i => elems.map(_(i))).toList)
   def *(m: Matrix): Matrix = {
     if (elems.head.size != m.elems.size)
       throw new IllegalArgumentException(s"Can't multiply a ${elems.size}x${elems.head.size} and a ${m.elems.size}x${m.elems.head.size} matrix")
@@ -28,6 +27,7 @@ case class Matrix(elems: List[List[Double]]) {
   def round: Matrix = Matrix(elems.map(_.map(Math.round(_).toDouble)))
   def clean: Matrix = Matrix(elems.map(_.map(n => if (n == -0.0) 0 else if (Math.abs(n) < 1.0E-10) 0 else n)))
   def toTuple: (Int, Int, Int) = (elems.head.head.toInt, elems(1).head.toInt, elems(2).head.toInt)
+  def rowsToColums: Matrix = Matrix(elems.head.indices.map(i => elems.map(_(i))).toList)
 }
 
 object Matrix extends App {
@@ -77,15 +77,11 @@ object Matrix extends App {
 
   def toIntLists(m: Matrix): List[List[Int]] = m.elems.map(_.map(_.toInt))
 
-  def permutations: List[Matrix] = (0 to 3).flatMap(x => (0 to 3).flatMap(y => (0 to 3).map(z => rotation(x * 90, y * 90, z * 90)))).toList
+  def permutations: List[Matrix] = (0 to 3).flatMap(x => (0 to 3)
+    .flatMap(y => (0 to 3)
+      .map(z => rotation(x * 90, y * 90, z * 90))))
+    .toList.distinct
 
-  val m1 = Matrix(List(List(1,2,3)))
-  val m2 = Matrix(List(List(2),List(3),List(4)))
-  val m3 = m1 * m2
-  println(m2.rotateX(180).round)
-  println(xRotation(90).clean)
-  println(yRotation(0).clean)
-  println(zRotation(0).clean)
-  println(rotation(90, 0, 0).clean)
-  println(permutations.size)
+  def perpendicularPermutations: List[Matrix] = permutations.map(_.clean.round).distinct
+
 }
