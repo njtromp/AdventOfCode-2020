@@ -52,17 +52,16 @@ class Day19 extends Puzzle {
   }
 
   def findTransformations(base: Scanner, scanners: List[Scanner]): List[Scanner] = {
-    scanners.map(s => Matrix.perpendicularPermutations.foldLeft(Option.empty[(Matrix, Set[Matrix])])((acc, t) => acc match {
+    scanners.map(s => beaconsForScanner(s.id).foldLeft(Option.empty[(Matrix, Set[Matrix])])((acc, transformedBeacons) => acc match {
         case bs: Some[(Matrix, Set[Matrix])] =>
           bs
         case None =>
-          val transformedBeacons = s.beacons.map(t * _)
-          val matchingInfo = matchBeacons(base.beacons.toList, transformedBeacons.toList)
+          val matchingInfo = matchBeacons(base.beacons.toList, transformedBeacons)
           if (matchingInfo.size < 24) // Take into account that we find matches both ways! Hence the 24 (=2 * 12)
             None
           else {
             val offset = matchingInfo.head._1._1 - matchingInfo.head._2._1
-            Some((s.pos + offset, transformedBeacons.map(_ + offset)))
+            Some((s.pos + offset, transformedBeacons.map(_ + offset).toSet))
           }
       }) match {
         case None => s
@@ -86,16 +85,24 @@ class Day19 extends Puzzle {
     }
   }
 
+  // Dirty trick to ensure we map the scanners just once
+  var alignedScanners = List.empty[Scanner]
+  var beaconsForScanner = Map.empty[Int, List[List[Matrix]]]
   override def solvePart1(lines: List[String]): Long = {
     val scanners = parseScannerInfo(lines).reverse
-    val alignedScanners = findScannerMappings(Set.empty, Set(0), scanners)
+    beaconsForScanner = scanners.map(s => s.id -> Matrix.perpendicularPermutations.map(t => s.beacons.map(t * _).toList)).toMap
+    alignedScanners = findScannerMappings(Set.empty, Set(0), scanners)
     alignedScanners.flatMap(_.beacons).toSet.size
   }
 
   override def solvePart2(lines: List[String]): Long = {
+    if (alignedScanners.isEmpty) {
+      println("Recalculating mapping :-(")
+      val scanners = parseScannerInfo(lines).reverse
+      beaconsForScanner = scanners.map(s => s.id -> Matrix.perpendicularPermutations.map(t => s.beacons.map(t * _).toList)).toMap
+      alignedScanners = findScannerMappings(Set.empty, Set(0), scanners)
+    }
     def manhattan(t: (Int, Int, Int)): Double = Math.abs(t._1) + Math.abs(t._2) + Math.abs(t._3)
-    val scanners = parseScannerInfo(lines).reverse
-    val alignedScanners = findScannerMappings(Set.empty, Set(0), scanners)
     alignedScanners.flatMap(s0 => alignedScanners.map(s1 => manhattan((s0.pos - s1.pos).toTuple))).max.toLong
   }
 }
