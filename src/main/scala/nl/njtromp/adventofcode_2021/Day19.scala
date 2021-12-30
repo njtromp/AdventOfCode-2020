@@ -2,6 +2,7 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.{Matrix, Puzzle}
 
+import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 class Day19 extends Puzzle {
@@ -42,53 +43,52 @@ class Day19 extends Puzzle {
     other.flatMap(b2_1 => other.filterNot(b2_1.eq(_)).filter(b2_2 => sameDistance(b1_1, b1_2, b2_1, b2_2)).map((b2_1, _)))
   }
 
-  def haveSameBeacons(beacons: List[Matrix], others: List[Matrix]): List[((Matrix, Matrix), (Matrix, Matrix))] = {
+  def matchBeacons(beacons: List[Matrix], others: List[Matrix]): List[((Matrix, Matrix), (Matrix, Matrix))] = {
     beacons
       .flatMap(b1_1 => beacons.filterNot(b1_1.eq(_)).map(b1_2 => ((b1_1, b1_2), findMatching(others, b1_1, b1_2))))
       .filter(_._2.nonEmpty)
       .map(m => (m._1, m._2.head))
   }
 
-  def findTransformations(base: Scanner, scanners: List[Scanner]): List[(Scanner, Scanner, Option[Matrix])] = {
-    scanners.filterNot(_ == base).map(s => {
-      (base, s, Matrix.perpendicularPermutations.find(p => {
-        val mappedBeacons = haveSameBeacons(base.beacons.toList, s.beacons.map(p * _).toList)
-        if (mappedBeacons.size >= 24) {
-          println(s"${base.id} -> ${s.id}")
-          mappedBeacons.foreach(m => {
-            println(s"${(m._2._1 - m._1._1).toTuple}")
-            println(s"${(m._2._2 - m._1._2).toTuple}")
-          })
-//          mappedBeacons
-//            .map(m => ((m._1._1.toTuple, m._1._2.toTuple), (m._2._1.toTuple, m._2._2.toTuple)))
-//            .foreach(m => println(s"${m._1} -> ${m._2}"))
-        }
-        mappedBeacons.size >= 24
-      }))
-    })
+  def findTransformations(base: Scanner, scanners: List[Scanner]): List[Scanner] = {
+    scanners.map(s => Matrix.perpendicularPermutations.foldLeft(Option.empty[Set[Matrix]])((acc, t) => acc match {
+        case bs: Some[Set[Matrix]] =>
+          bs
+        case None =>
+          val transformedBeacons = s.beacons.map(t * _)
+          val matchingInfo = matchBeacons(base.beacons.toList, transformedBeacons.toList)
+          if (matchingInfo.size < 24) // Take into account that we find matches both ways! Hence the 24 (=2 * 12)
+            None
+          else {
+            val offset = matchingInfo.head._1._1 - matchingInfo.head._2._1
+            Some(transformedBeacons.map(_ + offset))
+          }
+      }) match {
+        case None => s
+        case Some(m) => Scanner(s.id, m)
+      }
+    )
   }
 
-  def findScannerMappings(connectedScanners: Set[Int], needInvestigation: List[Int], scanners: List[Scanner]): List[(Int, Int, Matrix)] = {
+  @tailrec
+  private def findScannerMappings(connectedScanners: Set[Int], needInvestigation: List[Int], scanners: List[Scanner]): List[Scanner] = {
     if (needInvestigation.isEmpty)
-      List.empty
+      scanners
     else {
       val base = scanners.find(_.id == needInvestigation.head).get
       val unmapped = scanners.filterNot(s => connectedScanners.contains(s.id) || needInvestigation.contains(s.id))
-      val matchedScanners = findTransformations(base, unmapped)
-        .filter(_._3.isDefined)
-        .map(s => (s._1, s._2, s._3.get))
-        .map(s => (s._1, s._2.transform(s._3), s._3))
-      val findConnectionsFor = (needInvestigation.tail ++ matchedScanners.map(_._2.id)).filterNot(connectedScanners.contains)
-      matchedScanners.map(s => (s._1.id, s._2.id, s._3)) ++
-        findScannerMappings(connectedScanners + needInvestigation.head, findConnectionsFor, scanners)
+      val possiblyMapped = findTransformations(base, unmapped)
+      val mappedScanners = possiblyMapped.zip(unmapped).filterNot(s => s._1.beacons == s._2.beacons).map(_._1)
+      val findConnectionsFor = (needInvestigation.tail ++ mappedScanners.map(_.id)).filterNot(connectedScanners.contains)
+      val correctedScanners = scanners.filterNot(s => mappedScanners.map(_.id).contains(s.id)) ++ mappedScanners
+      findScannerMappings(connectedScanners + base.id, findConnectionsFor, correctedScanners)
     }
   }
 
   override def solvePart1(lines: List[String]): Long = {
     val scanners = parseScannerInfo(lines).reverse
-    val transformations = findScannerMappings(Set.empty, List(0), scanners)
-    transformations.foreach(t => println(s"${t._1} -> ${t._2} = ${t._3}"))
-    -1
+    val alignedScanners = findScannerMappings(Set.empty, List(0), scanners)
+    alignedScanners.flatMap(_.beacons).toSet.size
   }
 
   override def solvePart2(lines: List[String]): Long = ???
