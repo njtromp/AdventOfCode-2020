@@ -10,7 +10,7 @@ class Day19 extends Puzzle {
   private val ScannerLine: Regex = raw"--- scanner (\d+) ---".r
   private type Pos = List[Int]
 
-  case class Scanner(id: Int, beacons: Set[Matrix]) {
+  case class Scanner(id: Int, pos: Matrix, beacons: Set[Matrix]) {
     def intersect(s: Scanner): Set[Matrix] = beacons.intersect(s.beacons)
     def relativeLocations: Set[Matrix] = {
       val beaconList = beacons.toList
@@ -20,17 +20,18 @@ class Day19 extends Puzzle {
       relativeBeacons.toSet
     }
     def transform(t: Matrix): Scanner = {
-      Scanner(id, beacons.map(b => t * b))
+      Scanner(id, pos, beacons.map(b => t * b))
     }
   }
 
   private def parseScannerInfo(lines: List[String]): List[Scanner] = {
+    val center = Matrix(List(List(0.0), List(0,0), List(0.0)))
     lines.foldLeft(List.empty[Scanner], List.empty[Pos])((acc, l) => l match {
-      case ScannerLine(id) => (Scanner(id.toInt, Set.empty[Matrix]) :: acc._1, List.empty[Pos])
+      case ScannerLine(id) => (Scanner(id.toInt, center, Set.empty[Matrix]) :: acc._1, List.empty[Pos])
       case "" =>
         val scanner = acc._1.head
         val beacons = acc._2.map(p => Matrix(List(p.map(_.toDouble))).rowsToColums).toSet
-        (Scanner(scanner.id, beacons) :: acc._1.tail, List.empty[Pos])
+        (Scanner(scanner.id, scanner.pos, beacons) :: acc._1.tail, List.empty[Pos])
       case _ =>
         val pos = l.split(",").map(_.toInt).toList
         (acc._1, List(pos) ++ acc._2)
@@ -51,8 +52,8 @@ class Day19 extends Puzzle {
   }
 
   def findTransformations(base: Scanner, scanners: List[Scanner]): List[Scanner] = {
-    scanners.map(s => Matrix.perpendicularPermutations.foldLeft(Option.empty[Set[Matrix]])((acc, t) => acc match {
-        case bs: Some[Set[Matrix]] =>
+    scanners.map(s => Matrix.perpendicularPermutations.foldLeft(Option.empty[(Matrix, Set[Matrix])])((acc, t) => acc match {
+        case bs: Some[(Matrix, Set[Matrix])] =>
           bs
         case None =>
           val transformedBeacons = s.beacons.map(t * _)
@@ -61,11 +62,11 @@ class Day19 extends Puzzle {
             None
           else {
             val offset = matchingInfo.head._1._1 - matchingInfo.head._2._1
-            Some(transformedBeacons.map(_ + offset))
+            Some((s.pos + offset, transformedBeacons.map(_ + offset)))
           }
       }) match {
         case None => s
-        case Some(m) => Scanner(s.id, m)
+        case Some(b) => Scanner(s.id, b._1, b._2)
       }
     )
   }
@@ -91,7 +92,12 @@ class Day19 extends Puzzle {
     alignedScanners.flatMap(_.beacons).toSet.size
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  override def solvePart2(lines: List[String]): Long = {
+    def manhattan(t: (Int, Int, Int)): Double = Math.abs(t._1) + Math.abs(t._2) + Math.abs(t._3)
+    val scanners = parseScannerInfo(lines).reverse
+    val alignedScanners = findScannerMappings(Set.empty, Set(0), scanners)
+    alignedScanners.flatMap(s0 => alignedScanners.map(s1 => manhattan((s0.pos - s1.pos).toTuple))).max.toLong
+  }
 }
 
 object Day19 extends App {
