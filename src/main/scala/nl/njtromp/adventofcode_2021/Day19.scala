@@ -71,7 +71,7 @@ class Day19 extends Puzzle {
   }
 
   @tailrec
-  private def findScannerMappings(connectedScanners: Set[Int], needInvestigation: List[Int], scanners: List[Scanner]): List[Scanner] = {
+  private def findScannerMappings(connectedScanners: Set[Int], needInvestigation: Set[Int], scanners: List[Scanner]): List[Scanner] = {
     if (needInvestigation.isEmpty)
       scanners
     else {
@@ -79,7 +79,7 @@ class Day19 extends Puzzle {
       val unmapped = scanners.filterNot(s => connectedScanners.contains(s.id) || needInvestigation.contains(s.id))
       val possiblyMapped = findTransformations(base, unmapped)
       val mappedScanners = possiblyMapped.zip(unmapped).filterNot(s => s._1.beacons == s._2.beacons).map(_._1)
-      val findConnectionsFor = (needInvestigation.tail ++ mappedScanners.map(_.id)).filterNot(connectedScanners.contains)
+      val findConnectionsFor = (needInvestigation.tail ++ mappedScanners.map(_.id).toSet).diff(connectedScanners)
       val correctedScanners = scanners.filterNot(s => mappedScanners.map(_.id).contains(s.id)) ++ mappedScanners
       findScannerMappings(connectedScanners + base.id, findConnectionsFor, correctedScanners)
     }
@@ -87,7 +87,7 @@ class Day19 extends Puzzle {
 
   override def solvePart1(lines: List[String]): Long = {
     val scanners = parseScannerInfo(lines).reverse
-    val alignedScanners = findScannerMappings(Set.empty, List(0), scanners)
+    val alignedScanners = findScannerMappings(Set.empty, Set(0), scanners)
     alignedScanners.flatMap(_.beacons).toSet.size
   }
 
