@@ -53,20 +53,20 @@ class Day19 extends Puzzle {
 
   def findTransformations(base: Scanner, scanners: List[Scanner]): List[Scanner] = {
     scanners.map(scanner => beaconsForScanner(scanner.id).foldLeft(Option.empty[Scanner])((acc, transformedBeacons) => acc match {
-        case mappedScanner: Some[Scanner] =>
-          // A mapping has been found, just pass it on
-          mappedScanner
-        case None =>
-          // No mapping has been found yet, try a new set of tranformed beacons
-          val matchingInfo = matchBeacons(base.beacons.toList, transformedBeacons)
-          if (matchingInfo.size < 24) { // Take into account that we find matches both ways! Hence the 24 (=2 * 12)
-            // No mapping found
-            None
-          } else {
-            // Mapping found, adjust the scanner and pass it on
-            val offset = matchingInfo.head._1._1 - matchingInfo.head._2._1
-            Some(Scanner(scanner.id, scanner.pos + offset, transformedBeacons.map(_ + offset).toSet))
-          }
+      case mappedScanner: Some[Scanner] =>
+        // A mapping has been found, just pass it on
+        mappedScanner
+      case None =>
+        // No mapping has been found yet, try a new set of tranformed beacons
+        val matchingInfo = matchBeacons(base.beacons.toList, transformedBeacons)
+        if (matchingInfo.size < 24) { // Take into account that we find matches both ways! Hence the 24 (=2 * 12)
+          // No mapping found
+          None
+        } else {
+          // Mapping found, adjust the scanner and pass it on
+          val offset = matchingInfo.head._1._1 - matchingInfo.head._2._1
+          Some(Scanner(scanner.id, scanner.pos + offset, transformedBeacons.map(_ + offset).toSet))
+        }
       }) match {
         case None => scanner
         case Some(mappedScanner) => mappedScanner
