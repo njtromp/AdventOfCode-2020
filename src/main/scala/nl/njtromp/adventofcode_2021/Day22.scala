@@ -2,8 +2,6 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.Puzzle
 
-import scala.annotation.tailrec
-
 class Day22 extends Puzzle {
 
   private val CubesOnOff = raw"(.+) x=(-?\d+)..(-?\d+),y=(-?\d+)..(-?\d+),z=(-?\d+)..(-?\d+)".r
@@ -11,12 +9,7 @@ class Day22 extends Puzzle {
   private val InitCube = Cube(InitRange, InitRange, InitRange)
 
   case class Cube(x: Range, y: Range, z: Range) {
-    private def overlapping(a: Range, b: Range): Range = {
-      val overlap = a.intersect(b)
-      overlap.min to overlap.max
-    }
     def size: Long = x.size.toLong * y.size.toLong * z.size.toLong
-    def points: Set[(Int, Int, Int)] = x.flatMap(x => y.flatMap(y => z.map((x, y, _)))).toSet
     def overlap(c : Cube): Boolean = {
       x.intersect(c.x).nonEmpty &&
       y.intersect(c.y).nonEmpty &&
@@ -28,6 +21,10 @@ class Day22 extends Puzzle {
         z.min <= c.z.min && z.max >= c.z.max
     }
     def intersect(c: Cube): Cube = Cube(overlapping(x, c.x), overlapping(y, c.y), overlapping(z, c.z))
+    private def overlapping(a: Range, b: Range): Range = {
+      val overlap = a.intersect(b)
+      overlap.min to overlap.max
+    }
   }
   case class Instruction(ins: String, cube: Cube)
 
@@ -44,7 +41,6 @@ class Day22 extends Puzzle {
   }
 
   def parts(outer: Range, inner: Range): List[Range] =
-//    List(outer.min to inner.min - 1, inner.min to inner.max, inner.max + 1 to outer.max).filterNot(_.isEmpty)
     List(outer.min until inner.min, inner.min to inner.max, inner.max + 1 to outer.max).filterNot(_.isEmpty)
 
   private var instructionCounter = 1
@@ -53,9 +49,12 @@ class Day22 extends Puzzle {
     instructionCounter += 1
     val newCube = instruction.cube
     val noneOverlapping = onCubes.filterNot(newCube.overlap)
+    // If there is an overlap the original cube is split into multiple smaller cubes that don't overlap and a single
+    // cube that is exists in both the original and the new cube. The smaller cubes replace the original cube excluding
+    // the overlapping (smaller) cube. At this moment we don't have to take into account the type of instruction.
     val overlapping = onCubes.filter(newCube.overlap).flatMap(c => {
       if (newCube.contains(c)) {
-        List.empty // The contained cube will either be removed (off) of replaced (on) so it will always be removed
+        List.empty // The contained cube will either be removed (off) or replaced (on) so it will always be removed
       } else {
         val intersection = newCube.intersect(c)
         // Chop along each axis into at most 3 ranges and combine that into at most 27 partial cubes ...
@@ -68,6 +67,8 @@ class Day22 extends Puzzle {
       }
     })
     if (instruction.ins == "on") {
+      // Add the new cube to the list of cubes, if it overlapped with one or more other cubes the overlapping part has
+      // been removed so we can safely add the whole cube
       newCube :: overlapping ++ noneOverlapping
     } else {
       overlapping ++ noneOverlapping
