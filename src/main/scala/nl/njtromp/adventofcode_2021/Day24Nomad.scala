@@ -1,33 +1,48 @@
 package nl.njtromp.adventofcode_2021
 
 object Day24Nomad extends App {
-  def monads: List[(Long, Long) => Long] = List(monad0, monad3, monad4, monad5, monad6, monad7, monad8, monad9, monad10, monad11, monad12, monad13)
+  def monads: List[(Long, Long) => Long] = List(monad0, monad1, monad2, monad3, monad4, monad5, monad6, monad7, monad8, monad9, monad10, monad11, monad12, monad13)
   type NomadInfo = Map[(Long, Long), Long]
 
   val digits = 1L to 9L
 
-  val curry = Long.MaxValue - 25
-//  digits.foreach(d => println(s"($curry, $d) ${monad13(curry, d)}"))
-  digits.foreach(d => digits.foreach(w => {
-    var x = if (d == w) 1 else 0
-    x = if (x == 0) 1 else 0
-    println(s"$d, $w => $x")
-  }))
+  def findModelNumber(monad: Int, carry: Long, modelNumber: Long): Long = {
+    if (monad == monads.length) {
+      if (carry == 0)
+        modelNumber
+      else
+        throw new IllegalArgumentException
+    } else {
+      digits.foreach(d => {
+        try {
+          val newCarry = monads(monad)(carry, d)
+          findModelNumber(monad + 1, newCarry, modelNumber * 10L + d)
+        } catch {
+          case _: IllegalArgumentException => ;// Just to get notified about
+        }
+      })
+      throw new IllegalArgumentException
+    }
+  }
+
+  println(findModelNumber(0, 0, 0))
 
   // Monads
-  def monad0(curry: Long, input: Long): Long = {
+  
+  def monad0(carry: Long, input: Long): Long = {
     val w = input
     var x = 0L
-    var z = curry
+    var z = 0L
+    var y = 0L
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 12
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    var y = 0L
+    y = y * 0
     y = y + 25
     y = y * x
     y = y + 1
@@ -40,14 +55,14 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad1(curry: Long, input: Long): Long = {
+  def monad1(carry: Long, input: Long): Long = {
     val w = input
+    var z = carry
     var x = 0L
-    var z = curry
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 11
     x = if (x == w) 1 else 0
@@ -65,14 +80,14 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad2(curry: Long, input: Long): Long = {
+  def monad2(carry: Long, input: Long): Long = {
     val w = input
+    var z = carry
     var x = 0L
-    var z = curry
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 10
     x = if (x == w) 1 else 0
@@ -90,14 +105,14 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad3(curry: Long, input: Long): Long = {
+  def monad3(carry: Long, input: Long): Long = {
     val w = input
+    var z = carry
     var x = 0L
-    var z = curry
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 10
     x = if (x == w) 1 else 0
@@ -115,14 +130,14 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad4(curry: Long, input: Long): Long = {
+  def monad4(carry: Long, input: Long): Long = {
     val w = input
+    var z = carry
     var x = 0L
-    var z = curry
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -16
     x = if (x == w) 1 else 0
@@ -140,22 +155,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad5(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad5(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 14
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -168,22 +180,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad6(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad6(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 12
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -196,22 +205,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad7(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad7(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -4
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0l
     y = y + 25
     y = y * x
     y = y + 1
@@ -224,22 +230,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad8(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad8(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (1 < 0) return 0;
+    if (1 < 0) throw new IllegalArgumentException
     z = z / 1
     x = x + 15
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -252,22 +255,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad9(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad9(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -7
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -280,22 +280,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad10(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad10(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -8
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -308,22 +305,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad11(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad11(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -4
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -336,22 +330,19 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad12(curry: Long, input: Long): Long = {
-    var z = curry
-    var w = 0L
+  def monad12(carry: Long, input: Long): Long = {
+    val w = input
+    var z = carry
     var x = 0L
-    var y = 0L
-    w = input
-    x = x * 0
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -15
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-    y = y * 0
+    var y = 0L
     y = y + 25
     y = y * x
     y = y + 1
@@ -364,14 +355,14 @@ object Day24Nomad extends App {
     z
   }
 
-  def monad13(curry: Long, input: Long): Long = {
+  def monad13(carry: Long, input: Long): Long = {
     val w = input
+    var z = carry
     var x = 0L
-    var z = curry
     x = x + z
-    if (x < 0 || 26 <= 0) return 0;
+    if (x < 0 || 26 <= 0) throw new IllegalArgumentException
     x = x % 26
-    if (26 < 0) return 0;
+    if (26 < 0) throw new IllegalArgumentException
     z = z / 26
     x = x + -8
     x = if (x == w) 1 else 0
