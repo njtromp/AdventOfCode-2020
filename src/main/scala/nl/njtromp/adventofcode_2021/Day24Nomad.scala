@@ -13,15 +13,18 @@ object Day24Nomad extends App {
       else
         throw new IllegalArgumentException
     } else {
+      var nr = 0L
       digits.foreach(d => {
         try {
-          val newCarry = monads(monad)(carry, d)
-          findModelNumber(monad + 1, newCarry, modelNumber * 10L + d)
+          if (nr == 0L) {
+            val newCarry = monads(monad)(carry, d)
+            nr = findModelNumber(monad + 1, newCarry, modelNumber * 10L + d)
+          }
         } catch {
           case _: IllegalArgumentException => ;// Just to get notified about
         }
       })
-      throw new IllegalArgumentException
+      nr
     }
   }
 
@@ -42,6 +45,7 @@ object Day24Nomad extends App {
     x = x + 12
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     y = y * 0
     y = y + 25
     y = y * x
@@ -67,6 +71,7 @@ object Day24Nomad extends App {
     x = x + 11
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -92,6 +97,7 @@ object Day24Nomad extends App {
     x = x + 10
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -117,6 +123,7 @@ object Day24Nomad extends App {
     x = x + 10
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -142,6 +149,7 @@ object Day24Nomad extends App {
     x = x + -16
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -167,6 +175,7 @@ object Day24Nomad extends App {
     x = x + 14
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -192,6 +201,7 @@ object Day24Nomad extends App {
     x = x + 12
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -217,6 +227,7 @@ object Day24Nomad extends App {
     x = x + -4
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0l
     y = y + 25
     y = y * x
@@ -242,6 +253,7 @@ object Day24Nomad extends App {
     x = x + 15
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -267,6 +279,7 @@ object Day24Nomad extends App {
     x = x + -7
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -292,6 +305,7 @@ object Day24Nomad extends App {
     x = x + -8
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -317,6 +331,7 @@ object Day24Nomad extends App {
     x = x + -4
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -342,6 +357,7 @@ object Day24Nomad extends App {
     x = x + -15
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -367,6 +383,7 @@ object Day24Nomad extends App {
     x = x + -8
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
+//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
