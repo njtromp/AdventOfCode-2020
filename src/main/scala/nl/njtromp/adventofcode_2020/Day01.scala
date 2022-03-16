@@ -3,7 +3,7 @@ package nl.njtromp.adventofcode_2020
 import scala.io.Source
 
 object Day01 extends App {
-  val ns = Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle01.txt")).getLines().map(n => n.toInt).toSet
+  val ns = Source.fromInputStream(getClass.getResourceAsStream("/2020/input-puzzle01.txt")).getLines().map(n => n.toInt).toSet
 
   def solvePart1(ns: Set[Int]):Int =ns.filter(n => ns.contains(2020 - n)).product
 

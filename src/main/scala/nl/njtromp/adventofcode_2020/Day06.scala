@@ -7,7 +7,7 @@ object Day06 extends App {
   private var positiveQuestionsPerGroup: mutable.Map[Char, Int] = mutable.Map.empty.withDefaultValue(0)
   private var listOfAllPositiveQuestions: List[mutable.Map[Char, Int]] = List.empty
   private var groupSize = 0
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle06.txt")).getLines) {
+  for (line <- Source.fromInputStream(getClass.getResourceAsStream("/2020/input-puzzle06.txt")).getLines) {
     if (line.isEmpty) {
       positiveQuestionsPerGroup += ('_' -> groupSize)
       listOfAllPositiveQuestions = positiveQuestionsPerGroup +: listOfAllPositiveQuestions

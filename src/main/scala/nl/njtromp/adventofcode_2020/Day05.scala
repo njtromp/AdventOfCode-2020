@@ -4,7 +4,7 @@ import scala.io.Source
 
 object Day05 extends App {
   private var seatNumbers: Set[Int] = Set.empty
-  for (line <- Source.fromInputStream(Day01.getClass.getResourceAsStream("/2020/input-puzzle05.txt")).getLines) {
+  for (line <- Source.fromInputStream(getClass.getResourceAsStream("/2020/input-puzzle05.txt")).getLines) {
     seatNumbers += Integer.parseInt(line.replaceAll("[FL]", "0").replaceAll("[BR]", "1"), 2)
   }
   println(s"Answer part 1: ${seatNumbers.max}")
