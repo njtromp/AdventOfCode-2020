@@ -1,6 +1,5 @@
 package nl.njtromp.adventofcode_2020
 
-import _root_.nl.njtromp.{Day21BaseVisitor, Day21Lexer, Day21Parser}
 import nl.njtromp.adventofcode.Puzzle
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.TerminalNode

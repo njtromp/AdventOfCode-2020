@@ -1,6 +1,5 @@
 package nl.njtromp.adventofcode_2020
 
-import _root_.nl.njtromp.{Day19Part2BaseVisitor, Day19Part2Lexer, Day19Part2Parser}
 import nl.njtromp.adventofcode.Puzzle
 import org.antlr.v4.runtime.atn.ATNConfigSet
 import org.antlr.v4.runtime.dfa.DFA

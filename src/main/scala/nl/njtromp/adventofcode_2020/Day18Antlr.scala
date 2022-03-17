@@ -1,6 +1,5 @@
 package nl.njtromp.adventofcode_2020
 
-import _root_.nl.njtromp.{Day18BaseVisitor, Day18Lexer, Day18Parser}
 import nl.njtromp.adventofcode.Puzzle
 import org.antlr.v4.runtime.{CharStreams, CommonTokenStream}
 
