@@ -1,37 +1,34 @@
 package nl.njtromp.adventofcode_2021
 
+import scala.collection.mutable
+
 object Day24Nomad extends App {
-  def monads: List[(Long, Long) => Long] = List(monad0, monad1, monad2, monad3, monad4, monad5, monad6, monad7, monad8, monad9, monad10, monad11, monad12, monad13)
-  type NomadInfo = Map[(Long, Long), Long]
+  type Monad = (Long, Long) => Long
+  def monads: List[Monad] = List(monad0, monad1, monad2, monad3, monad4, monad5, monad6, monad7, monad8, monad9, monad10, monad11, monad12, monad13)
 
-  val digits = 1L to 9L
+  val digits = (1L to 9L).toList
+  val unsuccessfulCarries: List[mutable.Set[Long]] = monads.map(_ => mutable.Set.empty[Long])
 
-  def findModelNumber(monad: Int, carry: Long, modelNumber: Long): Long = {
-    if (monad == monads.length) {
-      if (carry == 0)
-        modelNumber
-      else
-        throw new IllegalArgumentException
-    } else {
-      var nr = 0L
-      digits.foreach(d => {
-        try {
-          if (nr == 0L) {
-            val newCarry = monads(monad)(carry, d)
-            nr = findModelNumber(monad + 1, newCarry, modelNumber * 10L + d)
-          }
-        } catch {
-          case _: IllegalArgumentException => ;// Just to get notified about
+  def findModelNumber(carry: Long, digits: List[Long], unsuccessfullCarries: List[mutable.Set[Long]], monads: List[Monad], modelNumber: List[Long]): Unit = {
+    monads match {
+      case Nil =>
+        if (carry == 0) {
+          println(modelNumber.reverse)
         }
-      })
-      nr
+      case monad :: monads =>
+        if (!unsuccessfullCarries.head.contains(carry)) {
+          unsuccessfullCarries.head += carry
+          digits.foreach(d => findModelNumber(monad(carry, d), digits, unsuccessfullCarries.tail, monads, d :: modelNumber))
+        }
     }
   }
-
-  println(findModelNumber(0, 0, 0))
+  println("First number found is for part 1")
+  findModelNumber(0, digits.reverse, unsuccessfulCarries, monads, Nil)
+  println("First number found is for part 2")
+  unsuccessfulCarries.foreach(_.clear())
+  findModelNumber(0, digits, unsuccessfulCarries, monads, Nil)
 
   // Monads
-  
   def monad0(carry: Long, input: Long): Long = {
     val w = input
     var x = 0L
@@ -45,7 +42,6 @@ object Day24Nomad extends App {
     x = x + 12
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     y = y * 0
     y = y + 25
     y = y * x
@@ -71,7 +67,6 @@ object Day24Nomad extends App {
     x = x + 11
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -97,7 +92,6 @@ object Day24Nomad extends App {
     x = x + 10
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -123,7 +117,6 @@ object Day24Nomad extends App {
     x = x + 10
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -149,7 +142,6 @@ object Day24Nomad extends App {
     x = x + -16
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -175,7 +167,6 @@ object Day24Nomad extends App {
     x = x + 14
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -201,7 +192,6 @@ object Day24Nomad extends App {
     x = x + 12
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -227,7 +217,6 @@ object Day24Nomad extends App {
     x = x + -4
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0l
     y = y + 25
     y = y * x
@@ -253,7 +242,6 @@ object Day24Nomad extends App {
     x = x + 15
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -279,7 +267,6 @@ object Day24Nomad extends App {
     x = x + -7
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -305,7 +292,6 @@ object Day24Nomad extends App {
     x = x + -8
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -331,7 +317,6 @@ object Day24Nomad extends App {
     x = x + -4
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -357,7 +342,6 @@ object Day24Nomad extends App {
     x = x + -15
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x
@@ -383,7 +367,6 @@ object Day24Nomad extends App {
     x = x + -8
     x = if (x == w) 1 else 0
     x = if (x == 0) 1 else 0
-//    if (x == 1) throw new IllegalArgumentException("Exploding carry!")
     var y = 0L
     y = y + 25
     y = y * x

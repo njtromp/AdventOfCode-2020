@@ -59,27 +59,13 @@ class Day24 extends Puzzle {
       }
     }
     // generateProgram(lines)
-    // genModelNumber(Array.empty)
+     genModelNumber(Array(9,9,8,9,3,9,9,9,2,9,1,9,6,7))
     99893999291967L
   }
 
   override def solvePart2(lines: List[String]): Long = {
-    def genModelNumber(modelNumber: Array[Long]): Long = {
-      if (modelNumber.length == 14) {
-        if (checkModelNumber(modelNumber) == 0)
-          modelNumber.mkString.toLong
-        else
-          0
-      } else {
-        for (d <- 1L to 9L) {
-          val nr = genModelNumber(modelNumber ++ Array(d))
-          if (nr > 0)
-            return nr
-        }
-        0
-      }
-    }
-    genModelNumber(Array.empty)
+    // Run Day24Nomad and follow the instructions in the console :-)
+    34171911181211L
   }
 
   def checkModelNumber(modelNumber: Array[Long]): Long = {
