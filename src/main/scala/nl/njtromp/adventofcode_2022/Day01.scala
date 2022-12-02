@@ -11,7 +11,7 @@ class Day01 extends Puzzle {
     lines.map((line: String) => if (line.isBlank) 0 else line.toInt)
       .foldLeft((List[Int](), 0))((a, snack) =>
         if (snack == 0) (a._2 :: a._1, 0) else (a._1, a._2 + snack))
-      ._1.sortWith((a, b) => a >= b)
+      ._1.sorted.reverse
       .take(3).sum
 }
 
