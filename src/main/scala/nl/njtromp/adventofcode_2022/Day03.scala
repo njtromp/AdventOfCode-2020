@@ -8,7 +8,7 @@ class Day03 extends Puzzle {
       .map(l => l.trim)
       .map(l => (l.substring(0, l.length / 2).toSet, l.substring(l.length / 2).toSet))
       .map(c => c._1.intersect(c._2))
-      .map(_.toList.head)
+      .map(_.head)
       .map(c => if (c.isLower) c - 'a' + 1 else c - 'A' + 27)
       .sum
   }
@@ -20,10 +20,9 @@ class Day03 extends Puzzle {
         case _ => lines.take(3) :: makeGroups(lines.drop(3))
       }
     }
-    val allChars = ('a' to 'z').toSet.union(('A' to  'Z').toSet)
     makeGroups(lines)
-      .map(g => g.map(_.toSet).foldLeft(allChars)((a, r) => a.intersect(r)))
-      .map(_.toList.head)
+      .map(g => g.map(_.toSet).reduce((a, b) => a.intersect(b)))
+      .map(_.head)
       .map(c => if (c.isLower) c - 'a' + 1 else c - 'A' + 27)
       .sum
   }
