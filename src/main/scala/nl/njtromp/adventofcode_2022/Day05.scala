@@ -12,6 +12,6 @@ class Day05 extends Puzzle2 {
   override def solvePart2(lines: List[String]): Long = -1
 }
 
-object Day05 extends App{
+object Day05 extends App {
   new Day05().solvePuzzles("/2022/day05.txt")
 }

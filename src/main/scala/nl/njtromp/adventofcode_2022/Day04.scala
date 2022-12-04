@@ -23,6 +23,6 @@ class Day04 extends Puzzle2 {
 
 }
 
-object Day04 extends App{
+object Day04 extends App {
   new Day04().solvePuzzles("/2022/day04.txt")
 }
