@@ -3,7 +3,7 @@ package nl.njtromp.adventofcode
 import java.util.concurrent.TimeUnit
 import scala.io.Source
 
-trait Puzzle2 {
+trait Puzzle2 extends RangeUtils {
 
   def solvePuzzles(inputName: String): Unit = {
     val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList

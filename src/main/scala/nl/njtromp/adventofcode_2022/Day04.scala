@@ -10,7 +10,7 @@ class Day04 extends Puzzle2 {
     lines.map(l => l.split(","))
       .map(ls => (ls.head.split("-"), ls.tail.head.split("-")))
       .map(s => (s._1.head.toInt to s._1.tail.head.toInt, s._2.head.toInt to s._2.tail.head.toInt))
-      .count(s => s._1.intersect(s._2) == s._1 || s._1.intersect(s._2) == s._2)
+      .count(s => s._1.holds(s._2) || s._2.holds(s._1))
   }
 
   override def exampleAnswerPart2: Long = 4
@@ -19,7 +19,7 @@ class Day04 extends Puzzle2 {
     lines.map(l => l.split(","))
       .map(ls => (ls.head.split("-"), ls.tail.head.split("-")))
       .map(s => (s._1.head.toInt to s._1.tail.head.toInt, s._2.head.toInt to s._2.tail.head.toInt))
-      .count(s => s._1.intersect(s._2).nonEmpty)
+      .count(s => s._1.overlap(s._2).nonEmpty)
 
 }
 
