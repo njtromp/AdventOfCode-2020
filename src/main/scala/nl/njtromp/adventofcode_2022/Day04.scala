@@ -1,8 +1,11 @@
 package nl.njtromp.adventofcode_2022
 
-import nl.njtromp.adventofcode.Puzzle
+import nl.njtromp.adventofcode.Puzzle2
 
-class Day04 extends Puzzle {
+class Day04 extends Puzzle2 {
+
+  override def exampleAnswerPart1: Long = 2
+
   override def solvePart1(lines: List[String]): Long = {
     lines.map(l => l.split(","))
       .map(ls => (ls.head.split("-"), ls.tail.head.split("-")))
@@ -10,6 +13,7 @@ class Day04 extends Puzzle {
       .count(s => s._1.intersect(s._2) == s._1 || s._1.intersect(s._2) == s._2)
   }
 
+  override def exampleAnswerPart2: Long = 4
 
   override def solvePart2(lines: List[String]): Long =
     lines.map(l => l.split(","))
