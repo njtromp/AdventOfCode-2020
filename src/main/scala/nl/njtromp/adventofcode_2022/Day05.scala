@@ -24,7 +24,6 @@ class Day05 extends Puzzle2 {
           parseCrates(piles, remainingCrates)
       }
     }
-
     val piles = new mutable.ArrayBuffer[List[Char]]()
     (0 until crates.head.replace(" ", "").length).foreach(_ => piles += Nil)
     parseCrates(piles, crates.tail)
@@ -69,7 +68,6 @@ class Day05 extends Puzzle2 {
         piles(from) = piles(from).drop(crates)
         piles
       }
-
       instructions match {
         case Nil => piles
         case instruction :: remainingInstructions =>
