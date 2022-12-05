@@ -31,20 +31,20 @@ class Day05 extends Puzzle2 {
     @tailrec
     def moveCretes(piles: Array[List[Char]], instructions: List[String]): Array[List[Char]] = {
       @tailrec
-      def moveCreaes(piles: Array[List[Char]], crates: Int, from: Int, to: Int): Array[List[Char]] = {
+      def moveCrates(piles: Array[List[Char]], crates: Int, from: Int, to: Int): Array[List[Char]] = {
         crates match {
           case 0 => piles
           case _ =>
             piles(to) = piles(from).head :: piles(to)
             piles(from) = piles(from).tail
-            moveCreaes(piles, crates - 1, from, to)
+            moveCrates(piles, crates - 1, from, to)
         }
       }
       instructions match {
         case Nil => piles
         case instruction :: remainingInstructions =>
           val parts = instruction.split(" ")
-          moveCretes(moveCreaes(piles, parts(1).toInt, parts(3).toInt - 1, parts(5).toInt - 1), remainingInstructions)
+          moveCretes(moveCrates(piles, parts(1).toInt, parts(3).toInt - 1, parts(5).toInt - 1), remainingInstructions)
       }
     }
     val crates = lines.takeWhile(_.nonEmpty).reverse
@@ -60,7 +60,7 @@ class Day05 extends Puzzle2 {
   override def solvePart2(lines: List[String]): Long = {
     @tailrec
     def moveCretes(piles: Array[List[Char]], instructions: List[String]): Array[List[Char]] = {
-      def moveCreaes(piles: Array[List[Char]], crates: Int, from: Int, to: Int): Array[List[Char]] = {
+      def moveCrates(piles: Array[List[Char]], crates: Int, from: Int, to: Int): Array[List[Char]] = {
         piles(to) = piles(from).take(crates) ++ piles(to)
         piles(from) = piles(from).drop(crates)
         piles
@@ -69,7 +69,7 @@ class Day05 extends Puzzle2 {
         case Nil => piles
         case instruction :: remainingInstructions =>
           val parts = instruction.split(" ")
-          moveCretes(moveCreaes(piles, parts(1).toInt, parts(3).toInt - 1, parts(5).toInt - 1), remainingInstructions)
+          moveCretes(moveCrates(piles, parts(1).toInt, parts(3).toInt - 1, parts(5).toInt - 1), remainingInstructions)
       }
     }
     val crates = lines.takeWhile(_.nonEmpty).reverse
