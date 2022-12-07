@@ -31,16 +31,15 @@ class Day07 extends Puzzle2 {
 
   override def exampleAnswerPart1: Long = 95437
 
-  def parseFolders(lines: List[String], folder: ElvenFolder): List[String] = {
+  def parseFolders(lines: List[String], folder: ElvenFolder): Unit = {
     def createFolder(file: String): Node = {
       new ElvenFolder(file.split(" ")(1), folder, ArrayBuffer())
     }
     def createFile(file: String): Node = {
       new ElvenFile(file.split(" ")(1), file.split(" ")(0).toInt)
     }
-    if (lines.isEmpty) {
-      lines
-    } else if (lines.head == "$ cd /") {
+    if (lines.isEmpty) return
+    if (lines.head == "$ cd /") {
       parseFolders(lines.tail, folder.root)
     } else if (lines.head == "$ ls") {
       val content = lines.tail.takeWhile(l => l.startsWith("dir") || l.split(" ")(0)(0).isDigit)
@@ -58,8 +57,6 @@ class Day07 extends Puzzle2 {
       parseFolders(lines.tail, folder.selectFolder(lines.head.split(" ")(2)))
     } else if (lines.head == "$ ls") {
       parseFolders(lines.tail, folder)
-    } else {
-      List()
     }
   }
 
