@@ -50,7 +50,7 @@ class Day08 extends Puzzle2 {
     x
   }
 
-  def numberVisibleTreesRightt(trees: Array[Array[Int]], x: Int, y: Int): Int = {
+  def numberVisibleTreesRight(trees: Array[Array[Int]], x: Int, y: Int): Int = {
     var t = x + 1
     while (t < trees(0).length) {
       if (trees(y)(t) >= trees(y)(x)) return t - x;
@@ -79,7 +79,7 @@ class Day08 extends Puzzle2 {
 
   def scenicScore(trees: Array[Array[Int]], x: Int, y: Int): Long = {
     val treesLeft = numberVisibleTreesLeft(trees, x, y)
-    val treesRight = numberVisibleTreesRightt(trees, x, y)
+    val treesRight = numberVisibleTreesRight(trees, x, y)
     val treedUp = numberVisibleTreesUp(trees, x, y)
     val treesDown = numberVisibleTreesDown(trees, x, y)
     treesLeft * treesRight * treedUp * treesDown
