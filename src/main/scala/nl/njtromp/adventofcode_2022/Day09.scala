@@ -8,14 +8,13 @@ class Day09 extends Puzzle2 with SimpleMapTypes{
     def doMove(head: Pos, tail: Pos): (Pos, Pos) =
       ((head._1 + delta._1, head._2 + delta._2), moveTail((head._1 +delta._1, head._2 + delta._2), tail))
 
-    def moveTail(head: Pos, tail: Pos): Pos =
+    def moveTail(head: Pos, tail: Pos): Pos = {
+      def correct(delta: Int, difference: Int): Int = if (delta == 0) difference else delta
       if (Math.abs(tail._1 - head._1) > 1 || Math.abs(tail._2 - head._2) > 1) {
-        if (delta._1 == 0)
-          (tail._1 + (head._1 - tail._1), tail._2 + delta._2)
-        else
-          (tail._1 + delta._1, tail._2 + (head._2 - tail._2))
+        (tail._1 + correct(delta._1, head._1 - tail._1), tail._2 + correct(delta._2, head._2 - tail._2))
       } else
         tail
+    }
 
     def moveRope(head: Pos, tail: Pos): (Pos, Pos, List[Pos]) = {
       var newHead = head
