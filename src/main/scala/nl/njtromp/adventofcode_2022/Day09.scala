@@ -5,8 +5,8 @@ import nl.njtromp.adventofcode.{Puzzle2, SimpleMapTypes}
 class Day09 extends Puzzle2 with SimpleMapTypes{
 
   class Move(delta: Pos, var n: Int) {
-    def doMove(head: Pos, tail: Pos): (Pos, Pos) =
-      ((head._1 + delta._1, head._2 + delta._2), moveTail((head._1 +delta._1, head._2 + delta._2), tail))
+    def moveHead(head: Pos): Pos =
+      (head._1 + delta._1, head._2 + delta._2)
 
     def moveTail(head: Pos, tail: Pos): Pos = {
       def correct(delta: Int, difference: Int): Int = if (delta == 0) difference else delta
@@ -18,18 +18,18 @@ class Day09 extends Puzzle2 with SimpleMapTypes{
 
     def moveRope(head: Pos, tail: Pos): (Pos, Pos, List[Pos]) = {
       var newHead = head
-      var newTail = tail
+      var previousTail = tail
       var positions: List[Pos] = Nil
       while (n > 0) {
-        val p = doMove(newHead, newTail)
-        if (p._2 != newTail) {
-          positions = p._2 :: positions
+        newHead = moveHead(newHead)
+        val newTail = moveTail(newHead, previousTail)
+        if (newTail != previousTail) {
+          positions = newTail :: positions
         }
-        newHead = p._1
-        newTail = p._2
+        previousTail = newTail
         n -= 1
       }
-      (newHead, newTail, positions)
+      (newHead, previousTail, positions)
     }
   }
 
