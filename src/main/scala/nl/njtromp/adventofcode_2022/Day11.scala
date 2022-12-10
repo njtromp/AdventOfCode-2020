@@ -2,7 +2,7 @@ package nl.njtromp.adventofcode_2022
 
 import nl.njtromp.adventofcode.Puzzle2
 
-class Day00 extends Puzzle2 {
+class Day11 extends Puzzle2 {
 
   override def exampleAnswerPart1: Long = 0
   override def solvePart1(lines: List[String]): Long = {
@@ -16,6 +16,6 @@ class Day00 extends Puzzle2 {
 
 }
 
-object Day00 extends App{
-  new Day00().solvePuzzles("/2022/day00.txt")
+object Day11 extends App{
+  new Day11().solvePuzzles("/2022/day11.txt")
 }
