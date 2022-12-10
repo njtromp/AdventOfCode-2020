@@ -18,9 +18,7 @@ class Day10 extends Puzzle2 {
   override def exampleAnswerPart1: Long = 13140
   override def solvePart1(lines: List[String]): Long = {
     val xs = runSystem(lines.map(_.trim), 1)
-    xs.foldLeft((1, 0L))((a, x) => (a._1 + 1, a._2 + (if (a._1 == 20 || (a._1 - 20) % 40 == 0) {
-      a._1 * x
-    } else 0)))._2
+    xs.foldLeft((1, 0L))((a, x) => (a._1 + 1, a._2 + (if (a._1 == 20 || (a._1 - 20) % 40 == 0) a._1 * x else 0)))._2
   }
 
   override def exampleAnswerPart2: Long = 0
@@ -31,7 +29,7 @@ class Day10 extends Puzzle2 {
       if ((a + 1) % 40 == 0) println
       a + 1
     })
-    println("="*20)
+    println("="*40)
     println("BACEKLHF")
     0
   }
