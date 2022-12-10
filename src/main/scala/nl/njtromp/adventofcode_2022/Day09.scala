@@ -9,7 +9,7 @@ class Day09 extends Puzzle2 {
   val right: Pos = (1, 0)
   val left: Pos = (-1, 0)
 
-  class Move(delta: Pos, var n: Int) {
+  class Move(delta: Pos, var moves: Int) {
     def moveHead(head: Pos): Pos =
       (head._1 + delta._1, head._2 + delta._2)
 
@@ -20,23 +20,22 @@ class Day09 extends Puzzle2 {
         tail
     }
 
-    def moveRope(rope: List[Pos]): (List[Pos], List[Pos]) = {
-      var newRope: List[Pos] = rope
-      var positions: List[Pos] = Nil
-      while (n > 0) {
-        val previousTail = newRope.last
-        val newHead: Pos = moveHead(newRope.head)
-        newRope = newHead :: newRope.tail.foldLeft((newHead, List[Pos]()))((a, k) => {
+    def moveRope(rope: List[Pos], tails: List[Pos], move: Int): (List[Pos], List[Pos]) = {
+      if (move == moves)
+        (rope, tails)
+      else {
+        val newHead: Pos = moveHead(rope.head)
+        val newRope = newHead :: rope.tail.foldLeft((newHead, List[Pos]()))((a, k) => {
           val newKnot = moveTail(a._1, k)
           (newKnot, a._2 ++ List(newKnot))
         })._2
         val newTail = newRope.last
-        if (newTail != previousTail) {
-          positions = newTail :: positions
+        if (newTail != rope.last) {
+          moveRope(newRope, newTail :: tails, move + 1)
+        } else {
+          moveRope(newRope, tails, move + 1)
         }
-        n -= 1
       }
-      (newRope, positions)
     }
   }
 
@@ -53,7 +52,7 @@ class Day09 extends Puzzle2 {
   def moveRope(lines: List[String], rope: List[Pos], positions: List[Pos]): List[Pos] = {
     lines match {
       case line :: remaining =>
-        val newRope = decodeMove(line).moveRope(rope)
+        val newRope = decodeMove(line).moveRope(rope, Nil, 0)
         positions ++ newRope._2 ++ moveRope(remaining, newRope._1, positions)
       case Nil => Nil
     }
