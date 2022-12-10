@@ -20,9 +20,9 @@ class Day09 extends Puzzle2 {
         tail
     }
 
-    def moveRope(rope: List[Pos], tails: List[Pos], move: Int): (List[Pos], List[Pos]) = {
+    def moveRope(rope: List[Pos], tailPositions: List[Pos], move: Int): (List[Pos], List[Pos]) = {
       if (move == moves)
-        (rope, tails)
+        (rope, tailPositions)
       else {
         val newHead = moveHead(rope.head)
         val newRope = newHead :: rope.tail.foldLeft((newHead, List[Pos]()))((a, k) => {
@@ -30,11 +30,7 @@ class Day09 extends Puzzle2 {
           (newKnot, a._2 ++ List(newKnot))
         })._2
         val newTail = newRope.last
-        if (newTail != rope.last) {
-          moveRope(newRope, newTail :: tails, move + 1)
-        } else {
-          moveRope(newRope, tails, move + 1)
-        }
+        moveRope(newRope, if (newTail != rope.last) newTail :: tailPositions else tailPositions, move + 1)
       }
     }
   }
@@ -49,31 +45,12 @@ class Day09 extends Puzzle2 {
 
   override def exampleAnswerPart1: Long = 88 // 13 for example part 1
 
-  def moveRope(lines: List[String], rope: List[Pos], tails: List[Pos]): List[Pos] = {
+  def moveRope(lines: List[String], rope: List[Pos], tailPositions: List[Pos]): List[Pos] = {
     lines match {
       case line :: remaining =>
         val ropeAndTails = decodeMove(line).moveRope(rope, Nil, 0)
-        tails ++ ropeAndTails._2 ++ moveRope(remaining, ropeAndTails._1, tails)
+        tailPositions ++ ropeAndTails._2 ++ moveRope(remaining, ropeAndTails._1, tailPositions)
       case Nil => Nil
-    }
-  }
-
-  def printPositions(positions: List[(Int, Int)]): Unit = {
-    if (positions != Nil) {
-      val minX = positions.map(_._1).min
-      val maxX = positions.map(_._1).max
-      val minY = positions.map(_._2).min
-      val maxY = positions.map(_._2).max
-      for (y <- Range(maxY, minY, -1).inclusive) {
-        for (x <- minX to maxX) {
-          if ((x, y) == (0, 0))
-            print('S')
-          else
-            print(if (positions.contains((x, y))) '#' else '.')
-        }
-        println
-      }
-      println
     }
   }
 
@@ -89,6 +66,25 @@ class Day09 extends Puzzle2 {
     val rope: List[Pos] = List((0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0))
     val tailPositions = moveRope(lines, rope, List((0, 0)))
     tailPositions.distinct.size
+  }
+
+  def printPositions(tailPostitions: List[(Int, Int)]): Unit = {
+    if (tailPostitions != Nil) {
+      val minX = tailPostitions.map(_._1).min
+      val maxX = tailPostitions.map(_._1).max
+      val minY = tailPostitions.map(_._2).min
+      val maxY = tailPostitions.map(_._2).max
+      for (y <- Range(maxY, minY, -1).inclusive) {
+        for (x <- minX to maxX) {
+          if ((x, y) == (0, 0))
+            print('S')
+          else
+            print(if (tailPostitions.contains((x, y))) '#' else '.')
+        }
+        println
+      }
+      println
+    }
   }
 }
 
