@@ -1,35 +1,42 @@
 package nl.njtromp.adventofcode_2022
 
-import nl.njtromp.adventofcode.{Puzzle2, SimpleMapTypes}
+import nl.njtromp.adventofcode.Puzzle2
 
-class Day09 extends Puzzle2 with SimpleMapTypes{
+class Day09 extends Puzzle2 {
+  type Pos = (Int, Int)
+  val up: Pos = (0, 1)
+  val down: Pos = (0, -1)
+  val right: Pos = (1, 0)
+  val left: Pos = (-1, 0)
 
   class Move(delta: Pos, var n: Int) {
     def moveHead(head: Pos): Pos =
       (head._1 + delta._1, head._2 + delta._2)
 
     def moveTail(head: Pos, tail: Pos): Pos = {
-      def correct(delta: Int, difference: Int): Int = if (delta == 0) difference else delta
       if (Math.abs(tail._1 - head._1) > 1 || Math.abs(tail._2 - head._2) > 1) {
-        (tail._1 + correct(delta._1, head._1 - tail._1), tail._2 + correct(delta._2, head._2 - tail._2))
+        (tail._1 + (head._1 - tail._1).signum, tail._2 + (head._2 - tail._2).signum)
       } else
         tail
     }
 
-    def moveRope(head: Pos, tail: Pos): (Pos, Pos, List[Pos]) = {
-      var newHead = head
-      var previousTail = tail
+    def moveRope(rope: List[Pos]): (List[Pos], List[Pos]) = {
+      var newRope: List[Pos] = rope
       var positions: List[Pos] = Nil
       while (n > 0) {
-        newHead = moveHead(newHead)
-        val newTail = moveTail(newHead, previousTail)
+        val previousTail = newRope.last
+        val newHead: Pos = moveHead(newRope.head)
+        newRope = newHead :: newRope.tail.foldLeft((newHead, List[Pos]()))((a, k) => {
+          val newKnot = moveTail(a._1, k)
+          (newKnot, a._2 ++ List(newKnot))
+        })._2
+        val newTail = newRope.last
         if (newTail != previousTail) {
           positions = newTail :: positions
         }
-        previousTail = newTail
         n -= 1
       }
-      (newHead, previousTail, positions)
+      (newRope, positions)
     }
   }
 
@@ -41,41 +48,48 @@ class Day09 extends Puzzle2 with SimpleMapTypes{
       case 'R' => new Move(right, line.substring(2).toInt)
     }
 
-  override def exampleAnswerPart1: Long = 13
+  override def exampleAnswerPart1: Long = 88//13
 
-  def moveRope(lines: List[String], head: Pos, tail: Pos): List[Pos] = {
+  def moveRope(lines: List[String], rope: List[Pos], positions: List[Pos]): List[Pos] = {
     lines match {
       case line :: remaining =>
-        val newPos = decodeMove(line).moveRope(head, tail)
-        newPos._3 ++ moveRope(remaining, newPos._1, newPos._2)
+        val newRope = decodeMove(line).moveRope(rope)
+        positions ++ newRope._2 ++ moveRope(remaining, newRope._1, positions)
       case Nil => Nil
     }
   }
 
   def printPositions(positions: List[(Int, Int)]): Unit = {
-    val minX = positions.map(_._1).min
-    val maxX = positions.map(_._1).max
-    val minY = positions.map(_._2).min
-    val maxY = positions.map(_._2).max
-    for (y <- Range(maxY, minY, -1).inclusive) {
-      for (x <- minX to maxX) {
-        print(if (positions.contains((x, y))) '#' else '.')
+    if (positions != Nil) {
+      val minX = positions.map(_._1).min
+      val maxX = positions.map(_._1).max
+      val minY = positions.map(_._2).min
+      val maxY = positions.map(_._2).max
+      for (y <- Range(maxY, minY, -1).inclusive) {
+        for (x <- minX to maxX) {
+          if ((x, y) == (0, 0))
+            print('S')
+          else
+            print(if (positions.contains((x, y))) '#' else '.')
+        }
+        println
       }
       println
     }
-    println
   }
 
   override def solvePart1(lines: List[String]): Long = {
-    val tailPositions: List[Pos] = (0, 0) :: moveRope(lines, (0, 0), (0, 0))
-//    printPositions(tailPositions)
+    val rope: List[Pos] = List((0, 0), (0, 0))
+    val tailPositions = moveRope(lines, rope, List((0, 0)))
     tailPositions.distinct.size
   }
 
   override def exampleAnswerPart2: Long = 36
 
   override def solvePart2(lines: List[String]): Long = {
-    -1
+    val rope: List[Pos] = List((0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0))
+    val tailPositions = moveRope(lines, rope, List((0, 0)))
+    tailPositions.distinct.size
   }
 }
 
