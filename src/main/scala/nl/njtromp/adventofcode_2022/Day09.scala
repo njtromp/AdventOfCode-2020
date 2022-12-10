@@ -48,7 +48,7 @@ class Day09 extends Puzzle2 {
       case 'R' => new Move(right, line.substring(2).toInt)
     }
 
-  override def exampleAnswerPart1: Long = 88//13
+  override def exampleAnswerPart1: Long = 88 // 13 for example part 1
 
   def moveRope(lines: List[String], rope: List[Pos], positions: List[Pos]): List[Pos] = {
     lines match {
