@@ -24,7 +24,7 @@ class Day09 extends Puzzle2 {
       if (move == moves)
         (rope, tails)
       else {
-        val newHead: Pos = moveHead(rope.head)
+        val newHead = moveHead(rope.head)
         val newRope = newHead :: rope.tail.foldLeft((newHead, List[Pos]()))((a, k) => {
           val newKnot = moveTail(a._1, k)
           (newKnot, a._2 ++ List(newKnot))
@@ -49,11 +49,11 @@ class Day09 extends Puzzle2 {
 
   override def exampleAnswerPart1: Long = 88 // 13 for example part 1
 
-  def moveRope(lines: List[String], rope: List[Pos], positions: List[Pos]): List[Pos] = {
+  def moveRope(lines: List[String], rope: List[Pos], tails: List[Pos]): List[Pos] = {
     lines match {
       case line :: remaining =>
-        val newRope = decodeMove(line).moveRope(rope, Nil, 0)
-        positions ++ newRope._2 ++ moveRope(remaining, newRope._1, positions)
+        val ropeAndTails = decodeMove(line).moveRope(rope, Nil, 0)
+        tails ++ ropeAndTails._2 ++ moveRope(remaining, ropeAndTails._1, tails)
       case Nil => Nil
     }
   }
