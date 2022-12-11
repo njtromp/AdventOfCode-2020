@@ -5,13 +5,10 @@ import nl.njtromp.adventofcode.Puzzle
 import scala.annotation.tailrec
 
 class Day21 extends Puzzle {
-  private val PlayerPosition = raw"Player (\d) starting position: (\d+)".r
-  case class Player(id: Int, pos: Int, score: Int) {
-    def move(dice: Dice): Player = {
-      val newPos = pos + dice.faceValue % 100 + 1
-      Player(id, newPos, score + newPos)
-    }
-  }
+  private val PlayerPosition = "Player (\\d) starting position: (\\d+)".r
+
+  case class Player(id: Int, pos: Int, score: Long)
+
   sealed abstract class Dice(value: Int, rolls: Int) {
     def faceValue: Int = value
     def numberOrRolls: Int = rolls
@@ -34,7 +31,6 @@ class Day21 extends Puzzle {
     val moves = rolls.map(_.faceValue).sum
     val newPos = (activePlayer.pos + moves) % 10
     val player = Player(activePlayer.id, newPos, activePlayer.score + newPos + 1)
-//    println(s"Player ${player.id} rolls ${rolls.reverse.map(_.faceValue).mkString("+")} and moves to space ${newPos + 1} for a total score of ${player.score}.")
     val playersForNextRound = players.tail ++ List(player)
     if (player.score >= winningScore)
       (rolls.head, playersForNextRound)
@@ -48,19 +44,36 @@ class Day21 extends Puzzle {
     val result = playDiracDice(players, DiracDice(1, 1), winningScore)
     val losingPlayer = result._2.find(_.score < winningScore).get
     val dice = result._1
-//    println(s"Game finished dice: $dice and player $losingPlayer lost")
     dice.numberOrRolls *  losingPlayer.score
   }
 
-  def pow(n: Long, p: Int): Long =
-    if (p == 0) 1L else n * pow(n, p - 1)
+  val diceToUniverses: Map[Int, Long] = Map(
+    3 -> 1L,
+    4 -> 3L,
+    5 -> 6L,
+    6 -> 7L,
+    7 -> 6L,
+    8 -> 3L,
+    9 -> 1L
+  )
+
+  private val winningUniverses: Array[Long] = Array(0L, 0L)
+  private def roleDice(activePlayer: Player, otherPlayer: Player, universes: Long, winningScore: Int): Unit = {
+    if (otherPlayer.score >= winningScore) {
+      winningUniverses(otherPlayer.id - 1) += universes
+    } else {
+      for (dice <- 3 to 9) {
+        val pos = (activePlayer.pos + dice) % 10
+        roleDice(otherPlayer, Player(activePlayer.id, pos, activePlayer.score + pos + 1), universes * diceToUniverses(dice), winningScore)
+     }
+    }
+  }
 
   override def solvePart2(lines: List[String]): Long = {
     val players = readStartPositions(lines)
     val winningScore = 21
-    val result = playDiracDice(players, DiracDice(1, 1), winningScore)
-    val dice = result._1
-    pow(3L*3L*3L, dice.numberOrRolls - 1)
+    roleDice(players.head, players.last, 1, winningScore)
+    winningUniverses.max
   }
 }
 
