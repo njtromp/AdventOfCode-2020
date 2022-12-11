@@ -43,7 +43,6 @@ class Day11 extends Puzzle2 {
   }
 
   def parseOperation(op: String): Operation = {
-    val operation =
     op match {
       case Plus(value) => PlusOp(value.toInt)
       case PlusOld() => TimesOp(2)
@@ -52,7 +51,6 @@ class Day11 extends Puzzle2 {
       case TimesOld() => TimesOldOp()
       case Divide(value) => DivideOp(value.toInt)
     }
-    operation
   }
 
   def parseId(line: String): Int =
@@ -126,29 +124,27 @@ class Day11 extends Puzzle2 {
   }
 
   @tailrec
-  private def playRound(monkeys: Array[Monkey], round: Int): Array[Monkey] =
-    if (round == 0)
-      monkeys
-    else {
+  private def playRound(monkeys: Array[Monkey], round: Int): Unit =
+    if (round != 0) {
       monkeys.foreach(_.play(monkeys))
       playRound(monkeys, round - 1)
     }
 
   override def exampleAnswerPart1: Long = 10605L
   override def solvePart1(lines: List[String]): Long = {
-    val startMonkeys = parseMonkeys(lines).toArray
+    val monkeys = parseMonkeys(lines).toArray
     Monkey.worryDivider = 3
-    Monkey.limiter = startMonkeys.map(_.test).product
-    val monkeys = playRound(startMonkeys, 20)
+    Monkey.limiter = monkeys.map(_.test).product
+    playRound(monkeys, 20)
     monkeys.sortBy(_.inspections).reverse.take(2).map(_.inspections).product
   }
 
   override def exampleAnswerPart2: Long = 2713310158L
   override def solvePart2(lines: List[String]): Long = {
-    val startMonkeys = parseMonkeys(lines).toArray
+    val monkeys = parseMonkeys(lines).toArray
     Monkey.worryDivider = 1
-    Monkey.limiter = startMonkeys.map(_.test).product
-    val monkeys = playRound(startMonkeys, 10000)
+    Monkey.limiter = monkeys.map(_.test).product
+    playRound(monkeys, 10000)
     monkeys.sortBy(_.inspections).reverse.take(2).map(_.inspections).product
   }
 
