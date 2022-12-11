@@ -1,7 +1,5 @@
 package nl.njtromp.adventofcode
 
-import nl.njtromp.adventofcode
-
 import scala.reflect.ClassTag
 
 trait SimpleMapTypes {
