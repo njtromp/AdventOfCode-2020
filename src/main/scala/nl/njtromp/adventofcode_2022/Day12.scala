@@ -8,12 +8,10 @@ import scala.collection.mutable.ArrayBuffer
 
 class Day12 extends Puzzle2 with SimpleMapTypes {
 
-  private def find(map: SimpleMap[Char], c: Char): Pos = {
-    val positions = (0 until map.height).flatMap(y =>
-        (0 until map.width)
-        .map(x => (y, x)))
-    positions.filter(p => map(p) == c).head
-  }
+  private def find(map: SimpleMap[Char], c: Char): Pos =
+    map.allPositions().filter(p => map(p) == c).head
+
+  private def canReach(s: Char, d: Char): Boolean = d - s <= 1
 
   private def findRoute(map: SimpleMap[Char], start: Pos, finish: Pos): Int = {
     var bestLength: Int = Int.MaxValue
@@ -22,7 +20,6 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     val visited = mutable.Set[Pos]()
     def priority(p: Pos): Int = -map.elems(p._1)(p._2)
     var toBeVisited = ArrayBuffer[Pos]()
-    def canReach(s: Char, d: Char): Boolean = d - s <= 1
     @tailrec
     def dijkstra(): Unit =
       if (toBeVisited.nonEmpty) {
@@ -59,11 +56,9 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
   override def exampleAnswerPart1: Long = 31
 
   def listStartingPoints(map: SimpleMap[Char]): List[Pos] = {
-    (0 until map.height).flatMap(y => {
-      (0 until map.width).map(x => (y, x))
-    }).toList
+    map.allPositions()
       .filter(map(_) == 'a')
-      .filter(p => map.neighbors(p, square).count(l => l - map(p) <= 1) > 0)
+      .filter(p => map.neighbors(p, square).count(canReach(map(p), _)) > 0)
   }
 
   override def solvePart1(lines: List[String]): Long = {

@@ -31,6 +31,10 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   def isOnMap(p: Pos): Boolean = elems.indices.contains(p._1) && elems(0).indices.contains(p._2)
   def row(y: Int): List[A] = elems(y).toList
   def column(x: Int): List[A] = elems(0).indices.map(elems(_)(x)).toList
+  def allPositions(): List[Pos] =
+    (0 until height).flatMap(y => {
+      (0 until width).map(x => (y, x))
+    }).toList
   def neighborPositions(p: Pos, directions: List[Delta]): List[Pos] =
     directions.map(d => (p._1 + d._1, p._2 + d._2))
       .filter(p => isOnMap(p))
