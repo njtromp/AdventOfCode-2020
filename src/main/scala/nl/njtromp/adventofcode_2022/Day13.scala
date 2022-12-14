@@ -45,19 +45,17 @@ class Day13 extends Puzzle2 with RegexParsers {
       .zipWithIndex
       .map(p => Pair(p._2 + 1, p._1.head, p._1.last))
       .toList
-    val validPairs = pairs.filter(p => {
-      p.isValid().getOrElse(false)
-    })
+    val validPairs = pairs.filter(p => p.isValid().get)
     validPairs.map(_.id).sum
   }
 
   override def exampleAnswerPart2: Long = 140
   override def solvePart2(lines: List[String]): Long = {
-    val marker2 = parseAll(list, "[[2]]").get
-    val marker6 = parseAll(list, "[[6]]").get
     val packets = lines
       .filterNot(_.isEmpty)
       .map(parseAll(list, _).get)
+    val marker2 = parseAll(list, "[[2]]").get
+    val marker6 = parseAll(list, "[[6]]").get
     val sortedPackets = (marker2 :: marker6 :: packets).sortBy(_.leftMostValue)
     (sortedPackets.takeWhile(_ != marker2).size + 1) * (sortedPackets.takeWhile(_ != marker6).size + 1)
   }
