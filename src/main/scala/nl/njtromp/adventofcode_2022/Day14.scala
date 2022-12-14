@@ -5,10 +5,14 @@ import nl.njtromp.adventofcode.{Puzzle2, SimpleMapTypes}
 import scala.annotation.tailrec
 
 class Day14 extends Puzzle2 with SimpleMapTypes {
-  private val Position = "(\\d+),(\\d+)".r
+  private val POSITION = "(\\d+),(\\d+)".r
+  private val START = '+'
+  private val AIR = '.'
+  private val ROCK = '#'
+  private val SAND = 'o'
 
   private def createPos(pos: String): Pos = pos match {
-    case Position(x, y) => (y.toInt, x.toInt)
+    case POSITION(x, y) => (y.toInt, x.toInt)
   }
 
   private def createLineSeqments(lines: List[String]):List[List[Pos]] = {
@@ -16,28 +20,29 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
       .map(_.map(createPos))
   }
 
-  private def createCaveMap(lineSements: List[List[((Int, Int), (Int, Int))]], height: Int, width: Int, sourceX: Int): Array[Array[Char]] = {
-    val caveMap = Array.fill(height, width)('.')
-    def createLine(segments: List[((Int, Int), (Int, Int))]): Unit = {
+  private def createCaveMap(lineSements: List[List[(Pos, Pos)]], height: Int, width: Int, sourceX: Int): Array[Array[Char]] = {
+    val caveMap = Array.fill(height, width)(AIR)
+    def createLine(segments: List[(Pos, Pos)]): Unit = {
       segments.foreach(s => {
         val minY = Math.min(s._1._1, s._2._1)
         val maxY = Math.max(s._1._1, s._2._1)
         val minX = Math.min(s._1._2, s._2._2)
         val maxX = Math.max(s._1._2, s._2._2)
         if (minX == maxX)
-          (minY to maxY).foreach(y => caveMap(y)(minX) = '#')
+          (minY to maxY).foreach(y => caveMap(y)(minX) = ROCK)
         else
-          (minX to maxX).foreach(x => caveMap(minY)(x) = '#')
+          (minX to maxX).foreach(x => caveMap(minY)(x) = ROCK)
       })
     }
-    caveMap(0)(sourceX) = '+'
+
+    caveMap(0)(sourceX) = START
     lineSements.foreach(createLine)
     caveMap
   }
 
-  private def createCaveMap2(lineSements: List[List[((Int, Int), (Int, Int))]], height: Int, width: Int, sourceX: Int): Array[Array[Char]] = {
+  private def createCaveMap2(lineSements: List[List[(Pos, Pos)]], height: Int, width: Int, sourceX: Int): Array[Array[Char]] = {
     val caveMap = createCaveMap(lineSements, height, width, sourceX)
-    (0 until width).foreach(x => caveMap(height - 1)(x) = '#')
+    (0 until width).foreach(x => caveMap(height - 1)(x) = ROCK)
     caveMap
   }
 
@@ -46,11 +51,11 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     def dropGrain(pos: Pos): Pos = {
       val newPos = if (pos._1 == caveMap.length - 1)
         pos
-      else if (caveMap(pos._1 + 1)(pos._2) == '.')
+      else if (caveMap(pos._1 + 1)(pos._2) == AIR)
         (pos._1 + 1, pos._2)
-      else if (caveMap(pos._1 + 1)(pos._2 - 1) == '.')
+      else if (caveMap(pos._1 + 1)(pos._2 - 1) == AIR)
         (pos._1 + 1, pos._2 - 1)
-      else if (caveMap(pos._1 + 1)(pos._2 + 1) == '.')
+      else if (caveMap(pos._1 + 1)(pos._2 + 1) == AIR)
         (pos._1 + 1, pos._2 + 1)
       else
         pos
@@ -65,7 +70,7 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
       if (newPos._1 == caveMap.length - 1 || newPos == (0, sourceX))
         grainCount
       else {
-        caveMap(newPos._1)(newPos._2) = 'o'
+        caveMap(newPos._1)(newPos._2) = SAND
         dropGrains(grainCount + 1, (0, sourceX))
       }
     }

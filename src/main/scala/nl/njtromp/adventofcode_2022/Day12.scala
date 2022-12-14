@@ -18,7 +18,7 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     val numberOfSteps = Array.fill(map.height, map.width)(Int.MaxValue)
     val source = mutable.Map[Pos, Pos]()
     val visited = mutable.Set[Pos]()
-    def priority(p: Pos): Int = -map.elems(p._1)(p._2)
+    def priority(p: Pos): Int = -map(p)
     var toBeVisited = ArrayBuffer[Pos]()
     @tailrec
     def dijkstra(): Unit =
@@ -53,14 +53,13 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     numberOfSteps(finish._1)(finish._2)
   }
 
-  override def exampleAnswerPart1: Long = 31
-
   def listStartingPoints(map: SimpleMap[Char]): List[Pos] = {
     map.allPositions()
       .filter(map(_) == 'a')
       .filter(p => map.neighbors(p, square).count(canReach(map(p), _)) > 0)
   }
 
+  override def exampleAnswerPart1: Long = 31
   override def solvePart1(lines: List[String]): Long = {
     val map = SimpleMap[Char](lines, _.toCharArray)
     val start = find(map, 'S')
@@ -79,7 +78,7 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     map.set(finish, ('z' + 1).toChar)
 
     val startingPoints = listStartingPoints(map)
-    startingPoints.foldLeft(Int.MaxValue)((a, s) => Math.min(a, findRoute(map, s, finish)))
+    startingPoints.map(s => findRoute(map, s, finish)).min
   }
 
   def printRoute(route: List[Pos], map: SimpleMap[Char]): Unit =
