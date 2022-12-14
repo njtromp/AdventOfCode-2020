@@ -41,8 +41,6 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     caveMap
   }
 
-    override def exampleAnswerPart1: Long = 24
-
   private def animateSand(caveMap: Array[Array[Char]], sourceX: Int): Int = {
     @tailrec
     def dropGrain(pos: Pos): Pos = {
@@ -74,6 +72,7 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     dropGrains(1, (0, sourceX))
   }
 
+  override def exampleAnswerPart1: Long = 24
   override def solvePart1(lines: List[String]): Long = {
     val points = createLineSeqments(lines)
     val minX = points.map(_.minBy(_._2)).minBy(_._2)._2
@@ -83,8 +82,7 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     val sourceX = 500 - offsetX
     val lineSeqments = points.map(_.map(p => (p._1, p._2 - offsetX))).map(l => l.zip(l.tail))
     val caveMap = createCaveMap(lineSeqments, maxY + 3, maxX - minX + 6, sourceX)
-    val grainsUntilFull = animateSand(caveMap, sourceX)
-    grainsUntilFull
+    animateSand(caveMap, sourceX) - 1
   }
 
   override def exampleAnswerPart2: Long = 93
@@ -95,8 +93,7 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     val sourceX = 500
     val lineSeqments = points.map(_.map(p => (p._1, p._2))).map(l => l.zip(l.tail))
     val caveMap = createCaveMap2(lineSeqments, maxY + 3, maxX * 2, sourceX)
-    val grainsUntilFull = animateSand(caveMap, sourceX)
-    grainsUntilFull
+    animateSand(caveMap, sourceX)
   }
 
   def printCave(caveMap: Array[Array[Char]]): Unit = {
