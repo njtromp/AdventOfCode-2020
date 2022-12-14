@@ -15,17 +15,17 @@ class Day13 extends Puzzle2 with RegexParsers {
     override def leftMostValue: Int = if (nodes.isEmpty) 0 else nodes.head.leftMostValue
   }
   case class Pair(id: Int, left: Node, right: Node) {
-    def isValid(): Option[Boolean] = (left, right) match {
+    def isValid: Option[Boolean] = (left, right) match {
       case (NodeNumber(l), NodeNumber(r)) =>
         if (l < r) Some(true) else if (l > r) Some(false) else None
       case (NodeNumber(l), NodeList(rs)) =>
-        Pair(0, NodeList(List(left)), NodeList(rs)).isValid()
+        Pair(0, NodeList(List(left)), NodeList(rs)).isValid
       case (NodeList(ls), NodeNumber(r)) =>
-        Pair(0, NodeList(ls), NodeList(List(right))).isValid()
+        Pair(0, NodeList(ls), NodeList(List(right))).isValid
       case (NodeList(ls), NodeList(rs)) =>
         ls.zip(rs).foldLeft(Option.empty[Boolean])((a, e) => a match {
           case Some(f) => Some(f)
-          case None => Pair(0, e._1, e._2).isValid()
+          case None => Pair(0, e._1, e._2).isValid
         }) match {
           case Some(f) => Some(f)
           case None => if (ls.size == rs.size) None else Some(ls.size < rs.size)
@@ -45,7 +45,7 @@ class Day13 extends Puzzle2 with RegexParsers {
       .zipWithIndex
       .map(p => Pair(p._2 + 1, p._1.head, p._1.last))
       .toList
-    val validPairs = pairs.filter(p => p.isValid().get)
+    val validPairs = pairs.filter(p => p.isValid.get)
     validPairs.map(_.id).sum
   }
 
