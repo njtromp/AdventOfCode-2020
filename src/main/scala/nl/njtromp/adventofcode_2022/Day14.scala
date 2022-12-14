@@ -35,7 +35,13 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     caveMap
   }
 
-  override def exampleAnswerPart1: Long = 24
+  private def createCaveMap2(lineSements: List[List[((Int, Int), (Int, Int))]], height: Int, width: Int, sourceX: Int): Array[Array[Char]] = {
+    val caveMap = createCaveMap(lineSements, height, width, sourceX)
+    (0 until width).foreach(x => caveMap(height - 1)(x) = '#')
+    caveMap
+  }
+
+    override def exampleAnswerPart1: Long = 24
 
   private def animateSand(caveMap: Array[Array[Char]], sourceX: Int): Int = {
     @tailrec
@@ -58,14 +64,14 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     @tailrec
     def dropGrains(grainCount:Int, pos : Pos): Int = {
       val newPos = dropGrain(pos)
-      if (newPos._1 == caveMap.length - 1)
+      if (newPos._1 == caveMap.length - 1 || newPos == (0, sourceX))
         grainCount
       else {
         caveMap(newPos._1)(newPos._2) = 'o'
         dropGrains(grainCount + 1, (0, sourceX))
       }
     }
-    dropGrains(1, (0, sourceX)) - 1
+    dropGrains(1, (0, sourceX))
   }
 
   override def solvePart1(lines: List[String]): Long = {
@@ -77,14 +83,20 @@ class Day14 extends Puzzle2 with SimpleMapTypes {
     val sourceX = 500 - offsetX
     val lineSeqments = points.map(_.map(p => (p._1, p._2 - offsetX))).map(l => l.zip(l.tail))
     val caveMap = createCaveMap(lineSeqments, maxY + 3, maxX - minX + 6, sourceX)
-//    printCave(caveMap)
     val grainsUntilFull = animateSand(caveMap, sourceX)
     grainsUntilFull
   }
 
-  override def exampleAnswerPart2: Long = 0
+  override def exampleAnswerPart2: Long = 93
   override def solvePart2(lines: List[String]): Long = {
-    93
+    val points = createLineSeqments(lines)
+    val maxX = points.map(_.maxBy(_._2)).maxBy(_._2)._2
+    val maxY = points.map(_.maxBy(_._1)).maxBy(_._1)._1
+    val sourceX = 500
+    val lineSeqments = points.map(_.map(p => (p._1, p._2))).map(l => l.zip(l.tail))
+    val caveMap = createCaveMap2(lineSeqments, maxY + 3, maxX * 2, sourceX)
+    val grainsUntilFull = animateSand(caveMap, sourceX)
+    grainsUntilFull
   }
 
   def printCave(caveMap: Array[Array[Char]]): Unit = {
