@@ -19,12 +19,12 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     val source = mutable.Map[Pos, Pos]()
     val visited = mutable.Set[Pos]()
     def priority(p: Pos): Int = -map(p)
-    var toBeVisited = ArrayBuffer[Pos]()
+    val toBeVisited = ArrayBuffer[Pos]()
     @tailrec
     def dijkstra(): Unit =
       if (toBeVisited.nonEmpty) {
-        val current = toBeVisited.head
-        toBeVisited = toBeVisited.tail
+        val current = toBeVisited.minBy(priority)
+        toBeVisited -= current
         visited += current
         val length = numberOfSteps(current._1)(current._2)
         if (current == finish) {
@@ -43,7 +43,6 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
               toBeVisited += n
             }
           })
-          toBeVisited = toBeVisited.sortBy(priority)
           dijkstra()
         }
       }
