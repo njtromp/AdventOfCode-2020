@@ -1,6 +1,6 @@
 package nl.njtromp.adventofcode
 
-class IntegerRangeUtils {
+class RangeUtils {
   implicit class RangeUtils(a: Range) {
     def holds(b: Range): Boolean = a.start <= b.start && a.last >= b.last
 
