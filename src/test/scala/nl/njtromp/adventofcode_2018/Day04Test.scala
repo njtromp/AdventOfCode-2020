@@ -12,7 +12,7 @@ class Day04Test extends AnyFlatSpec {
   }
 
   "Part 2" should "solve example correct" in {
-    assert(new Day04().solvePart2(example) === -1)
+    assert(new Day04().solvePart2(example) === 4455)
   }
 
 }
