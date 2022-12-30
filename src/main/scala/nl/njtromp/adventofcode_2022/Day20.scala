@@ -79,7 +79,6 @@ class Day20 extends Puzzle2 {
     val zero = numbers.find(_.value == 0).get
     linkNumbers(numbers)
     (1 to 10).foreach(_ => encrypt(numbers, numbers.size))
-
     zero.next(1000).value + zero.next(2000).value + zero.next(3000).value
   }
 
