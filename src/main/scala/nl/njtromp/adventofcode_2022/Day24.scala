@@ -8,7 +8,9 @@ import scala.collection.mutable.ArrayBuffer
 
 class Day24 extends Puzzle2 {
   type Pos = (Int, Int)
-  case class ValleyState(progress: Int, expedition: Pos)
+  case class ValleyState(progress: Int, expedition: Pos) {
+    var distance: Int = Int.MaxValue
+  }
   case class Valley(height: Int, width: Int, left: Array[Array[Char]], right: Array[Array[Char]], up: Array[Array[Char]], down: Array[Array[Char]]) {
     private val repeating = height * width
     def apply(progress: Int, p: Pos): Char = {
@@ -19,7 +21,7 @@ class Day24 extends Puzzle2 {
         val r = right(p._1)((((p._2 - (progress % repeating)) % width) + width) % width)
         val u = up((p._1 + (progress % repeating)) % height)(p._2)
         val d = down((((p._1 - (progress % repeating)) % height) + height) % height)(p._2)
-        val combined = s"$l$r$u$d".sorted
+        val combined = s"$l$r$u$d"
         if (combined.count(_ == '.') == 4)
           '.'
         else {
@@ -76,7 +78,7 @@ class Day24 extends Puzzle2 {
   }
 
   private def findRoute(valley: Valley, progress: Int, start: Pos, finish: Pos): Int = {
-    val distance = mutable.Map[ValleyState, Int]().withDefaultValue(Int.MaxValue)
+//    val distance = mutable.Map[ValleyState, Int]().withDefaultValue(Int.MaxValue)
     val source = mutable.Map[ValleyState, ValleyState]()
     val visited = mutable.Set[ValleyState]()
     val investigate = ArrayBuffer[ValleyState]()
@@ -86,16 +88,16 @@ class Day24 extends Puzzle2 {
       if (investigate.isEmpty)
         -1
       else {
-        val current = investigate.minBy(distance)
+        val current = investigate.minBy(_.distance)
 //        println("== PROCESSING ==")
 //        valley.printValley(current)
-        if (current.expedition == finish) return distance(current)
+        if (current.expedition == finish) return current.distance
         investigate -= current
         visited += current
-        val potentialDistance = distance(current) + 1
+        val potentialDistance = current.distance + 1
         valley.neighbours(current).foreach(n => {
-          if (potentialDistance < distance(n)) {
-            distance(n) = potentialDistance
+          if (potentialDistance < n.distance) {
+            n.distance = potentialDistance
 //            println("-- CANDIDATE --")
 //            valley.printValley(n)
             source += n -> current
@@ -108,7 +110,7 @@ class Day24 extends Puzzle2 {
       }
     }
     val startState = ValleyState(progress, start)
-    distance(startState) = 0
+    startState.distance = 0
     investigate += startState
     dijkstra()
   }
