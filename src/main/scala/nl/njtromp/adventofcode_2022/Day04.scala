@@ -1,8 +1,8 @@
 package nl.njtromp.adventofcode_2022
 
-import nl.njtromp.adventofcode.Puzzle2
+import nl.njtromp.adventofcode.{Puzzle2, RangeUtils}
 
-class Day04 extends Puzzle2 {
+class Day04 extends Puzzle2 with RangeUtils {
 
   override def exampleAnswerPart1: Long = 2
 
