@@ -2,6 +2,8 @@ package nl.njtromp.adventofcode_2021
 
 import nl.njtromp.adventofcode.Puzzle
 
+import scala.collection.MapView
+
 class Day12 extends Puzzle {
   trait Cave
   case class SmallCave(name: String) extends Cave
@@ -14,7 +16,7 @@ class Day12 extends Puzzle {
     (createCave(names(0)), createCave(names(1)))
   }
 
-  def createPaths(path: List[Cave], finish: Cave, canVisitTwice: Option[Cave], visited: Set[Cave], adjLists: Map[Cave, List[Cave]]): List[List[Cave]] = {
+  def createPaths(path: List[Cave], finish: Cave, canVisitTwice: Option[Cave], visited: Set[Cave], adjLists: MapView[Cave, List[Cave]]): List[List[Cave]] = {
     if (path.head == finish)
       List(path)
     else {

@@ -86,7 +86,7 @@ class Day16 extends Puzzle {
   override def solvePart2(lines: List[String]): Long = {
     val bitEncodedMessage = lines.head.map(parseHex).map(toBinString).map("000" + _ takeRight 4).toList.mkString
     val decodedPacket = decodePacket(bitEncodedMessage)
-    decodedPacket.value.longValue()
+    decodedPacket.value.longValue
   }
 }
 
