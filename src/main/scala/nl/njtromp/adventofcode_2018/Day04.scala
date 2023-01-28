@@ -1,81 +1,112 @@
 package nl.njtromp.adventofcode_2018
 
-import nl.njtromp.adventofcode.Puzzle
+import nl.njtromp.adventofcode.Puzzle2
 
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+import scala.collection.mutable
 import scala.util.matching.Regex
 
-class Day04 extends Puzzle {
-  val NewGuard: Regex = "\\[(.+)] Guard #(\\d+) begins shift".r
-  val FallsAsleep: Regex = "\\[(.+)] falls asleep".r
-  val WakesUp: Regex = "\\[(.+)] wakes up".r
+class Day04 extends Puzzle2 {
+  private val NEW_GUARD: Regex = "\\[(.+)] Guard #(\\d+) begins shift".r
+  private val FALLS_ASLEEP: Regex = "\\[(.+)] falls asleep".r
+  private val WAKES_UP: Regex = "\\[(.+)] wakes up".r
 
-  type GuardId = Int
-  sealed abstract class Guard {
-    def dateTime(): LocalDateTime;
+  sealed abstract class Event {
+    def dateTime: LocalDateTime
   }
-  case class Start(id: GuardId, start: LocalDateTime) extends Guard {
-    override def dateTime(): LocalDateTime = start
+  case class Start(id: Int, start: LocalDateTime) extends Event {
+    override def dateTime: LocalDateTime = start
   }
-  case class Asleep(asleep: LocalDateTime) extends Guard {
-    override def dateTime(): LocalDateTime = asleep
+  case class Asleep(asleep: LocalDateTime) extends Event {
+    override def dateTime: LocalDateTime = asleep
   }
-  case class Awake(awake: LocalDateTime) extends Guard {
-    override def dateTime(): LocalDateTime = awake
+  case class Awake(awake: LocalDateTime) extends Event {
+    override def dateTime: LocalDateTime = awake
   }
 
-  def mergeMaps[K, V](map1: Map[K, V], map2: Map[K, V], merge: (V, V) => V): Map[K, V] =
-    (map1.keySet ++ map2.keySet).map { key=> (map1.contains(key), map2.contains(key)) match {
-      case (true, false) => (key -> map1(key))
-      case (false, true) => (key -> map2(key))
-      case (true, true) => (key -> merge(map1(key), map2(key)))
-      case (false, flase) => (key -> map1(key))
-    }}.toMap
+  case class Guard(id: Int) {
+    val sleeping: mutable.Map[LocalDate, Array[Int]] = mutable.Map[LocalDate, Array[Int]]()
+    var startedSleeping: LocalDateTime = null
+    def wakeUp(time: LocalDateTime): Unit = {
+      for (minute <- startedSleeping.getMinute until time.getMinute) {
+        sleeping(startedSleeping.toLocalDate)(minute) = 1
+      }
+      startedSleeping = null
+    }
+    def sleep(time: LocalDateTime): Unit = {
+      if (!sleeping.contains(time.toLocalDate))
+        sleeping(time.toLocalDate) = new Array[Int](60)
+      startedSleeping = time
+    }
+    def totalSleepingMinutes: Int = sleeping.values.map(_.count(_ == 1)).sum
+    def sleepiestMinute: Int = (0 until 60).map(m => (m, shiftsSleeping(m))).maxBy(_._2)._1
+    def shiftsSleeping(minute: Int): Int = sleeping.values.count(_(minute) == 1)
+  }
 
-  override def solvePart1(lines: List[String]): Long = {
+  private def parseEvents(lines: List[String]): List[Event] = {
     val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    val events: List[Guard] = lines.sorted.map({
-        case NewGuard(dateTime, id) => Start(id.toInt, LocalDateTime.parse(dateTime, dateTimeFormat))
-        case FallsAsleep(dateTime) => Asleep(LocalDateTime.parse(dateTime, dateTimeFormat))
-        case WakesUp(dateTime) => Awake(LocalDateTime.parse(dateTime, dateTimeFormat))
+    lines.sorted.map({
+      case NEW_GUARD(dateTime, id) => Start(id.toInt, LocalDateTime.parse(dateTime, dateTimeFormat))
+      case FALLS_ASLEEP(dateTime) => Asleep(LocalDateTime.parse(dateTime, dateTimeFormat))
+      case WAKES_UP(dateTime) => Awake(LocalDateTime.parse(dateTime, dateTimeFormat))
     })
-    val NO_DATE_TIME: Option[LocalDateTime] = None
-    val sleepingData = events.foldLeft((Map.empty[GuardId, Map[LocalDate, Set[Int]]], 0, NO_DATE_TIME))((gd, e) => e match {
-      // New guard starting
-      case Start(id, dateTime) =>
-        // Check if another guard is currently asleep
-        gd._3 match {
-          // There is no other guard sleeping
-          case None => if (gd._1.contains(id)) {
-              // We already know this guard
-              (gd._1, id, NO_DATE_TIME)
-            } else {
-              // A completely new guard, lets register him
-              val dutyDate = if (dateTime.getHour != 0) dateTime.plusHours(1).toLocalDate else dateTime.toLocalDate
-              (gd._1 ++ Map(id -> Map.empty[LocalDate, Set[Int]]), id, NO_DATE_TIME)
-            }
-          // There is an other guard sleeping
-          case Some(sleepStarted) => {
-            (gd._1 ++ Map(gd._2 -> (gd._1(gd._2) ++ Map(dateTime.toLocalDate -> (sleepStarted.getMinute until dateTime.getMinute).toSet))), gd._2, NO_DATE_TIME)
-          }
-        }
-      case Asleep(dateTime) =>
-        (gd._1, gd._2, Some(dateTime))
-      case Awake(dateTime) =>
-        val newMinutes = Map(dateTime.toLocalDate -> (gd._3.get.getMinute until dateTime.getMinute).toSet)
-        val bla = gd._1(gd._2) ++ newMinutes
-        (gd._1 ++ Map(gd._2 -> bla), gd._2, NO_DATE_TIME)
-    })._1
-    val guardId = sleepingData.maxBy(g => g._2.values.map(_.size).sum)._1
-    sleepingData(guardId).foreach(x => println(s"${x._1} -> ${x._2.toList.sorted}"))
-    val sleepiestMinutes = (0 to 59).map(d => d -> sleepingData(guardId).values.count(_.contains(d)))
-    val sleepingMinute = sleepiestMinutes.maxBy(_._2)._1
-    guardId * sleepingMinute + 1
   }
 
-  override def solvePart2(lines: List[String]): Long = ???
+  private def createGuards(events: List[Event]): Map[Int, Guard] = {
+    events.filter({
+      case _: Start => true
+      case _ => false
+    })
+      .map({case s: Start => (s.id, Guard(s.id))})
+      .toMap
+  }
+
+  private def registerShifts(events: List[Event], guards: Map[Int, Guard]): Unit = {
+    events.foldLeft(Option.empty[Guard])((currentGuard, event) => event match {
+      case start: Start =>
+        currentGuard match {
+          case Some(g) =>
+            if (g.startedSleeping != null) {
+              if (start.dateTime == g.startedSleeping.toLocalDate)
+                g.wakeUp(start.dateTime)
+              else
+                g.wakeUp(start.dateTime.withMinute(59))
+            }
+            Some(guards(start.id))
+          case None =>
+            Some(guards(start.id))
+        }
+      case wakeup: Awake =>
+        currentGuard match {
+          case Some(g) => g.wakeUp(wakeup.dateTime)
+        }
+        currentGuard
+      case fallAsleep: Asleep =>
+        currentGuard match {
+          case Some(g) => g.sleep(fallAsleep.dateTime)
+        }
+        currentGuard
+    })
+  }
+
+  override def exampleAnswerPart1: Long = 240
+  override def solvePart1(lines: List[String]): Long = {
+    val events = parseEvents(lines)
+    val guards = createGuards(events)
+    registerShifts(events, guards)
+    val sleepyGuard = guards.values.toList.maxBy(_.totalSleepingMinutes)
+    sleepyGuard.id * sleepyGuard.sleepiestMinute
+  }
+
+  override def exampleAnswerPart2: Long = 4455
+  override def solvePart2(lines: List[String]): Long = {
+    val events = parseEvents(lines)
+    val guards = createGuards(events)
+    registerShifts(events, guards)
+    val sleepyGuard = guards.values.maxBy(g => g.shiftsSleeping(g.sleepiestMinute))
+    sleepyGuard.id * sleepyGuard.sleepiestMinute
+  }
 }
 
 object Day04 extends App {
