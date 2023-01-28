@@ -32,13 +32,13 @@ class Day12(days1: Long, days2: Long) extends Puzzle2 {
   override def solvePart2(lines: List[String]): Long = {
     val first1000 = evolve(lines.head.split(": ")(1).zipWithIndex.filter(_._1 == '#').map(_._2.toLong).toSet,
       lines.tail.map(r => (r.split(" => ")(0).zipWithIndex.filter(_._1 == '#').map(_._2.toLong - 2).toSet, r.split(" => ")(1) == "#")).toMap,
-      1000L
+      150L
     )
     val perDay = evolve(lines.head.split(": ")(1).zipWithIndex.filter(_._1 == '#').map(_._2.toLong).toSet,
       lines.tail.map(r => (r.split(" => ")(0).zipWithIndex.filter(_._1 == '#').map(_._2.toLong - 2).toSet, r.split(" => ")(1) == "#")).toMap,
-      1001L
+      151L
     ) - first1000
-    first1000 + (days2 - 1000L) * perDay
+    first1000 + (days2 - 150L) * perDay
   }
 
 }
