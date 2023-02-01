@@ -2,6 +2,8 @@ package nl.njtromp.adventofcode_2022
 
 import nl.njtromp.adventofcode.Puzzle2
 
+import scala.collection.mutable
+
 class Day19 extends Puzzle2 {
   private val BLUEPRINT = """Blueprint (\d+): Each ore robot costs (\d+) ore. Each clay robot costs (\d+) ore. Each obsidian robot costs (\d+) ore and (\d+) clay. Each geode robot costs (\d+) ore and (\d+) obsidian.""".r
   // Indexes into stock and robot arrays
@@ -21,6 +23,8 @@ class Day19 extends Puzzle2 {
     maxRobots(DUMMY) = Int.MaxValue
     maxRobots(GEODE) = Int.MaxValue
   }
+
+  private case class State(minute: Int, robots: (Int, Int, Int, Int), stock: (Int, Int, Int, Int))
 
   private def readBlueprints(lines: List[String]): List[Blueprint] = {
     val dummy = Robot("Dummy", DUMMY, Array(0, 0, 0, 0, 0))
@@ -50,6 +54,8 @@ class Day19 extends Puzzle2 {
     var noObsidianPossible = 0L
     var cantImprove = 0L
     var overproduction = 0L
+    var knownStates = 0L
+    val states = mutable.Set.empty[State]
     def runMine(minute: Int, robots: Array[Int], stock: Array[Int]): Unit = {
       if (minute > minutes) {
         if (minedGeodes < stock(GEODE)) {
@@ -58,6 +64,12 @@ class Day19 extends Puzzle2 {
           bestStock = stock.clone()
         }
       } else {
+        val state = State(minute, (robots(ORE), robots(CLAY), robots(OBSIDIAN), robots(GEODE)), (stock(ORE), stock(CLAY), stock(OBSIDIAN), stock(GEODE)))
+        if (states.contains(state)) {
+          knownStates += 1L
+          return
+        }
+        states += state
         // Bail out if there is not enough time to mine
         if (minute > needGeodeRobot && robots(OBSIDIAN) == 0) {
           noGeodePossible += 1L
@@ -98,6 +110,7 @@ class Day19 extends Puzzle2 {
     println(s"Pruning caused by no Obsidian possible $noObsidianPossible")
     println(s"Pruning caused by not possible to improve $cantImprove")
     println(s"Pruning caused by overproduction $overproduction")
+    println(s"Pruning caused by known states $knownStates")
     println(s"Blueprint ${blueprint.id} constructed the following robots ${constructionOrder.toList.drop(1)} to mine ${bestStock.toList.drop(1)}.")
     minedGeodes * blueprint.id
   }
