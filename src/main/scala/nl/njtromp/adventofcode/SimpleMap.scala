@@ -28,7 +28,7 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   val height: Int = elems.length
   val width: Int = elems(0).length
   def apply(p: Pos): A = elems(p._1)(p._2)
-  def set(p: Pos, v: A): Unit = elems(p._1)(p._2) = v
+  def update(p: Pos, v: A): Unit = elems(p._1)(p._2) = v
   def isOnMap(p: Pos): Boolean = elems.indices.contains(p._1) && elems(0).indices.contains(p._2)
   def row(y: Int): List[A] = elems(y).toList
   def column(x: Int): List[A] = elems(0).indices.map(elems(_)(x)).toList

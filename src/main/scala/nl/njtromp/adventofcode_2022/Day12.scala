@@ -63,8 +63,8 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     val map = SimpleMap[Char](lines, _.toCharArray)
     val start = find(map, 'S')
     val finish = find(map, 'E')
-    map.set(start, 'a')
-    map.set(finish, ('z' + 1).toChar)
+    map(start)  = 'a'
+    map(finish) = ('z' + 1).toChar
     findRoute(map, start, finish)
   }
 
@@ -73,8 +73,8 @@ class Day12 extends Puzzle2 with SimpleMapTypes {
     val map = SimpleMap[Char](lines, _.toCharArray)
     val start = find(map, 'S')
     val finish = find(map, 'E')
-    map.set(start, 'a')
-    map.set(finish, ('z' + 1).toChar)
+    map(start) = 'a'
+    map(finish) = ('z' + 1).toChar
 
     val startingPoints = listStartingPoints(map)
     startingPoints.map(s => findRoute(map, s, finish)).min
