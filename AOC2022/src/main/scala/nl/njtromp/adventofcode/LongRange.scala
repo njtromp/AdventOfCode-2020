@@ -5,6 +5,8 @@ class LongRange(val start: Long, val last: Long) {
 
   def contains(n: Long): Boolean = start <= n && n <= last
 
+  def contains(r: LongRange): Boolean = start <= r.start && last >= r.last
+
   def isOverlapping(b: LongRange): Boolean = contains(b.start) || contains(b.last) || b.contains(start) || b.contains(last)
 
   def isAdjacent(b: LongRange): Boolean = !isOverlapping(b) && (last + 1 == b.start || b.last == start)
