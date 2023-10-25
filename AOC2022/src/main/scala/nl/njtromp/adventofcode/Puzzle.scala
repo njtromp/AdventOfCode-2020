@@ -1,6 +1,8 @@
 package nl.njtromp.adventofcode
-
 import java.util.concurrent.TimeUnit
+import scala.collection.generic.IsIterable
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
 trait Puzzle[T] {
@@ -35,6 +37,18 @@ trait Puzzle[T] {
       Nil
     else
       lines.takeWhile(_.nonEmpty) :: groupByEmptyLine(lines.dropWhile(_.nonEmpty).dropWhile(_.isEmpty))
+
+  extension[Repr] (repr: Repr)(using itererable: IsIterable[Repr])
+    def takeUntil(p: itererable.A => Boolean): List[itererable.A] =
+      val iter = itererable(repr).iterator
+      val b = new ListBuffer[itererable.A]
+      var continue = true
+      while (iter.hasNext && continue) {
+        val value = iter.next
+        b += value
+        continue = !p(value)
+      }
+      b.toList
 
   def time[R](block: => R): R = {
     val start = System.nanoTime()
