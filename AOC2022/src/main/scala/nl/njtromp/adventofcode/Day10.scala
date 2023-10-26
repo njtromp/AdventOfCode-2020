@@ -21,21 +21,18 @@ class Day10 extends Puzzle[Long] {
     }
     values.toArray
 
-  private def printTimeseries(xs: Array[Long]): Unit =
-    xs.zipWithIndex.foreach(x => println(s"${x._2} ${x._1}"))
-
   override def exampleAnswerPart1: Long = 13140
   override def solvePart1(lines: List[String]): Long = {
-    val timeseriesX = executeProgram(lines)
-    (20 to 220 by 40).map(t => t * timeseriesX(t)).sum
+    val xs = executeProgram(lines)
+    (20 to 220 by 40).map(t => t * xs(t)).sum
   }
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long = {
     println("=" * 40)
-    val timeseriesX = executeProgram(lines)
+    val xs = executeProgram(lines)
     (1 to 201 by 40).foreach(offset =>
-      (0 until 40).foreach(pixel => print(if (Math.abs(timeseriesX(offset + pixel) - pixel) <= 1) '#' else '.'))
+      (0 until 40).foreach(pixel => print(if (Math.abs(xs(offset + pixel) - pixel) <= 1) '#' else '.'))
       println
     )
     println("BRJLFULP")
