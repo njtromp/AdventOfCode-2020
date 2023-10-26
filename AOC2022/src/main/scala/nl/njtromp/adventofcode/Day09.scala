@@ -49,11 +49,17 @@ class Day09 extends Puzzle[Long] {
       }
     moveRope((0, 0), (0, 0), lines)
 
-  override def exampleAnswerPart1: Long = 13
+  override def exampleAnswerPart1: Long = 88
   override def solvePart1(lines: List[String]): Long = {
     val tailPositions = (0, 0) :: moveRope(lines)
     tailPositions.toSet.size
   }
+
+  private def clean(pos: List[Pos]): List[Pos] =
+    pos match {
+      case Nil => Nil
+      case head :: tail => head :: clean(tail.dropWhile(_ == head))
+    }
 
   private def follow(head: Pos, tail: Pos): Pos =
     if (head == tail || !tailNeedsToMove(head, tail))
@@ -74,11 +80,11 @@ class Day09 extends Puzzle[Long] {
     if (knots == 0)
       headPositions
     else
-      follow(follow(headPositions, (0, 0)), knots - 1)
+      follow(clean(follow(headPositions, (0, 0))), knots - 1)
 
   override def exampleAnswerPart2: Long = 36
   override def solvePart2(lines: List[String]): Long = {
-    val tailPositions = follow((0, 0) :: moveRope(lines), 9)
+    val tailPositions = follow(clean((0, 0) :: moveRope(lines)), 8)
     tailPositions.toSet.size
   }
 
