@@ -35,7 +35,7 @@ class Day11 extends Puzzle[Long] {
   }
 
   object Monkey {
-    var safety: Long = 3L
+    var safety: Long = 0L
     var limiter: Long = 0L
   }
 
@@ -63,22 +63,26 @@ class Day11 extends Puzzle[Long] {
   override def exampleAnswerPart1: Long = 10605
   override def solvePart1(lines: List[String]): Long = {
     val monkeys = lines.filter(_.nonEmpty).grouped(6).map(createMonkey).toArray
+    // Limit the worry factor
+    Monkey.safety = 3L
+    // By determining the product of all the dividers we can keep the worry factor within limits
     Monkey.limiter = monkeys.map(_.divider).product
-    val inspections = monkeys.map(_ => 0L)
+    val inspections = Array.fill(monkeys.length)(0L)
     (1 to 20).foreach(_ => round(monkeys, inspections))
-    val sortedInspections = inspections.sorted.reverse
-    sortedInspections.take(2).product
+    inspections.sorted.reverse.take(2).product
   }
 
   override def exampleAnswerPart2: Long = 2713310158L
   override def solvePart2(lines: List[String]): Long = {
     val monkeys = lines.filter(_.nonEmpty).grouped(6).map(createMonkey).toArray
+    // Don't limit the worry factor
     Monkey.safety = 1L
+    // By determining the product of all the dividers we can keep the worry factor within limits without
+    // risking a overflow or needing BigInt
     Monkey.limiter = monkeys.map(_.divider).product
-    val inspections = monkeys.map(_ => 0L)
+    val inspections = Array.fill(monkeys.length)(0L)
     (1 to 10000).foreach(_ => round(monkeys, inspections))
-    val sortedInspections = inspections.sorted.reverse
-    sortedInspections.take(2).product
+    inspections.sorted.reverse.take(2).product
   }
 
 }
