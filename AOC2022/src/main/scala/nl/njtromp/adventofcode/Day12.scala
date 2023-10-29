@@ -20,8 +20,8 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
   def listStartingPoints(map: SimpleMap[Char]): List[Pos] = {
     map.allPositions()
       .filter(map(_) == 'a')
-      .filter(_._2 == 0)
-      .filter(p => map.neighbors(p, square).count(_ == 'b') > 0)
+      .filter(_._2 == 0) // Shortcut after looking at the map. Needs to be on the first column.
+      .filter(p => map.neighbors(p, square).count(_ == 'b') > 0) // Ensure one og its neighbors is a 'b'.
   }
 
   override def exampleAnswerPart2: Long = 29
@@ -31,8 +31,11 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     val finish = map.find('E').head
     map(start) = 'a'
     map(finish) = 'z'
-    val startingPoints = listStartingPoints(map)
-    val bestStartPath = startingPoints.map(s => Dijkstra.findRoute(map, canReach, p => -map(p), s, finish)).filter(_.nonEmpty).minBy(_.size)
+    // Find the best alternative starting point
+    val bestStartPath = listStartingPoints(map)
+      .map(s => Dijkstra.findRoute(map, canReach, p => -map(p), s, finish))
+      .filter(_.nonEmpty)
+      .minBy(_.size)
     bestStartPath.size - 1
   }
 
