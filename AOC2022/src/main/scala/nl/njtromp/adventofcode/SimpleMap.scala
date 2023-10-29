@@ -46,6 +46,8 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
       .filter(p => isOnMap(p)).toList
   def allNeighbors(p: Pos, directions: List[Delta]): List[A] =
       allNeighborPositions(p, directions).map(this(_))
+  def find(item: A): List[Pos] =
+    allPositions().filter(p => this(p) == item)
 }
 
 object SimpleMap {
