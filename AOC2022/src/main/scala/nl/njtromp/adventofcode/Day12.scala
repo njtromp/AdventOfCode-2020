@@ -6,36 +6,34 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
 
   private def canReach(s: Char, d: Char): Boolean = d - s <= 1
 
-  def listStartingPoints(map: SimpleMap[Char]): List[Pos] = {
-    map.allPositions()
-      .filter(map(_) == 'a')
-      .filter(p => map.neighbors(p, square).count(canReach(map(p), _)) > 0)
-  }
-
   override def exampleAnswerPart1: Long = 31
   override def solvePart1(lines: List[String]): Long = {
     val map = SimpleMap[Char](lines, _.toCharArray)
     val start = map.find('S').head
     val finish = map.find('E').head
     map(start) = 'a'
-    map(finish) = ('z' + 1).toChar
+    map(finish) = 'z'
     val path = Dijkstra.findRoute(map, canReach, p => -map(p), start, finish)
-    Dijkstra.printPath(map, path)
-    println("Solution for day 1 should be 462!!!!")
     path.size - 1 // We need the number of steps, so that is one less then the positions
+  }
+
+  def listStartingPoints(map: SimpleMap[Char]): List[Pos] = {
+    map.allPositions()
+      .filter(map(_) == 'a')
+      .filter(_._2 == 0)
+      .filter(p => map.neighbors(p, square).count(_ == 'b') > 0)
   }
 
   override def exampleAnswerPart2: Long = 29
   override def solvePart2(lines: List[String]): Long = {
-//    val map = SimpleMap[Char](lines, _.toCharArray)
-//    val start = map.find('S').head
-//    val finish = map.find('E').head
-//    map(start) = 'a'
-//    map(finish) = ('z' + 1).toChar
-//
-//    val startingPoints = listStartingPoints(map)
-//    startingPoints.map(s => Dijkstra.findRoute(map, canReach, p => -map(p), s, finish)).min
-    -1
+    val map = SimpleMap[Char](lines, _.toCharArray)
+    val start = map.find('S').head
+    val finish = map.find('E').head
+    map(start) = 'a'
+    map(finish) = 'z'
+    val startingPoints = listStartingPoints(map)
+    val bestStartPath = startingPoints.map(s => Dijkstra.findRoute(map, canReach, p => -map(p), s, finish)).filter(_.nonEmpty).minBy(_.size)
+    bestStartPath.size - 1
   }
 
 }

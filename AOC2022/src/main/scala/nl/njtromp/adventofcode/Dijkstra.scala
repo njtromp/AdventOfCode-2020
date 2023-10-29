@@ -9,7 +9,6 @@ import nl.njtromp.adventofcode.{SimpleMap, SimpleMapTypes}
 object Dijkstra extends SimpleMapTypes {
 
   def findRoute[A](map: SimpleMap[A], canReach: (A, A) => Boolean, priority: Pos => Int, start: Pos, finish: Pos): List[Pos] =
-    var bestLength: Int = Int.MaxValue
     val numberOfSteps = Array.fill(map.height, map.width)(Int.MaxValue)
     val source = mutable.Map[Pos, Pos]()
     val visited = mutable.Set[Pos]()
@@ -31,30 +30,28 @@ object Dijkstra extends SimpleMapTypes {
         toBeVisited -= current
         visited += current
         val length = numberOfSteps(current._1)(current._2)
-        if (current == finish) {
-          if (length < bestLength)
-            bestLength = length
-        } else {
-          val neighbors = map.neighborPositions(current, square)
-            .filter(p => canReach(map(current), map(p)))
-          neighbors.foreach(n => {
-            if (length + 1 < numberOfSteps(n._1)(n._2))
-              numberOfSteps(n._1)(n._2) = length + 1
-              source += n -> current
-            if (!visited.contains(n) && !toBeVisited.contains(n))
-              toBeVisited += n
-          })
-          dijkstra()
-        }
+        val neighbors = map.neighborPositions(current, square)
+          .filter(p => canReach(map(current), map(p)))
+        neighbors.foreach(n => {
+          if (length + 1 < numberOfSteps(n._1)(n._2))
+            numberOfSteps(n._1)(n._2) = length + 1
+            source += n -> current
+          if (!visited.contains(n) && !toBeVisited.contains(n))
+            toBeVisited += n
+        })
+        dijkstra()
     numberOfSteps(start._1)(start._2) = 0
     toBeVisited += start
     dijkstra()
-    constructPath()
+    if (source.contains(finish))
+      constructPath()
+    else
+      Nil
 
   def printPath[A](map: SimpleMap[A], path: List[Pos]): Unit =
     def decodeMove(move: List[List[Pos]]): Char =
       move match {
-        case m :: Nil => val delta: Delta = (m.last._1 - m.head._1, m.last._2 - m.head._2)
+        case m :: Nil => val delta = (m.last._1 - m.head._1, m.last._2 - m.head._2)
           if (delta == up)
             '^'
           else if (delta == down)
@@ -69,10 +66,8 @@ object Dijkstra extends SimpleMapTypes {
     (0 until map.height).foreach(y =>
       (0 until map.width).foreach(x =>
         val p = (y, x)
-        if (ps.contains(p)) {
-          val s = s"${BOLD}${WHITE}${BLACK_B}${map(p)}${RESET}"
-          print(s)
-        }
+        if (ps.contains(p))
+          print(s"${BOLD}${WHITE}${BLACK_B}${map(p)}${RESET}")
         else
           print(map(p))
       )
