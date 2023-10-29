@@ -52,14 +52,12 @@ object Dijkstra extends SimpleMapTypes {
     def decodeMove(move: List[List[Pos]]): Char =
       move match {
         case m :: Nil => val delta = (m.last._1 - m.head._1, m.last._2 - m.head._2)
-          if (delta == up)
-            '^'
-          else if (delta == down)
-            'v'
-          else if (delta == right)
-            '>'
-          else
-            '<'
+          delta match {
+            case up => '^'
+            case down => 'v'
+            case left => '<'
+            case right => '>'
+          }
       }
     println
     val ps = path.toSet
