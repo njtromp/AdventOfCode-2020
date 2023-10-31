@@ -13,15 +13,18 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     val finish = map.find('E').head
     map(start) = 'a'
     map(finish) = 'z'
-    val path = Dijkstra.findRoute(map, canReach, p => -map(p), start, finish)
+    val path = Dijkstra.findRoute(map, canReach, start, finish)
+    map(start) = 'S'
+    map(finish) = 'E'
+//    Dijkstra.printPath(map, path, p => Math.abs(20 + (p - 'a') * 200 / ('z' -'a')))
     path.size - 1 // We need the number of steps, so that is one less then the positions
   }
 
-  def listStartingPoints(map: SimpleMap[Char]): List[Pos] = {
+  private def alternateStartingPoints(map: SimpleMap[Char]): List[Pos] = {
     map.allPositions()
       .filter(map(_) == 'a')
       .filter(_._2 == 0) // Shortcut after looking at the map. Needs to be on the first column.
-      .filter(p => map.neighbors(p, square).count(_ == 'b') > 0) // Ensure one og its neighbors is a 'b'.
+      .filter(map.neighbors(_, square).count(_ == 'b') > 0) // Ensure one of its neighbors is a 'b'.
   }
 
   override def exampleAnswerPart2: Long = 29
@@ -32,11 +35,13 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     map(start) = 'a'
     map(finish) = 'z'
     // Find the best alternative starting point
-    val bestStartPath = listStartingPoints(map)
-      .map(s => Dijkstra.findRoute(map, canReach, p => -map(p), s, finish))
-      .filter(_.nonEmpty)
+    val path = alternateStartingPoints(map)
+      .map(Dijkstra.findRoute(map, canReach, _, finish))
       .minBy(_.size)
-    bestStartPath.size - 1
+    map(start) = 'S'
+    map(finish) = 'E'
+//    Dijkstra.printPath(map, path, p => Math.abs(20 + (p - 'a') * 200 / ('z' - 'a')))
+    path.size - 1
   }
 
 }
