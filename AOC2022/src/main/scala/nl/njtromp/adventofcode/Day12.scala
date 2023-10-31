@@ -2,7 +2,7 @@ package nl.njtromp.adventofcode
 
 import nl.njtromp.adventofcode.{SimpleMap, SimpleMapTypes}
 
-class Day12 extends Puzzle[Long] with SimpleMapTypes {
+class Day12 extends Puzzle[Long] with RouteFinding {
 
   private def canReach(s: Char, d: Char): Boolean = d - s <= 1
 
@@ -13,7 +13,7 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     val finish = map.find('E').head
     map(start) = 'a'
     map(finish) = 'z'
-    val path = RouteFinding.dijkstra(map, canReach, start, finish)
+    val path = dijkstra(map, canReach, start, finish)
     map(start) = 'S'
     map(finish) = 'E'
 //    RouteFinding.printPath(map, path)
@@ -37,7 +37,7 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     map(finish) = 'z'
     // Find the best alternative starting point
     val path = alternateStartingPoints(map)
-      .map(RouteFinding.dijkstra(map, canReach, _, finish))
+      .map(dijkstra(map, canReach, _, finish))
       .minBy(_.size)
     map(start) = 'S'
     map(finish) = 'E'

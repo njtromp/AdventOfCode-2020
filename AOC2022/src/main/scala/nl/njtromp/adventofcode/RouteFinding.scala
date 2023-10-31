@@ -5,7 +5,7 @@ import io.AnsiColor._
 
 import nl.njtromp.adventofcode.{SimpleMap, SimpleMapTypes}
 
-object RouteFinding extends SimpleMapTypes {
+trait RouteFinding extends SimpleMapTypes {
 
   def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
     val distanceToStart = mutable.Map.empty[Pos, Int].withDefaultValue(Int.MaxValue)
@@ -47,9 +47,9 @@ object RouteFinding extends SimpleMapTypes {
       (0 until map.width).foreach(x =>
         val p = (y, x)
         if (ps.contains(p))
-          print(s"\u001B[48;5;${colorMapping(map(p))}m${BLACK}${map(p)}${RESET}")
+          print(s"\u001B[48;5;${colorMapping(map(p))}m$BLACK${map(p)}$RESET")
         else
-          print(s"\u001B[38;5;${colorMapping(map(p))}m${map(p)}${RESET}")
+          print(s"\u001B[38;5;${colorMapping(map(p))}m${map(p)}$RESET")
       )
       println
     )
