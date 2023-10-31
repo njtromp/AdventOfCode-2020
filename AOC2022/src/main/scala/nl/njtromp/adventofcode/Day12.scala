@@ -13,10 +13,11 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     val finish = map.find('E').head
     map(start) = 'a'
     map(finish) = 'z'
-    val path = Dijkstra.findRoute(map, canReach, start, finish)
+    val path = RouteFinding.dijkstra(map, canReach, start, finish)
     map(start) = 'S'
     map(finish) = 'E'
-//    Dijkstra.printPath(map, path, p => Math.abs(20 + (p - 'a') * 200 / ('z' -'a')))
+//    RouteFinding.printPath(map, path)
+//    RouteFinding.printColoredPath(map, path, p => Math.abs(20 + (p - 'a') * 200 / ('z' -'a')))
     path.size - 1 // We need the number of steps, so that is one less then the positions
   }
 
@@ -36,11 +37,12 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     map(finish) = 'z'
     // Find the best alternative starting point
     val path = alternateStartingPoints(map)
-      .map(Dijkstra.findRoute(map, canReach, _, finish))
+      .map(RouteFinding.dijkstra(map, canReach, _, finish))
       .minBy(_.size)
     map(start) = 'S'
     map(finish) = 'E'
-//    Dijkstra.printPath(map, path, p => Math.abs(20 + (p - 'a') * 200 / ('z' - 'a')))
+//    RouteFinding.printPath(map, path)
+//    RouteFinding.printColoredPath(map, path, p => Math.abs(20 + (p - 'a') * 200 / ('z' - 'a')))
     path.size - 1
   }
 

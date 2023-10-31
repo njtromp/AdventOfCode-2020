@@ -5,9 +5,9 @@ import io.AnsiColor._
 
 import nl.njtromp.adventofcode.{SimpleMap, SimpleMapTypes}
 
-object Dijkstra extends SimpleMapTypes {
+object RouteFinding extends SimpleMapTypes {
 
-  def findRoute[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
+  def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
     val distanceToStart = mutable.Map.empty[Pos, Int].withDefaultValue(Int.MaxValue)
     val source = mutable.Map.empty[Pos, Pos]
     val toBeVisited = mutable.PriorityQueue.empty[Pos](Ordering.by(p => -distanceToStart(p)))
@@ -40,17 +40,7 @@ object Dijkstra extends SimpleMapTypes {
         })
     Nil
 
-  def printPath[A](map: SimpleMap[A], path: List[Pos], colorMapping: A => Int): Unit =
-    def decodeMove(move: List[List[Pos]]): Char =
-      move match {
-        case m :: Nil => val delta = (m.last._1 - m.head._1, m.last._2 - m.head._2)
-          delta match {
-            case up => '^'
-            case down => 'v'
-            case left => '<'
-            case right => '>'
-          }
-      }
+  def printColoredPath[A](map: SimpleMap[A], path: List[Pos], colorMapping: A => Int): Unit =
     println
     val ps = path.toSet
     (0 until map.height).foreach(y =>
@@ -60,6 +50,30 @@ object Dijkstra extends SimpleMapTypes {
           print(s"\u001B[48;5;${colorMapping(map(p))}m${BLACK}${map(p)}${RESET}")
         else
           print(s"\u001B[38;5;${colorMapping(map(p))}m${map(p)}${RESET}")
+      )
+      println
+    )
+
+  def printPath[A](map: SimpleMap[A], path: List[Pos]): Unit =
+    def decodeMove(move: List[Pos]): Char =
+        val delta: Delta = (move.last._1 - move.head._1, move.last._2 - move.head._2)
+        if (delta == up)
+          '^'
+        else if (delta == down)
+          'v'
+        else if (delta == left)
+          '<'
+        else
+          '>'
+    println
+    val ps = path.sliding(2).toList
+    (0 until map.height).foreach(y =>
+      (0 until map.width).foreach(x =>
+        val moves = ps.filter(_.head == (y, x))
+        if (moves.nonEmpty)
+          print(decodeMove(moves.head))
+        else
+          print('.')
       )
       println
     )
