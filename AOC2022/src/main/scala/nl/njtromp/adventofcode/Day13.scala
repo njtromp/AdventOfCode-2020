@@ -35,9 +35,13 @@ class Day13 extends Puzzle[Long] with Trees {
     packetGroups.zipWithIndex.filter(p => correctOrder(p._1).get).map(_._2 + 1).sum
   }
 
-  override def exampleAnswerPart2: Long = 0
+  override def exampleAnswerPart2: Long = 140
   override def solvePart2(lines: List[String]): Long = {
-    -1
+    val marker2 = "[[2]]"
+    val marker6 = "[[6]]"
+    val packetGroups = (marker2 :: marker6 :: lines.filter(_.nonEmpty)).map(reconstructInOrder)
+    packetGroups.sortWith((l, r) => correctOrder(l, r).get)
+      .zipWithIndex.filter(p => p._1.toString == marker2 || p._1.toString == marker6).map(_._2 + 1).product
   }
 
 }
