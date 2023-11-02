@@ -12,9 +12,9 @@ trait Trees {
 
   def createNodeList(children: List[Node]): NodeList
 
-  def reconstructInOrder(line: String): Node = reconstructInOrder(line, '[', ']', ',')
+  def reconstructInOrder(line: String): Node = fromInOrder(line, '[', ']', ',')
 
-  def reconstructInOrder(line: String, start: Char, finish: Char, separator: Char): Node =
+  def fromInOrder(line: String, start: Char, finish: Char, separator: Char): Node =
     var stack = List.empty[mutable.ListBuffer[Node]]
     @tailrec
     def reconstruct(line: String): Node =

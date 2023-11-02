@@ -1,7 +1,5 @@
 package nl.njtromp.adventofcode
 
-import scala.annotation.tailrec
-
 class Day13 extends Puzzle[Long] with Trees {
   case class PacketValue(value: Int) extends Leaf {
     override def toString: String = value.toString
