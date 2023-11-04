@@ -6,21 +6,33 @@ class Day15 extends Puzzle[Long] {
   private case class SensorReading(sX: Long, sY: Long, bX: Long, bY: Long) {
     val range: Long = distance(sX - bX, sY - bY)
     def distance(deltaX: Long, deltaY: Long): Long = Math.abs(deltaX) + Math.abs(deltaY)
-    def beaconFree(y: Long): List[Long] =
-      if (Math.abs(y - sY) > range)
-        Nil
+    def rangeAt(y: Long): Option[LongRange] =
+      val deltaY = Math.abs(y - sY)
+      if (deltaY <= range)
+        Some(LongRange(sX - (range - deltaY), sX + (range - deltaY)))
       else
-        (sX - range to sX + range).filter(x => distance(x - sX, y - sY) <= range).toList
+        None
+  }
+
+  private def combine(ranges: List[LongRange]): List[LongRange] = ranges match {
+    case Nil => Nil
+    case r :: Nil => r :: Nil
+    case a :: b :: tail =>
+      val combined = a.combine(b)
+      if (combined.size == 1)
+        combine(combined.head :: tail)
+      else
+        a :: combine(b :: tail)
   }
 
   private var y = 10L
   override def exampleAnswerPart1: Long = 26
   override def solvePart1(lines: List[String]): Long =
     val readings = lines.map({case sensorReading(sX, sY, bX, bY) => SensorReading(sX.toLong, sY.toLong, bX.toLong, bY.toLong)})
-    val beacons  = readings.filter(_.bY == y).map(_.bY)
-    val beaconFree = (readings.flatMap(_.beaconFree(y)).toSet -- beacons.toSet).size
+    val beacons  = readings.filter(_.bY == y).map(_.bY).toSet
+    val sortedRanges = combine(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.start))
     y = 2000000L
-    beaconFree
+    sortedRanges.map(_.size).sum - beacons.size
 
   private var max = 20
   override def exampleAnswerPart2: Long = 56000011

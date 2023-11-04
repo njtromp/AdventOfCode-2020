@@ -1,23 +1,23 @@
 package nl.njtromp.adventofcode
 
-class LongRange(val start: Long, val last: Long) {
+case class LongRange(start: Long, last: Long) {
   def size: Long = last - start + 1
-
   def contains(n: Long): Boolean = start <= n && n <= last
 
-  def contains(r: LongRange): Boolean = start <= r.start && last >= r.last
+  /** Determines of this range completely contains the other range. */
+  def contains(other: LongRange): Boolean = start <= other.start && last >= other.last
 
-  def isOverlapping(b: LongRange): Boolean = contains(b.start) || contains(b.last) || b.contains(start) || b.contains(last)
+  /** Determines of this range has at list one element in common with the other range. */
+  def isOverlapping(other: LongRange): Boolean = contains(other.start) || contains(other.last) || other.contains(start) || other.contains(last)
 
-  def isAdjacent(b: LongRange): Boolean = !isOverlapping(b) && (last + 1 == b.start || b.last == start)
+  /** Determines of this range and the other range  */
+  def isAdjacent(other: LongRange): Boolean = !isOverlapping(other) && (last + 1 == other.start || other.last + 1 == start)
 
   def combine(b: LongRange): List[LongRange] =
     if (isOverlapping(b) || isAdjacent(b))
       List(new LongRange(Math.min(start, b.start), Math.max(last, b.last)))
     else
       List(this, b)
-
-  override def toString: String = s"LongRange($start, $last)"
 }
 
 object LongRange {
