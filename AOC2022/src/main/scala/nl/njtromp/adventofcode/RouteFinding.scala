@@ -7,6 +7,39 @@ import nl.njtromp.adventofcode.{SimpleMap, SimpleMapTypes}
 
 trait RouteFinding extends SimpleMapTypes {
 
+  def dijkstra[A](start: A, finish: A, neighbors: A => List[A], weight: (A, A) => Long): List[A] =
+    val distanceToStart = mutable.Map.empty[A, Long].withDefaultValue(Long.MaxValue)
+    val source = mutable.Map.empty[A, A]
+    val toBeVisited = mutable.PriorityQueue.empty[A](Ordering.by(n => -distanceToStart(n)))
+    val visited = mutable.Set.empty[A]
+
+    def constructPath(current: A): List[A] =
+      if (current == start)
+        List(start)
+      else
+        constructPath(source(current)) ++ List(current)
+
+    distanceToStart += start -> 0
+    toBeVisited.enqueue(start)
+    while (toBeVisited.nonEmpty)
+      val current = toBeVisited.dequeue()
+      if (current == finish)
+        return constructPath(finish)
+      // The queue might hold positions with an 'old' (lower) priority so if we encounter one of them, we must skip it.
+      if (!visited.contains(current))
+        visited += current
+        val length = distanceToStart(current)
+        neighbors(current).foreach(n => {
+          if (!visited.contains(n))
+            toBeVisited.enqueue(n)
+          // Relax
+          val delta = weight(current, n)
+          if (length + delta < distanceToStart(n))
+            distanceToStart += n -> (length + delta)
+            source += n -> current
+        })
+    Nil
+
   def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
     val distanceToStart = mutable.Map.empty[Pos, Int].withDefaultValue(Int.MaxValue)
     val source = mutable.Map.empty[Pos, Pos]
