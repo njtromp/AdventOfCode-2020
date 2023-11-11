@@ -19,7 +19,7 @@ class Day16 extends Puzzle[Long] with RouteFinding with Optimization {
         .map(finish => (start.id, finish.id) -> (dijkstra[String](start.id, finish.id, v => valveMapping(v).neighbors, (_, _) => 1L).size - 1L))
     ).toMap
     val totalTime = 30L
-    maximize[Valve](0L, totalTime, startValve, _ => usableValves, (v1, v2) => travelingTimes((v1.id, v2.id)), (v, t) => v.rate * (totalTime - t))
+    maximize[Valve](totalTime, startValve, _ => usableValves, (v1, v2) => travelingTimes((v1.id, v2.id)), (v, t) => v.rate * (totalTime - t))
 
   override def exampleAnswerPart2: Long = 1707L
   override def solvePart2(lines: List[String]): Long =
@@ -35,7 +35,7 @@ class Day16 extends Puzzle[Long] with RouteFinding with Optimization {
         .map(finish => (start.id, finish.id) -> (dijkstra[String](start.id, finish.id, v => valveMapping(v).neighbors, (_, _) => 1L).size - 1L))
     ).toMap
     val totalTime = 26L
-    maximize[Valve](0L, totalTime, startValve, _ => usableValves, (v1, v2) => travelingTimes((v1.id, v2.id)), (v, t) => v.rate * (totalTime - t))
+    maximize[Valve](totalTime, List(startValve, startValve), _ => usableValves, (v1, v2) => travelingTimes((v1.id, v2.id)), (v, t) => v.rate * (totalTime - t))
 
 }
 
