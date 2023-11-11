@@ -10,9 +10,7 @@ trait Optimization {
         if (maximum < profit + activatables.map(gain(_, time)).sum)
         activatables.foreach(n =>
           val actionTime = time + costs(worker, n) + 1
-          if (actionTime >= maxTime)
-            profit
-          else
+          if (actionTime < maxTime)
             val newProfit = profit + gain(n, actionTime)
             maximum = Math.max(maximum, newProfit)
             maximize(actionTime, n, newProfit, visited + n)
@@ -29,9 +27,7 @@ trait Optimization {
         if (maximum < profit + activatables.map(gain(_, time)).sum)
         activatables.foreach(n =>
           val actionTime = time + costs(worker, n) + 1
-          if (actionTime >= maxTime)
-            profit
-          else
+          if (actionTime < maxTime)
             val newProfit = profit + gain(n, actionTime)
             maximum = Math.max(maximum, newProfit)
             val newWorkers = ((actionTime, n) :: workers.tail).sortBy(_._1)
