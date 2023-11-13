@@ -1,5 +1,7 @@
 package nl.njtromp.adventofcode
 
+import scala.annotation.tailrec
+
 class Day17 extends Puzzle[Long] {
   private type Block = Set[(Int, Int)]
   private val leftWall = 0
@@ -14,9 +16,9 @@ class Day17 extends Puzzle[Long] {
   // Move all shapes two units to the right
   private val blocks = Array(minus, plus, hook, pipe, dot).map(_.map(s => (s._1 + 2, s._2)))
 
-  @scala.annotation.tailrec
+  @tailrec
   private def simulateBlocksFalling(nrOfBlocks: Int, blockIndex: Int, jetIndex: Int, jets: Array[Char], cave: Set[(Int, Int)]): Set[(Int, Int)] =
-    @scala.annotation.tailrec
+    @tailrec
     def simulateBlock(block: Block, jetIndex: Int): (Block, Int) =
       val jettedBlock = jets(jetIndex) match {
         case '<' => if (block.minBy(_._1)._1 == leftWall + 1) block else block.map(b => (b._1 - 1, b._2))
