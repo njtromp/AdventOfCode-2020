@@ -59,7 +59,7 @@ class Day15 extends Puzzle2 {
     }).map(y => (y, combineRanges(sensors.filter(s => s.distanceTo((y, s.pos._2)) <= s.reach).map(_.coveringRange(y)))))
     // The next two lines are a shortcut because in my case the first range precedes the second range, so we can use
     // that knowledge in out advantage, just use the last value of the first range.
-    val targetRanges = candidateRanges.filter(p => p._2.head.last + 2 == p._2.last.start)
+    val targetRanges = candidateRanges.filter(p => p._2.head.last + 2 == p._2.last.first)
     (targetRanges.head._1, targetRanges.head._2.head.last + 1L)
   }
 

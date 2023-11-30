@@ -1,21 +1,26 @@
 package nl.njtromp.adventofcode
 
-class LongRange(val start: Long, val last: Long) {
-  def size: Long = last - start + 1
+case class LongRange(first: Long, last: Long) {
+  def size: Long = last - first + 1
+  def mid: Long = (first + last) / 2L
 
-  def contains(n: Long): Boolean = start <= n && n <= last
+  def contains(n: Long): Boolean = first <= n && n <= last
 
-  def isOverlapping(b: LongRange): Boolean = contains(b.start) || contains(b.last) || b.contains(start) || b.contains(last)
+  def isOverlapping(b: LongRange): Boolean = contains(b.first) || contains(b.last) || b.contains(first) || b.contains(last)
 
-  def isAdjacent(b: LongRange): Boolean = !isOverlapping(b) && (last + 1 == b.start || b.last == start)
+  def isAdjacent(b: LongRange): Boolean = !isOverlapping(b) && (last + 1 == b.first || b.last == first)
 
   def combine(b: LongRange): List[LongRange] =
     if (isOverlapping(b) || isAdjacent(b))
-      List(new LongRange(Math.min(start, b.start), Math.max(last, b.last)))
+      List(new LongRange(Math.min(first, b.first), Math.max(last, b.last)))
     else
       List(this, b)
 
-  override def toString: String = s"LongRange($start, $last)"
+  def intersect(r: LongRange): LongRange = {
+    LongRange(Math.max(first, r.first), Math.min(last, r.last))
+  }
+
+  def values(): Seq[Long] = first to last
 }
 
 object LongRange {

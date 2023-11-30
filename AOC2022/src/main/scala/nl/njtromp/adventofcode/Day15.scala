@@ -32,7 +32,7 @@ class Day15 extends Puzzle[Long] {
   override def solvePart1(lines: List[String]): Long =
     val readings = lines.map({case sensorReading(sX, sY, bX, bY) => SensorReading(sX.toLong, sY.toLong, bX.toLong, bY.toLong)})
     val beacons  = readings.filter(_.bY == y).map(_.bY).toSet
-    val sortedRanges = combineRanges(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.start))
+    val sortedRanges = combineRanges(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.first))
     y = 2000000L
     sortedRanges.map(_.size).sum - beacons.size
 
@@ -42,8 +42,8 @@ class Day15 extends Puzzle[Long] {
     val readings = lines.map({ case sensorReading(sX, sY, bX, bY) => SensorReading(sX.toLong, sY.toLong, bX.toLong, bY.toLong) })
     val minY = readings.minBy(_.sY).sY
     val maxY = readings.maxBy(_.sY).sY
-    val y = (minY to maxY).filter(y => combineRanges(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.start)).size == 2).head
-    val gapped = combineRanges(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.start))
+    val y = (minY to maxY).filter(y => combineRanges(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.first)).size == 2).head
+    val gapped = combineRanges(readings.map(_.rangeAt(y)).filter(_.nonEmpty).map(_.get).sortBy(_.first))
     max = 4000000L
     (gapped.head.last + 1) * max + y
 }
