@@ -16,22 +16,22 @@ class Day01 extends Puzzle[Long] {
   override def exampleAnswerPart2: Long = 281
   override def solvePart2(lines: List[String]): Long =
     def firstDigit(line: String): Int = {
-      val foundDigits = digits.filter(d => line.contains(d)).map(d => (line.indexOf(d), d))
+      val letterDigitsWithIndex = digits.filter(d => line.contains(d)).map(d => (line.indexOf(d), d))
       val digitIndex = line.takeWhile(_.isLetter).length
-      if foundDigits.isEmpty then
+      if letterDigitsWithIndex.isEmpty then
         line.charAt(digitIndex).asDigit
       else
-        val spelledDigit = foundDigits.minBy(_._1)
-        if spelledDigit._1 < digitIndex then digits.indexOf(spelledDigit._2) else line.charAt(digitIndex).asDigit
+        val letterDigit = letterDigitsWithIndex.minBy(_._1)
+        if letterDigit._1 < digitIndex then digits.indexOf(letterDigit._2) else line.charAt(digitIndex).asDigit
     }
     def lastDigit(line: String): Int = {
-      val foundDigits = digits.filter(d => line.contains(d)).map(d => (line.length - line.reverse.indexOf(d.reverse) - d.length, d))
+      val letterDigitsWithIndex = digits.filter(d => line.contains(d)).map(d => (line.length - line.reverse.indexOf(d.reverse) - d.length, d))
       val digitIndex = line.reverse.dropWhile(_.isLetter).length - 1
-      if foundDigits.isEmpty then
+      if letterDigitsWithIndex.isEmpty then
         line.charAt(digitIndex).asDigit
       else
-        val spelledDigit = foundDigits.maxBy(_._1)
-        if spelledDigit._1 > digitIndex then digits.indexOf(spelledDigit._2) else line.charAt(digitIndex).asDigit
+        val letterDigit = letterDigitsWithIndex.maxBy(_._1)
+        if letterDigit._1 > digitIndex then digits.indexOf(letterDigit._2) else line.charAt(digitIndex).asDigit
     }
     val actualLines = if isExample2 then lines.drop(4) else lines
     isExample2 = false
