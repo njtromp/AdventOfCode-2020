@@ -11,8 +11,8 @@ trait Puzzle[T] {
   def solvePuzzles(inputName: String): Unit = {
     val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList
     val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList
-    val answer1 = solvePart1(example)
 
+    val answer1 = solvePart1(example)
     if (answer1 == exampleAnswerPart1)
       println(s"Answer ${getClass.getSimpleName} part 1: ${time{solvePart1(lines)}}")
     else
@@ -26,11 +26,9 @@ trait Puzzle[T] {
   }
 
   def exampleAnswerPart1: T
-
   def solvePart1(lines: List[String]): T
 
   def exampleAnswerPart2: T
-
   def solvePart2(lines: List[String]): T
 
   def groupByEmptyLine(lines: List[String]): List[List[String]] =
