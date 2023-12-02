@@ -4,7 +4,7 @@ class Day02 extends Puzzle[Long] {
   private val GameInfo = "Game (\\d+)".r
   private type Cubes = (Int, Int, Int)
   private case class Game(id: Int, cubes: List[Cubes]) {
-    def getMaximums: Cubes = (cubes.map(_._1).max, cubes.map(_._2).max, cubes.map(_._3).max)
+    def getMaximums: Cubes = cubes.foldLeft((0, 0, 0))((a, c) => (Math.max(a._1, c._1), Math.max(a._2, c._2), Math.max(a._3, c._3)))
   }
 
   private def createGames(id: Int, takes: Array[String]): Game =
