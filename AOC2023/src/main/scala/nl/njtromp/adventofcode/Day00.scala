@@ -12,6 +12,6 @@ class Day00 extends Puzzle[Long] {
 
 }
 
-object Day00 extends App{
+object Day00 extends App {
   new Day00().solvePuzzles("/day00.txt")
 }
