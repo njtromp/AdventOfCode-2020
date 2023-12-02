@@ -42,5 +42,5 @@ class Day01 extends Puzzle[Long] {
 object Day01 extends App{
   var isExample1 = true
   var isExample2 = true
-  new Day01().solvePuzzles("/day01.txt")
+  new Day01().solvePuzzles()
 }

@@ -8,9 +8,9 @@ import scala.io.Source
 
 trait Puzzle[T] {
 
-  def solvePuzzles(inputName: String): Unit = {
-    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList
-    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList
+  def solvePuzzles(): Unit = {
+    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(s"/${getClass.getSimpleName}-example.txt")).getLines().toList
+    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(s"/${getClass.getSimpleName}.txt")).getLines().toList
 
     val answer1 = solvePart1(example)
     if (answer1 == exampleAnswerPart1)

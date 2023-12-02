@@ -1,6 +1,6 @@
 package nl.njtromp.adventofcode
 
-import nl.njtromp.adventofcode.Day01.{isExample1, isExample2}
+import nl.njtromp.adventofcode.Day01C.{isExample1, isExample2}
 
 class Day01C extends Puzzle[Long] {
   private val digitMapping = Map(
@@ -32,5 +32,5 @@ class Day01C extends Puzzle[Long] {
 object Day01C extends App {
   var isExample1 = true
   var isExample2 = true
-  new Day01C().solvePuzzles("/day01.txt")
+  new Day01C().solvePuzzles()
 }
