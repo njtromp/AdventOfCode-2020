@@ -21,12 +21,12 @@ class Day02B extends Puzzle[Long] with RegexParsers {
 
   override def exampleAnswerPart1: Long = 8
   override def solvePart1(lines: List[String]): Long =
-    val games = lines.map(l => parseAll(game, l) match { case Success(game, _) => game })
+    val games = lines.map(l => parse(game, l) match { case Success(game, _) => game })
     games.filter(g => g.maxBalls(red) <= 12 && g.maxBalls(green) <= 13 && g.maxBalls(blue) <= 14).map(_.id).sum
 
   override def exampleAnswerPart2: Long = 2286
   override def solvePart2(lines: List[String]): Long =
-    val games = lines.map(l => parseAll(game, l) match { case Success(game, _) => game })
+    val games = lines.map(l => parse(game, l) match { case Success(game, _) => game })
     games.map(g => g.maxBalls(red) * g.maxBalls(green) * g.maxBalls(blue)).sum
 }
 
