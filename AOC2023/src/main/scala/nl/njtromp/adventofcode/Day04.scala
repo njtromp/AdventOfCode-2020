@@ -4,7 +4,7 @@ import scala.util.parsing.combinator.RegexParsers
 
 class Day04 extends Puzzle[Long] with RegexParsers {
   case class ScratchCard(id: Int, winningNumbers: Set[Int], numbers: Set[Int]) {
-    def numberOfMatchingCards: Int = (winningNumbers intersect numbers).size
+    lazy val numberOfMatchingCards: Int = (winningNumbers intersect numbers).size
     def score(): Int = Math.pow(2, numberOfMatchingCards - 1).toInt // 0.5 => 0, :-)
     def score(tail: Array[ScratchCard]): Int =
       val copies = tail.take(numberOfMatchingCards)
