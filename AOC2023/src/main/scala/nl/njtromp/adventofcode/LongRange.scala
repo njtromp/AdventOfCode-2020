@@ -28,4 +28,19 @@ case class LongRange(first: Long, last: Long) {
 
 object LongRange {
   implicit def apply(start: Long, last: Long): LongRange = new LongRange(start, last)
+
+  def sort(ranges: List[LongRange]): List[LongRange] = ranges.sortWith((l, r) => l.first < r.first)
+  
+  def combine(ranges: List[LongRange]): List[LongRange] =
+    def reduce(ranges: List[LongRange]): List[LongRange] = ranges match {
+      case Nil => Nil
+      case r :: Nil => r :: Nil
+      case a :: b :: tail =>
+        val combined = a.combine(b)
+        if (combined.size == 1)
+          reduce(combined.head :: tail)
+        else
+          a :: reduce(b :: tail)
+      }
+    reduce(sort(ranges))
 }

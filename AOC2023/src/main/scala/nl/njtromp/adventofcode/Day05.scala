@@ -26,23 +26,6 @@ class Day05 extends Puzzle[Long] with RegexParsers {
         mapper(destName, destination)
     mapper(name, source)
 
-  private def combineRanges(ranges: List[LongRange]): List[LongRange] = ranges match {
-    case Nil => Nil
-    case r :: Nil => r :: Nil
-    case a :: b :: tail =>
-      val combined = a.combine(b)
-      if (combined.size == 1)
-        combineRanges(combined.head :: tail)
-      else
-        a :: combineRanges(b :: tail)
-  }
-
-  private def split(range: LongRange): List[LongRange] =
-    List(
-      LongRange(range.first, range.first + (range.last - range.first) / 2),
-      LongRange(range.first + (range.last - range.first) / 2, range.last)
-    )
-
   override def exampleAnswerPart1: Long = 35
   override def solvePart1(lines: List[String]): Long =
     val startingSeeds = parse(seeds, lines.head) match { case Success(seeds, _) => seeds }
@@ -52,15 +35,16 @@ class Day05 extends Puzzle[Long] with RegexParsers {
         block.tail.map(parse(numbers, _) match { case Success(mapping, _) => mapping })
       )
     })
-
     val nameMapping = mappingInfo.map(m => m._1._1 -> m._1._2).toMap
     val valueMapping = mappingInfo.map(m => m._1._1 -> m._2).toMap
     startingSeeds.map(map("seed", _, nameMapping, valueMapping)).min
 
   override def exampleAnswerPart2: Long = 46
   override def solvePart2(lines: List[String]): Long =
-    val startingSeeds = combineRanges((parse(seeds, lines.head) match { case Success(seeds, _) => seeds })
-      .sliding(2, 2).map(ns => LongRange(ns.head, ns.head + ns.last - 1)).toList.sortWith((l, r) => l.first < r.first))
+    val seedRanges = LongRange.combine(
+      (parse(seeds, lines.head) match { case Success(seeds, _) => seeds })
+        .sliding(2, 2).map(ns => LongRange(ns.head, ns.head + ns.last - 1)).toList
+    )
     val mappingInfo = groupByEmptyLine(lines.drop(2)).map(block => {
       (
         parse(mapping, block.head) match { case Success(mapping, _) => mapping },
@@ -69,13 +53,7 @@ class Day05 extends Puzzle[Long] with RegexParsers {
     })
     val nameMapping = mappingInfo.map(m => m._1._1 -> m._1._2).toMap
     val valueMapping = mappingInfo.map(m => m._1._1 -> m._2).toMap
-    // After brute forcing and removing ranges that did not lead to the correct solution this worked ;-)
-    val splittedSeeds = if startingSeeds.size == 10 then split(startingSeeds.slice(8, 9).head) else startingSeeds
-    splittedSeeds.map(r => {
-      val possibleLocation = r.values().map(map("seed", _, nameMapping, valueMapping)).min
-      println(possibleLocation)
-      possibleLocation
-    }).min
+    seedRanges.map(r => r.values().foldLeft(Long.MaxValue)((a, s) => Math.min(a, map("seed", s, nameMapping, valueMapping)))).min
 }
 
 object Day05 extends App {
