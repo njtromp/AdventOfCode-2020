@@ -31,5 +31,5 @@ class Day02B extends Puzzle[Long] with RegexParsers {
 }
 
 object Day02B extends App {
-  new Day02B().solvePuzzles()
+  new Day02B().solvePuzzles("/day02.txt")
 }

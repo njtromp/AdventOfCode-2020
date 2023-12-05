@@ -7,11 +7,21 @@ import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
 trait Puzzle[T] {
+  def exampleAnswerPart1: T
+  def solvePart1(lines: List[String]): T
 
-  def solvePuzzles(): Unit = {
-    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(s"/${getClass.getSimpleName}-example.txt")).getLines().toList
-    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(s"/${getClass.getSimpleName}.txt")).getLines().toList
+  def exampleAnswerPart2: T
+  def solvePart2(lines: List[String]): T
 
+  def solvePuzzles(): Unit =
+    solvePuzzles(s"/${getClass.getSimpleName}.txt")
+
+  def solvePuzzles(inputName: String): Unit =
+    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList
+    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList
+    solvePuzzles(example, lines)
+
+  private def solvePuzzles(example: List[String], lines: List[String]): Unit =
     val answer1 = solvePart1(example)
     if (answer1 == exampleAnswerPart1)
       println(s"Answer ${getClass.getSimpleName} part 1: ${time{solvePart1(lines)}}")
@@ -23,13 +33,6 @@ trait Puzzle[T] {
       println(s"Answer ${getClass.getSimpleName} part 2: ${time{solvePart2(lines)}}")
     else
       Console.err.println(s"Part 2 failed, expecting $exampleAnswerPart2 but got $answer2")
-  }
-
-  def exampleAnswerPart1: T
-  def solvePart1(lines: List[String]): T
-
-  def exampleAnswerPart2: T
-  def solvePart2(lines: List[String]): T
 
   def groupByEmptyLine(lines: List[String]): List[List[String]] =
     if (lines.isEmpty)
@@ -49,11 +52,10 @@ trait Puzzle[T] {
       }
       b.toList
 
-  def time[R](block: => R): R = {
+  def time[R](block: => R): R =
     val start = System.nanoTime()
     val result = block    // call-by-name
     val finish = System.nanoTime()
     println(f"Elapsed time: ${TimeUnit.NANOSECONDS.toMillis(finish - start)}%,d ms")
     result
-  }
 }
