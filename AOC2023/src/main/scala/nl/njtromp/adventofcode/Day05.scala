@@ -15,9 +15,7 @@ class Day05 extends Puzzle[Long] with RegexParsers {
   }
 
   private def parseSeedInfo(lines: List[String]): List[Long] =
-    parse(seeds, lines.head) match {
-      case Success(seeds, _) => seeds
-    }
+    parse(seeds, lines.head) match { case Success(seeds, _) => seeds }
 
   private def parseMappingInfo(lines: List[String]): ((String, String), List[Mapping]) =
     (
