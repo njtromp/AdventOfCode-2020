@@ -25,7 +25,10 @@ class Day01C extends Puzzle[Long] {
   override def solvePart2(lines: List[String]): Long =
     val actualLines = if isExample2 then lines.drop(4) else lines
     isExample2 = false
-    solvePart1(actualLines.map(l => digitMapping.foldLeft(l)((l, d) => l.replaceAll(d._1, d._2))))
+    solvePart1(actualLines.map(l => {
+      val doubleETs = l.replaceAll("e", "ee").replaceAll("t", "tt")
+      digitMapping.foldLeft(doubleETs)((l, d) => l.replaceAll(d._1, d._2))
+    }))
 
 }
 
