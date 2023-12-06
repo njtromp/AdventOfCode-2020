@@ -14,7 +14,7 @@ trait Puzzle[T] {
   def solvePart2(lines: List[String]): T
 
   def solvePuzzles(): Unit =
-    solvePuzzles(s"/${getClass.getSimpleName}.txt")
+    solvePuzzles(s"/${getClass.getSimpleName.toLowerCase}.txt")
 
   def solvePuzzles(inputName: String): Unit =
     val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList
