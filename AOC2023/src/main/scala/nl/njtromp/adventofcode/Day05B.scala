@@ -1,6 +1,9 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, MINUTES}
+import scala.concurrent.{Await, Future}
 import scala.util.parsing.combinator.RegexParsers
 
 class Day05B extends Puzzle[Long] with RegexParsers {
@@ -47,10 +50,12 @@ class Day05B extends Puzzle[Long] with RegexParsers {
     val valueMapping = mappingInfo.map(m => m._1._1 -> m._2).toMap
     startingSeeds.map(map("seed", _, nameMapping, valueMapping)).min
 
-  private def transform(source: LongRange, mappings: List[Mapping]): List[(LongRange, LongRange)] =
-    val candidates = mappings.filter(_.source.isOverlapping(source))
-    println(s"$source (${candidates.size})) => $candidates")
-    List.empty
+  private def split(r: LongRange): List[LongRange] =
+    val MAX_RANGE_SIZE = 50000000
+    if r.size < MAX_RANGE_SIZE then
+      r :: Nil
+    else
+      LongRange(r.first, r.first + MAX_RANGE_SIZE) :: split(LongRange(r.first + MAX_RANGE_SIZE + 1, r.last))
 
   override def exampleAnswerPart2: Long = 46
   override def solvePart2(lines: List[String]): Long =
@@ -58,11 +63,11 @@ class Day05B extends Puzzle[Long] with RegexParsers {
     val mappingInfo = groupByEmptyLine(lines.drop(2)).map(parseMappingInfo)
     val nameMapping = mappingInfo.map(m => m._1._1 -> m._1._2).toMap
     val valueMapping = mappingInfo.map(m => m._1._1 -> m._2).toMap
-    seedRanges.foreach(transform(_, valueMapping("seed")))
-//    seedRanges.map(r => r.values().foldLeft(Long.MaxValue)((a, s) => Math.min(a, map("seed", s, nameMapping, valueMapping)))).min
-    println(LongRange(0, 10).destruct(LongRange(5, 20)))
-    println(LongRange(0, 10).destruct(LongRange(5, 10)))
-    46
+    def findMinimum(r: LongRange) =
+      r.values().foldLeft(Long.MaxValue)((a, s) => Math.min(a, map("seed", s, nameMapping, valueMapping)))
+
+    seedRanges.flatMap(split)
+      .map(r => Future(findMinimum(r))).map(Await.result(_, Duration(10, MINUTES))).min
 }
 
 object Day05B extends App {
