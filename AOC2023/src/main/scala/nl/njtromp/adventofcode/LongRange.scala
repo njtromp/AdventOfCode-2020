@@ -22,23 +22,23 @@ case class LongRange(first: Long, last: Long) {
   def intersect(r: LongRange): LongRange =
     LongRange(Math.max(first, r.first), Math.min(last, r.last))
 
-  def destruct(r: LongRange): List[LongRange] =
+  def split(r: LongRange): List[LongRange] =
     if !isOverlapping(r) then
       List(this, r)
     else
       (first < r.first, last > r.last) match {
         // TTTTTTTTTT
         //    RRRR
-        case (true, true) => List(LongRange(first, r.first - 1), intersect(r), LongRange(r.last + 1, last))
+        case (true, true) => List(LongRange(first, r.first - 1), intersect(r), LongRange(r.last + 1, last)).filter(_.size > 0)
         // TTTTTT
         //    RRRRRRR
-        case (true, false) => List(LongRange(first, r.first - 1), intersect(r), LongRange(last + 1, r.last)).filter(_.size > 0)
+        case (true, false) => List(LongRange(first, r.first - 1), intersect(r)).filter(_.size > 0)
         //     TTTTTT
         // RRRRRRR
-        case (false, true) => List(LongRange(r.first, first - 1), intersect(r), LongRange(r.last + 1, last)).filter(_.size > 0)
+        case (false, true) => List(intersect(r), LongRange(r.last + 1, last)).filter(_.size > 0)
         //   TTT
         // RRRRRRR
-        case (false, false) => List(LongRange(r.first, first - 1), intersect(r), LongRange(last + 1, r.last)).filter(_.size > 0)
+        case (false, false) => List(this)
       }
 
   def values(): Seq[Long] = first to last
