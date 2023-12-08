@@ -13,12 +13,14 @@ case class LongRange(first: Long, last: Long) {
   /** Determines of this range and the other range  */
   def isAdjacent(other: LongRange): Boolean = !isOverlapping(other) && (last + 1 == other.first || other.last + 1 == first)
 
+  /** Combines this range with another into one if the overlap or if they are adjacent without any gap. */
   def combine(b: LongRange): List[LongRange] =
     if (isOverlapping(b) || isAdjacent(b))
       List(new LongRange(Math.min(first, b.first), Math.max(last, b.last)))
     else
       List(this, b)
 
+  /** The intersection of this range with another range, the resulting range can be 'empty'. */
   def intersect(r: LongRange): LongRange =
     LongRange(Math.max(first, r.first), Math.min(last, r.last))
 
@@ -29,7 +31,8 @@ case class LongRange(first: Long, last: Long) {
       (first < r.first, last > r.last) match {
         // TTTTTTTTTT
         //    RRRR
-        case (true, true) => List(LongRange(first, r.first - 1), intersect(r), LongRange(r.last + 1, last)).filter(_.size > 0)
+        case (true, true) =>
+          List(LongRange(first, r.first - 1), intersect(r), LongRange(r.last + 1, last)).filter(_.size > 0)
         // TTTTTT
         //    RRRRRRR
         case (true, false) => List(LongRange(first, r.first - 1), intersect(r)).filter(_.size > 0)
