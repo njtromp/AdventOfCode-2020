@@ -1,12 +1,9 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
-import scala.util.parsing.combinator.RegexParsers
 
-class Day06 extends Puzzle[Long] with RegexParsers {
-  private def number: Parser[Long] = "\\d+".r ^^ { _.toLong }
-  private def numbers: Parser[List[Long]] = rep(number) ^^ { numbers => numbers}
-  private def parseNumbers(line: String): List[Long] = parse(numbers, line) match { case Success(numbers, _) => numbers }
+class Day06 extends ParserPuzzle[Long] {
+  private def parseNumbers(line: String): List[Long] = parse(integers, line).get
   private def calculateWinningTimes(time: Long, distance: Long): Long =
     @tailrec
     def findLimit(t: Long, delta: Long): Long =

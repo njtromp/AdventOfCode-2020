@@ -1,16 +1,13 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
-import scala.util.parsing.combinator.RegexParsers
 
-class Day05B extends Puzzle[Long] with RegexParsers {
-  def number: Parser[Long] =
-    "\\d+".r ^^ { _.toLong }
+class Day05B extends ParserPuzzle[Long] {
   def seeds: Parser[List[Long]] =
-    "seeds:".r ~ rep(number) ^^ { case "seeds:" ~ numbers => numbers }
+    "seeds:".r ~ rep(integer) ^^ { case "seeds:" ~ numbers => numbers }
   def mapping: Parser[(String, String)] =
     "\\w+".r ~ "-to-" ~ "\\w+".r ~ "map:" ^^ { case from ~ "-to-" ~ to ~ "map:" => (from, to) }
-  def numbers: Parser[Mapping] = number ~ number ~ number ^^
+  def numbers: Parser[Mapping] = integer ~ integer ~ integer ^^
     { case destination ~ source ~ range => Mapping(LongRange(source, source + range - 1), LongRange(destination, destination + range - 1)) }
   def fullMapping: Parser[FullMapping] = mapping ~ rep(numbers) ^^ { case names ~ values => FullMapping(names, values)}
   def puzzle: Parser[Puzzle] = seeds ~ rep(fullMapping) ^^ { case seeds ~ mappings => Puzzle(seeds, mappings) }

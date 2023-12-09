@@ -1,10 +1,8 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
-import scala.util.parsing.combinator.RegexParsers
 
-class Day08 extends Puzzle[Long] with RegexParsers {
-  private def word: Parser[String] = "\\w+".r ^^ { w => w }
+class Day08 extends ParserPuzzle[Long] {
   private def mapping: Parser[(String, (String, String))] = word ~ "=" ~ "(" ~ word ~ "," ~ word ~ ")" ^^ { case from ~ "=" ~ "(" ~ left ~ "," ~ right ~ ")" => (from, (left, right)) }
   private def puzzle: Parser[Puzzle] = word ~ rep(mapping) ^^ { case directions ~ mappings => Puzzle(directions, mappings) }
   private def puzzles: Parser[List[Puzzle]] = rep(puzzle) ^^ { ps => ps }
