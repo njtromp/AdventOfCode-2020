@@ -18,15 +18,16 @@ class Day02B extends Puzzle[Long] with RegexParsers {
   def ball: Parser[Ball] = number ~ color ^^ { case count ~ color => Ball(color, count) }
   def balls: Parser[List[Ball]] = repsep(ball, ",")
   def game: Parser[Game] = "Game" ~ number ~ ":" ~ repsep(balls, ";") ^^ { case "Game" ~ id ~ ":" ~ takes => Game(id, takes) }
+  def gameList: Parser[List[Game]] = rep(game) ^^ { gs => gs }
 
   override def exampleAnswerPart1: Long = 8
   override def solvePart1(lines: List[String]): Long =
-    val games = lines.map(l => parse(game, l) match { case Success(game, _) => game })
+    val games = parse(gameList, lines.mkString("\n")).get
     games.filter(g => g.maxBalls(red) <= 12 && g.maxBalls(green) <= 13 && g.maxBalls(blue) <= 14).map(_.id).sum
 
   override def exampleAnswerPart2: Long = 2286
   override def solvePart2(lines: List[String]): Long =
-    val games = lines.map(l => parse(game, l) match { case Success(game, _) => game })
+    val games = parse(gameList, lines.mkString("\n")).get
     games.map(g => g.maxBalls(red) * g.maxBalls(green) * g.maxBalls(blue)).sum
 }
 

@@ -1,14 +1,11 @@
 package nl.njtromp.adventofcode
 
-import nl.njtromp.adventofcode.Day01.{isExample1, isExample2}
-
 class Day01 extends Puzzle[Long] {
   private val digits = List("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 
   override def exampleAnswerPart1: Long = 142
   override def solvePart1(lines: List[String]): Long =
-    val actualLines = if isExample1 then lines.take(4) else lines
-    isExample1 = false
+    val actualLines = groupByEmptyLine(lines).head
     actualLines.map(l => {
       l.dropWhile(_.isLetter).head.asDigit * 10 + l.reverse.dropWhile(_.isLetter).head.asDigit
     }).sum
@@ -33,14 +30,11 @@ class Day01 extends Puzzle[Long] {
         val letterDigit = letterDigitsWithIndex.maxBy(_._1)
         if letterDigit._1 > digitIndex then digits.indexOf(letterDigit._2) else line.charAt(digitIndex).asDigit
     }
-    val actualLines = if isExample2 then lines.drop(4) else lines
-    isExample2 = false
+    val actualLines = groupByEmptyLine(lines).last
     actualLines.map(l => firstDigit(l) * 10 + lastDigit(l)).sum
 
 }
 
 object Day01 extends App{
-  var isExample1 = true
-  var isExample2 = true
   new Day01().solvePuzzles()
 }
