@@ -2,13 +2,27 @@ package nl.njtromp.adventofcode
 
 class Day09 extends Puzzle[Long] {
 
-  override def exampleAnswerPart1: Long = 0
-  override def solvePart1(lines: List[String]): Long =
-    -1
+  private def predictNext(data: List[Long]): Long =
+    if data.forall(_ == 0) then
+      0
+    else
+      val next = data.tail.zip(data).map(d => d._1 - d._2)
+      data.last + predictNext(next)
 
-  override def exampleAnswerPart2: Long = 0
+  private def predictPrevious(data: List[Long]): Long =
+    if data.forall(_ == 0) then
+      0
+    else
+      val next = data.tail.zip(data).map(d => d._1 - d._2)
+      data.head - predictPrevious(next)
+
+  override def exampleAnswerPart1: Long = 114
+  override def solvePart1(lines: List[String]): Long =
+    lines.map(_.split(' ').map(_.toLong).toList).map(predictNext).sum
+
+  override def exampleAnswerPart2: Long = 2
   override def solvePart2(lines: List[String]): Long =
-    -1
+    lines.map(_.split(' ').map(_.toLong).toList).map(predictPrevious).sum
 
 }
 
