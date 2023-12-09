@@ -13,8 +13,8 @@ class Day09 extends Puzzle[Long] {
     if data.forall(_ == 0) then
       0
     else
-      val next = data.tail.zip(data).map(d => d._1 - d._2)
-      data.head - predictPrevious(next)
+      val previous = data.tail.zip(data).map(d => d._1 - d._2)
+      data.head - predictPrevious(previous)
 
   override def exampleAnswerPart1: Long = 114
   override def solvePart1(lines: List[String]): Long =
