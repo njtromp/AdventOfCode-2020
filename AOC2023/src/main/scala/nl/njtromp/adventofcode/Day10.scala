@@ -1,10 +1,6 @@
 package nl.njtromp.adventofcode
 
 class Day10 extends Puzzle[Long] with SimpleMapTypes {
-  private val westCandidates = List('-', 'F', 'L', 'S')
-  private val eastCandidates = List('-', 'J', '7', 'S')
-  private val northCandidates = List('|', 'F', '7', 'S')
-  private val southCandidates = List('|', 'J', 'L', 'S')
   private val directions = Map(
     (down, 'S') -> down,
     (up, 'S') -> up,
@@ -23,7 +19,12 @@ class Day10 extends Puzzle[Long] with SimpleMapTypes {
     (down, 'L') -> right,
     (left, 'L') -> up,
   )
-  private val candidates = Map(up -> northCandidates, down -> southCandidates, left -> westCandidates, right -> eastCandidates)
+  private val connections = Map(
+    up -> List('|', 'F', '7'),
+    down -> List('|', 'J', 'L'),
+    left -> List('-', 'F', 'L'),
+    right -> List('-', 'J', '7')
+  )
 
   private val extendHorizontal = Map(
     '-' -> '-',
@@ -49,7 +50,7 @@ class Day10 extends Puzzle[Long] with SimpleMapTypes {
         val nextMove = directions((move, map(nextPos)))
         current :: findLoop(nextPos, nextMove)
     }
-    val startingDirection = square.filter(d => isConnected(map, start, d, candidates(d))).head
+    val startingDirection = square.filter(d => isConnected(map, start, d, connections(d))).head
     findLoop(start, startingDirection)
 
   private def floodFill(map: SimpleMap[Char], start: Pos): Unit =
@@ -73,17 +74,18 @@ class Day10 extends Puzzle[Long] with SimpleMapTypes {
     // Extend vertical and horizontal.
     // This ensures that there is a opening between adjacent pipes so floodfill can do its job properly.
     val extendedMap = actualLines.map(_.flatMap(p => s"$p${extendHorizontal(p)}")).flatMap(l => List(l, l.map(extendVertical)))
+    // Get rid of lowest row and rightmost column
     val usableMap = extendedMap.dropRight(1).map(_.dropRight(1))
+
     val map = SimpleMap[Char](usableMap, _.toCharArray)
     val start = map.find('S').head
     // This correction could be input specific, for me it did the trick :-)
     map((start._1 + 1, start._2)) = '|'
 
     // Mark the loop
-    val loop = findLoop(map, start)
-    loop.foreach(p => map(p) = 'X')
+    findLoop(map, start).foreach(p => map(p) = 'X')
 
-    // Floodfill (mark with x, just for easier debugging) from the outside
+    // Floodfill, mark with 'x' from the outside
     (0 until map.height).foreach(r => {
       floodFill(map, (r, 0))
       floodFill(map, (r, map.width - 1))
@@ -94,8 +96,8 @@ class Day10 extends Puzzle[Long] with SimpleMapTypes {
     })
 
     // Remove lines and columns needed for floodfill to work
-    val srinkedMap = (0 until map.height / 2).map(r => map.row(r * 2)).toList.map(r => r.zipWithIndex.filter(_._2 % 2 == 0).map(_._1).mkString(""))
-    srinkedMap.map(_.count(_.toUpper != 'X')).sum
+    val shinkedMap = (0 until map.height / 2).map(r => map.row(r * 2)).toList.map(r => r.zipWithIndex.filter(_._2 % 2 == 0).map(_._1).mkString(""))
+    shinkedMap.map(_.count(_.toUpper != 'X')).sum
 
 }
 
