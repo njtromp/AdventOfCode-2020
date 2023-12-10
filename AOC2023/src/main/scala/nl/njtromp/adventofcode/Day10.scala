@@ -1,23 +1,19 @@
 package nl.njtromp.adventofcode
 
 class Day10 extends Puzzle[Long] with SimpleMapTypes {
-  private val directions = Map(
-    (down, 'S') -> down,
-    (up, 'S') -> up,
-    (left, 'S') -> right,
-    (right, 'S') -> right,
+  private val nextDirections = Map(
     (down, '|') -> down,
-    (up, '|') -> up,
-    (left, '-') -> left,
-    (right, '-') -> right,
-    (up, 'F') -> right,
-    (left, 'F') -> down,
-    (up, '7') -> left,
-    (right, '7') -> down,
     (down, 'J') -> left,
-    (right, 'J') -> up,
     (down, 'L') -> right,
+    (up, '|') -> up,
+    (up, 'F') -> right,
+    (up, '7') -> left,
+    (left, '-') -> left,
+    (left, 'F') -> down,
     (left, 'L') -> up,
+    (right, '7') -> down,
+    (right, '-') -> right,
+    (right, 'J') -> up
   )
   private val connections = Map(
     up -> List('|', 'F', '7'),
@@ -47,7 +43,7 @@ class Day10 extends Puzzle[Long] with SimpleMapTypes {
       if map(nextPos) == 'S' then
         List(current, nextPos)
       else
-        val nextMove = directions((move, map(nextPos)))
+        val nextMove = nextDirections((move, map(nextPos)))
         current :: findLoop(nextPos, nextMove)
     }
     val startingDirection = square.filter(d => isConnected(map, start, d, connections(d))).head
