@@ -25,38 +25,29 @@ class Day11 extends Puzzle[Long] with SimpleMapTypes {
   private def distance(a: (Long, Long), b: (Long, Long)): Long =
     Math.abs(a._1 - b._1) + Math.abs(a._2 - b._2)
 
-  override def exampleAnswerPart1: Long = 374
-  override def solvePart1(lines: List[String]): Long =
+  private def expandGalaxy(lines: List[String], expension: Long) = {
     val stars = lines.zipWithIndex.flatMap(r => r._1.toCharArray.zipWithIndex.filter(_._1 == '#').map(s => (r._2.toLong, s._2.toLong)))
     val starsOnRow = stars.groupBy(_._1)
     val minRow = stars.map(_._1).min
     val maxRow = stars.map(_._1).max
     val emptyRows = ((minRow to maxRow).toSet diff starsOnRow.keySet).toList.sorted
-    val rowExpandStars = expandRows(stars, emptyRows, 2-1)
+    val rowExpandStars = expandRows(stars, emptyRows, expension - 1)
 
     val starsOnColumn = rowExpandStars.groupBy(_._2)
     val minColumn = rowExpandStars.map(_._2).min
     val maxColumn = rowExpandStars.map(_._2).max
     val emptyColumns = ((minColumn to maxColumn).toSet diff starsOnColumn.keySet).toList.sorted
-    val expandedGalaxy = expandColumns(rowExpandStars, emptyColumns, 2-1)
+    val expandedGalaxy = expandColumns(rowExpandStars, emptyColumns, expension - 1)
     expandedGalaxy.map(a => expandedGalaxy.map(b => distance(a, b)).sum).sum / 2
+  }
+
+  override def exampleAnswerPart1: Long = 374
+  override def solvePart1(lines: List[String]): Long =
+    expandGalaxy(lines, 2)
 
   override def exampleAnswerPart2: Long = 82000210
   override def solvePart2(lines: List[String]): Long =
-    val stars = lines.zipWithIndex.flatMap(r => r._1.toCharArray.zipWithIndex.filter(_._1 == '#').map(s => (r._2.toLong, s._2.toLong)))
-
-    val starsOnRow = stars.groupBy(_._1)
-    val minRow = stars.map(_._1).min
-    val maxRow = stars.map(_._1).max
-    val emptyRows = ((minRow to maxRow).toSet diff starsOnRow.keySet).toList.sorted
-    val rowExpandStars = expandRows(stars, emptyRows, 1000000-1)
-
-    val starsOnColumn = rowExpandStars.groupBy(_._2)
-    val minColumn = rowExpandStars.map(_._2).min
-    val maxColumn = rowExpandStars.map(_._2).max
-    val emptyColumns = ((minColumn to maxColumn).toSet diff starsOnColumn.keySet).toList.sorted
-    val expandedGalaxy = expandColumns(rowExpandStars, emptyColumns, 1000000-1)
-    expandedGalaxy.map(a => expandedGalaxy.map(b => distance(a, b)).sum).sum / 2
+    expandGalaxy(lines, 1000000)
 
 }
 
