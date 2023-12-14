@@ -31,7 +31,7 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   def update(p: Pos, v: A): Unit = elems(p._1)(p._2) = v
   def isOnMap(p: Pos): Boolean = elems.indices.contains(p._1) && elems(0).indices.contains(p._2)
   def row(y: Int): List[A] = elems(y).toList
-  def column(x: Int): List[A] = elems(0).indices.map(elems(_)(x)).toList
+  def column(x: Int): List[A] = (0 until height).map(elems(_)(x)).toList
   def allPositions(): List[Pos] =
     (0 until height).flatMap(y => {
       (0 until width).map(x => (y, x))
@@ -48,6 +48,8 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
       allNeighborPositions(p, directions).map(this(_))
   def find(item: A): List[Pos] =
     allPositions().filter(p => this(p) == item)
+  def columnsToRows: List[String] = (0 until width).map(column(_).mkString).toList
+  def asString(): String = elems.map(_.mkString).mkString("\n")
 }
 
 object SimpleMap {

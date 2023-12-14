@@ -17,8 +17,8 @@ trait Puzzle[T] {
     solvePuzzles(s"/${getClass.getSimpleName.toLowerCase}.txt")
 
   def solvePuzzles(inputName: String): Unit =
-    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList
-    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList
+    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList.map(_.trim)
+    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList.map(_.trim)
     solvePuzzles(example, lines)
 
   private def solvePuzzles(example: List[String], lines: List[String]): Unit =
