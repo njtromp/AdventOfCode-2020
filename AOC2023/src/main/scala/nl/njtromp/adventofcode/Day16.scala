@@ -50,20 +50,19 @@ class Day16 extends Puzzle[Long] with SimpleMapTypes {
 
   override def exampleAnswerPart1: Long = 46
   override def solvePart1(lines: List[String]): Long =
-    val actualLines = groupByEmptyLine(lines).head
-    val map = SimpleMap[Char](actualLines, _.toCharArray)
+    val map = SimpleMap[Char](lines, _.toCharArray)
     val paths = followBeams(map, (0,0), right, List.empty)
     paths.flatten.toSet.size
 
   override def exampleAnswerPart2: Long = 51
   override def solvePart2(lines: List[String]): Long =
-    val actualLines = groupByEmptyLine(lines).head
-    val map = SimpleMap[Char](actualLines, _.toCharArray)
+    val map = SimpleMap[Char](lines, _.toCharArray)
     val starts = (0 until map.height).flatMap(r => List(((r, 0), right), ((r, map.width - 1), left))) ++
       (0 until map.width).flatMap(c => List(((0, c), down), ((map.height - 1, c), up)))
     starts.foldLeft(0L)((a, s) => Math.max(a, followBeams(map, s._1, s._2, List.empty).flatten.toSet.size))
 }
 
 object Day16 extends App {
+  println("Please run with: -Xss512M")
   new Day16().solvePuzzles()
 }
