@@ -8,9 +8,8 @@ class Day22 extends Puzzle[Long] {
   private type Delta = (Long, Long, Long)
   private val down = (0L, 0L, -1L)
   private val brick = "(\\d+),(\\d+),(\\d+)~(\\d+),(\\d+),(\\d+)".r
-  private case class Brick(id: Char, begin: Pos, end: Pos) {
+  private case class Brick(begin: Pos, end: Pos) {
     def move(delta: Delta): Brick = Brick(
-      id,
       (begin._1 + delta._1, begin._2 + delta._2, begin._3 + delta._3),
       (end._1 + delta._1, end._2 + delta._2, end._3 + delta._3)
     )
@@ -27,10 +26,9 @@ class Day22 extends Puzzle[Long] {
       maxZ + 1 == other.minZ && overlapping(other)
   }
 
-  private def parseLine(line: String, id: Int): Brick =
+  private def parseLine(line: String): Brick =
     line match
       case brick(x1, y1, z1, x2, y2, z2) => Brick(
-        ('A'.toInt + id).toChar,
         (x1.toLong, y1.toLong, z1.toLong),
         (x2.toLong, y2.toLong, z2.toLong)
       )
@@ -50,7 +48,7 @@ class Day22 extends Puzzle[Long] {
 
   override def exampleAnswerPart1: Long = 5
   override def solvePart1(lines: List[String]): Long =
-    val bricks = lines.zipWithIndex.map(parseLine).sortBy(_.minZ)
+    val bricks = lines.map(parseLine).sortBy(_.minZ)
     val settledBricks = settleBricks(bricks)
     settledBricks.count(s => {
       val reduced = settledBricks.filterNot(_ == s)
@@ -59,7 +57,7 @@ class Day22 extends Puzzle[Long] {
 
   override def exampleAnswerPart2: Long = 7
   override def solvePart2(lines: List[String]): Long =
-    val bricks = lines.zipWithIndex.map(parseLine).sortBy(_.minZ)
+    val bricks = lines.map(parseLine).sortBy(_.minZ)
     val settledBricks = settleBricks(bricks)
     val brickSet = settledBricks.toSet
     settledBricks.map(s => (settleBricks(settledBricks.filterNot(_ == s)).toSet diff brickSet).size).sum
