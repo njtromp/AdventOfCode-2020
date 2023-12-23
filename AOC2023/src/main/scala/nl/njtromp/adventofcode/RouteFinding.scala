@@ -94,15 +94,15 @@ trait RouteFinding extends SimpleMapTypes {
         })
     Nil
 
-  private def reconstructPath[A](start: A, current: A, source: mutable.Map[A, A]): List[A] =
+  protected def reconstructPath[A](start: A, current: A, source: mutable.Map[A, A]): List[A] =
     def reconstructPath(current: A): List[A] =
-    if (current == start)
-      List(start)
-    else
-      reconstructPath(source(current)) ++ List(current)
+      if (current == start)
+        List(start)
+      else
+        reconstructPath(source(current)) ++ List(current)
     reconstructPath(current)
 
-  def printColoredPath[A](map: SimpleMap[A], path: List[Pos], colorMapping: A => Int): Unit =
+  protected def printColoredPath[A](map: SimpleMap[A], path: List[Pos], colorMapping: A => Int): Unit =
     println
     val ps = path.toSet
     (0 until map.height).foreach(y =>
@@ -116,7 +116,7 @@ trait RouteFinding extends SimpleMapTypes {
       println
     )
 
-  def printPath[A](map: SimpleMap[A], path: List[Pos]): Unit =
+  protected def printPath[A](map: SimpleMap[A], path: List[Pos]): Unit =
     def decodeMove(move: List[Pos]): Char =
         val delta: Delta = (move.last._1 - move.head._1, move.last._2 - move.head._2)
         if (delta == up)
