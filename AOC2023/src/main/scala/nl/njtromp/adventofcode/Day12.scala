@@ -3,8 +3,6 @@ package nl.njtromp.adventofcode
 import scala.annotation.tailrec
 import scala.collection.mutable
 
-import scala.collection.parallel.CollectionConverters._
-
 class Day12 extends Puzzle[Long] {
   private case class Record(springs: String, groups: List[Int]) {
     lazy val reduced: String = reduceWorkingSprings(springs)
