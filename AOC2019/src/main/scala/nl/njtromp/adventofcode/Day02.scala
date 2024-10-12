@@ -6,17 +6,17 @@ class Day02 extends Puzzle[Long] {
   private val MUL = 2
 
   private def runProgram(instructions: Array[Int]): Long =
-    def apply(ip: Int, f: (Int, Int) => Int): Unit =
+    def apply(ip: Int, f: (Int, Int) => Int): Int =
       val a1 = instructions(ip + 1)
       val a2 = instructions(ip + 2)
       val r = instructions(ip + 3)
       instructions(r) = f(instructions(a1), instructions(a2))
+      ip + 4
     var ip = 0
     while instructions(ip) != STOP do
       instructions(ip) match
-        case ADD => apply(ip, (a, b) => a + b)
-        case MUL => apply(ip, (a, b) => a * b)
-      ip += 4
+        case ADD => ip = apply(ip, (a, b) => a + b)
+        case MUL => ip = apply(ip, (a, b) => a * b)
     instructions.head
 
   override def exampleAnswerPart1: Long = 2 + 2 + 2 + 30
