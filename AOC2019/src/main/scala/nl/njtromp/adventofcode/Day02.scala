@@ -6,23 +6,17 @@ class Day02 extends Puzzle[Long] {
   private val MUL = 2
 
   private def runProgram(instructions: Array[Int]): Long =
-    def add(ip: Int): Unit =
+    def apply(ip: Int, f: (Int, Int) => Int): Unit =
       val a1 = instructions(ip + 1)
       val a2 = instructions(ip + 2)
       val r = instructions(ip + 3)
-      instructions(r) = instructions(a1) + instructions(a2)
-    def mul(ip: Int): Unit =
-      val a1 = instructions(ip + 1)
-      val a2 = instructions(ip + 2)
-      val r = instructions(ip + 3)
-      instructions(r) = instructions(a1) * instructions(a2)
+      instructions(r) = f(instructions(a1), instructions(a2))
     var ip = 0
     while instructions(ip) != STOP do
       instructions(ip) match
-        case ADD => add(ip)
-        case MUL => mul(ip)
+        case ADD => apply(ip, (a, b) => a + b)
+        case MUL => apply(ip, (a, b) => a * b)
       ip += 4
-    println(instructions.mkString(","))
     instructions.head
 
   override def exampleAnswerPart1: Long = 2 + 2 + 2 + 30
@@ -35,9 +29,19 @@ class Day02 extends Puzzle[Long] {
     else
       lines.map(l => runProgram(l.split(",").map(_.toInt))).sum
 
-  override def exampleAnswerPart2: Long = 0
+  override def exampleAnswerPart2: Long = 19690720
   override def solvePart2(lines: List[String]): Long =
-    -1
+    if lines.size == 1 then
+      val instructions = lines.head.split(",").map(_.toInt)
+      (0 to 100 * 100).dropWhile(n =>
+        val ins = instructions.clone()
+        ins(1) = n / 100
+        ins(2) = n % 100
+        runProgram(ins) != 19690720
+      ).head
+    else
+      // Just skip the example
+      19690720
 
 }
 
