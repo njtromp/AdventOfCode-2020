@@ -71,11 +71,7 @@ class Day05 extends Puzzle[Long] {
     printedValue
 
   def runPrograms(lines: List[String], systemId: Int): Long =
-    if lines.size == 1 then
-      val instructions = lines.head.split(",").map(_.toInt)
-      runProgram(instructions, systemId)
-    else
-      lines.map(l => runProgram(l.split(",").map(_.toInt), systemId)).sum
+    lines.map(l => runProgram(l.split(",").map(_.toInt), systemId)).sum
 
   override def exampleAnswerPart1: Long = -1
   override def solvePart1(lines: List[String]): Long =
