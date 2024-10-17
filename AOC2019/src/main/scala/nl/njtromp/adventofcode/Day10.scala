@@ -1,6 +1,7 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 class Day10 extends Puzzle[Long] {
   private type Pos = (Int, Int)
@@ -47,14 +48,19 @@ class Day10 extends Puzzle[Long] {
         vaporizeAsteroids(toBeVaporized - amountToVaporize, asteroids.filter(a => !willBeVaporized.contains(a)))
     vaporizeAsteroids(200, asteroids)
 
+  private val stations = mutable.Queue.empty[Pos]
+
   override def exampleAnswerPart1: Long = 210
-  override def solvePart1(lines: List[String]): Long =
-    findStationLocation(locateAsteroids(lines))._2.size
+  override def solvePart1(lines: List[String]): Long = {
+    val stationWithAsteroidsInSight = findStationLocation(locateAsteroids(lines))
+    stations.enqueue(stationWithAsteroidsInSight._1)
+    stationWithAsteroidsInSight._2.size
+  }
 
   override def exampleAnswerPart2: Long = 802
   override def solvePart2(lines: List[String]): Long =
     val asteroids = locateAsteroids(lines)
-    val station = findStationLocation(asteroids)._1
+    val station = stations.dequeue()
     val lastAsteroid = activateLaser(station, asteroids)
     lastAsteroid._1 * 100 + lastAsteroid._2
 
