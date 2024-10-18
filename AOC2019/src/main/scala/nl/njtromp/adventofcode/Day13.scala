@@ -3,8 +3,6 @@ package nl.njtromp.adventofcode
 import scala.collection.mutable
 
 class Day13 extends Puzzle[Long] {
-  private type Pos = (Int, Int)
-
   private val STOP = 99
   private val ADD = 1
   private val MUL = 2
@@ -22,7 +20,38 @@ class Day13 extends Puzzle[Long] {
   private val IMMEDIATE = 1
   private val RELATIVE = 2
 
-  private def execute(program: Array[Long], initialValue: Long): mutable.Queue[Long] =
+  var ballPosition = 0L
+  var batPosition = 0L
+  var score = 0L
+  private def printScreen(instructions: List[Long]): Unit =
+    val screen: Map[(Long, Long), Long] = instructions.grouped(3).map(g => ((g.head, g(1)), g.last)).toMap.withDefaultValue(0)
+    val minX = screen.keys.foldLeft(Long.MaxValue)((a, i) => Math.min(a, i._1))
+    val maxX = screen.keys.foldLeft(Long.MinValue)((a, i) => Math.max(a, i._1))
+    val minY = screen.keys.foldLeft(Long.MaxValue)((a, i) => Math.min(a, i._2))
+    val maxY = screen.keys.foldLeft(Long.MinValue)((a, i) => Math.max(a, i._2))
+    def decode(x: Long, y: Long): Char = screen(x, y) match
+      case 0 => ' '
+      case 1 => '#'
+      case 2 => 'x'
+      case 3 =>
+        batPosition = x
+        '-'
+      case 4 =>
+        ballPosition = x
+        'o'
+    (minY to maxY).foreach(y =>
+      (minX to maxX).foreach(x =>
+        if (x, y) == (-1L, 0L) then
+          score = screen(x, y)
+//          print(s" $score\n ")
+        else
+//          print(decode(x, y))
+          decode(x, y) // Force updating the locations of the bat and the ball
+      )
+//      println
+    )
+
+  private def execute(program: Array[Long]): mutable.Queue[Long] =
     var ip: Int = 0
     var bp: Int = 0
     val extendedMemory = mutable.Map.empty[Long, Long].withDefaultValue(0L)
@@ -55,9 +84,10 @@ class Day13 extends Puzzle[Long] {
       write(mode / 100, program(ip + 3), f(read(mode, program(ip + 1)), read(mode / 10, program(ip + 2))))
       ip + 4
     def input(ip: Int, mode: Int): Int =
-      ???
-//      write(mode, program(ip + 1), input)
-//      ip + 2
+      printScreen(instructions.toList)
+      val input = Math.signum(ballPosition - batPosition).toLong
+      write(mode, program(ip + 1), input)
+      ip + 2
     def output(ip: Int, mode: Int): Int =
       val output = read(mode, program(ip + 1))
       instructions.enqueue(output)
@@ -110,25 +140,19 @@ class Day13 extends Puzzle[Long] {
   override def solvePart1(lines: List[String]): Long =
     if lines.nonEmpty then
       val program = lines.head.split(",").map(_.toLong)
-      val instructions = execute(program, 0)
-      instructions.grouped(3).map(_.last).count(_ == 2)
+      execute(program).grouped(3).map(_.last).count(_ == 2)
     else
       0
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
-//    if lines.nonEmpty then
-//      val program = lines.head.split(",").map(_.toLong)
-//      val tiles = execute(program, 1)
-//      val minX = tiles.keys.map(_._1).min + 1 // Remove some random noise
-//      val maxX = tiles.keys.map(_._1).max - 3 // Remove some random noise
-//      val minY = tiles.keys.map(_._2).min
-//      val maxY = tiles.keys.map(_._2).max
-//      (minY to maxY).foreach(y =>
-//        (minX to maxX).foreach(x => print(if tiles(x, y) == 1 then 'X' else ' '))
-//        println
-//      )
-    -1
+    if lines.nonEmpty then
+      val program = lines.head.split(",").map(_.toLong)
+      program(0) = 2
+      printScreen(execute(program).toList)
+      score
+    else
+      0
 
 }
 
