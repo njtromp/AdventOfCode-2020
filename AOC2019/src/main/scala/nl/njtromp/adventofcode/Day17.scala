@@ -86,8 +86,7 @@ class Day17 extends Puzzle[Long] {
       else
         print(value.toChar)
         if value == 35 then
-          val p: Pos = (x, y)
-          scaffolds += p
+          scaffolds += ((x, y))
         x += 1
       ip + 2
     def jumpIfTrue(ip: Int, mode: Int): Int =
