@@ -119,8 +119,31 @@ class Day19 extends Puzzle[Long] {
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
-    -1
-
+    if lines.isEmpty then return 0
+    val program = lines.head.split(",").map(_.toLong)
+    var y = 10 // Just make sure we skip the empty space
+    var x = 0
+    val tileSize = 100
+    var foundIt = false
+    while !foundIt do
+      // Find upper left corner
+      while !execute(program.clone(), x, y) do
+        x += 1
+      // If the line is not wide enough then try the next line
+      if !execute(program.clone(), x + tileSize - 1, y) then
+        y += 1
+      else
+        // While we did not find the lower left and there is an upper right, try one position to the right
+        var dx = 0
+        while !execute(program.clone(), x + dx, y + tileSize - 1) && execute(program.clone(), x + dx + tileSize - 1, y) do
+          dx += 1
+        // Check if it fits
+        if execute(program.clone(), x + dx, y + tileSize - 1) && execute(program.clone(), x + dx + tileSize - 1, y) then
+          x += dx
+          foundIt = true
+        else
+          y += 1
+    x * 10000 + y
 }
 
 object Day19 extends App {
