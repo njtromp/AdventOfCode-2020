@@ -28,6 +28,7 @@ class Day17 extends Puzzle[Long] {
     (1, 0),
   )
 
+  private var lastOutput = -1L
   private def countCrossings(scaffolds: mutable.Set[Pos]): Long =
     val minX = scaffolds.minBy(_._1)._1
     val maxX = scaffolds.maxBy(_._1)._1
@@ -43,7 +44,7 @@ class Day17 extends Puzzle[Long] {
   private def execute(program: Array[Long]): Long =
     var ip: Int = 0
     var bp: Int = 0
-    val extendedMemory = mutable.Map.empty[Long, Long]
+    val extendedMemory = mutable.Map.empty[Long, Long].withDefaultValue(0)
     var x: Int = 0
     var y: Int = 0
     val scaffolds = mutable.Set.empty[Pos]
@@ -78,14 +79,14 @@ class Day17 extends Puzzle[Long] {
       write(mode, program(ip + 1), input)
       ip + 2
     def output(ip: Int, mode: Int): Int =
-      val value = read(mode, program(ip + 1))
-      if value == '\n' then
+      lastOutput = read(mode, program(ip + 1))
+      if lastOutput == '\n' then
         println
         y += 1
         x = 0
       else
-        print(value.toChar)
-        if value == 35 then
+        print(lastOutput.toChar)
+        if lastOutput == 35 then
           scaffolds += ((x, y))
         x += 1
       ip + 2
@@ -109,6 +110,7 @@ class Day17 extends Puzzle[Long] {
       bp += read(mode, program(ip + 1)).toInt
       ip + 2
 
+    var inputCount = 0
     var opcode: Long = program(ip)
     while opcode != STOP do
       opcode % 100 match
@@ -117,8 +119,8 @@ class Day17 extends Puzzle[Long] {
         case MUL =>
           ip = biFunction(ip, opcode.toInt / 100, (a, b) => a * b)
         case INPUT =>
-          // Is not being used in the ASCII program so for easy of adopting the program lets use 0
-          ip = input(ip, opcode.toInt / 100, 0)
+          ip = input(ip, opcode.toInt / 100, instructions.charAt(inputCount))
+          inputCount += 1
         case OUTPUT =>
           ip = output(ip, opcode.toInt / 100)
         case JUMP_IF_TRUE =>
@@ -140,10 +142,19 @@ class Day17 extends Puzzle[Long] {
     if lines.isEmpty then return 0
     execute(lines.head.split(",").map(_.toLong))
 
-
+  // R,6,L,12,R,6,R,6,L,12,R,6,L,12,R,6,L,8,L12,R,12,L,10,L,10,L,12,R,6,L,8,L,12,R,12,L,10,L,10,L,12,R,6,L,8,L,12,R,12,L,10,L,10,L,12,R,6,L,8,L,12,R,6,L,12,R,6
+  private val instructions = "A,A,B,C,B,C,B,C,B,A\n" +
+    "R,6,L,12,R,6\n" + // A
+    "L,12,R,6,L,8,L,12\n" + // B
+    "R,12,L,10,L,10\n" + // C
+    "n\n"
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
-    -1
+    if lines.isEmpty then return 0
+    val program = lines.head.split(",").map(_.toLong)
+    program(0) = 2
+    execute(program)
+    lastOutput
 
 }
 
