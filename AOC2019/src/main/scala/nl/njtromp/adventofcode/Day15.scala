@@ -1,5 +1,6 @@
 package nl.njtromp.adventofcode
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 class Day15 extends Puzzle[Long] with RouteFinding {
@@ -30,6 +31,7 @@ class Day15 extends Puzzle[Long] with RouteFinding {
   private val WALL = 0
   private val MOVED = 1
   private val OXYGEN_SYSTEM = 2
+  private val OXYGEN = 2
   private val FREE = 3
 
   private def printMap(robot: Pos, map: mutable.Map[Pos, Int]): Unit =
@@ -56,7 +58,21 @@ class Day15 extends Puzzle[Long] with RouteFinding {
     )
     println
 
-  private def execute(program: Array[Long]): Long =
+  private def doMove(pos: Pos, move: Int): Pos =
+    move match
+      case NORTH => (pos._1, pos._2 - 1)
+      case SOUTH => (pos._1, pos._2 + 1)
+      case EAST => (pos._1 + 1, pos._2)
+      case WEST => (pos._1 - 1, pos._2)
+
+  private def reverse(move: Int): Int =
+    move match
+      case NORTH => SOUTH
+      case EAST => WEST
+      case SOUTH => NORTH
+      case WEST => EAST
+
+  private def execute(program: Array[Long]): mutable.Map[Pos, Int] =
     val extendedMemory = mutable.Map.empty[Long, Long]
     var ip: Int = 0
     var bp: Int = 0
@@ -66,18 +82,6 @@ class Day15 extends Puzzle[Long] with RouteFinding {
     var move = 0
     var backTracking = false
 
-    def doMove(pos: Pos, move: Int): Pos =
-      move match
-        case NORTH => (pos._1, pos._2 - 1)
-        case SOUTH => (pos._1, pos._2 + 1)
-        case EAST => (pos._1 + 1, pos._2)
-        case WEST => (pos._1 - 1, pos._2)
-    def reverse(move: Int): Int =
-      move match
-        case NORTH => SOUTH
-        case EAST => WEST
-        case SOUTH => NORTH
-        case WEST => EAST
     def nextMove(): Unit =
       // Try next direction
       while map.keySet.contains(doMove(pos, move)) do
@@ -186,24 +190,37 @@ class Day15 extends Puzzle[Long] with RouteFinding {
       opcode = program(ip)
     println
 //    printMap((0, 0), map)
-    val start = (0L, 0L)
-    val finish = map.filter(_._2 == OXYGEN_SYSTEM).head._1
-    val moves = List(0, 1, 2, 3)
-    val route = bfs(start, finish, p => moves.map(m => doMove(p, m)).filter(map(_) != WALL))
-    route.size - 1
+    map
+
+  private val moves = List(0, 1, 2, 3)
+  @tailrec
+  private def fillWithOxygen(time: Long, filled: Set[Pos], map: mutable.Map[(Long, Long), Int]): Long =
+    if filled.isEmpty then
+      time - 1
+    else
+      val newlyFilled = filled.flatMap(p => moves.map(doMove(p, _)))
+        .filter(map(_) == FREE)
+      newlyFilled.foreach(map(_) = OXYGEN)
+      fillWithOxygen(time + 1, newlyFilled, map)
 
   override def exampleAnswerPart1: Long = 0
   override def solvePart1(lines: List[String]): Long =
     if lines.isEmpty then return 0
     val program = lines.head.split(",").map(_.toLong)
-    execute(program)
+    val map = execute(program)
+    val start = (0L, 0L)
+    val finish = map.filter(_._2 == OXYGEN_SYSTEM).head._1
+    val route = bfs(start, finish, p => moves.map(m => doMove(p, m)).filter(map(_) != WALL))
+    route.size - 1
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
-    if lines.isEmpty then return -1
+    if lines.isEmpty then return 0
     val program = lines.head.split(",").map(_.toLong)
-    execute(program)
-    -1
+    val map = execute(program)
+    map((0, 0)) = FREE
+    val oxygenSystem: Pos = map.filter(_._2 == OXYGEN_SYSTEM).head._1
+    fillWithOxygen(0L, Set(oxygenSystem), map)
 
 }
 
