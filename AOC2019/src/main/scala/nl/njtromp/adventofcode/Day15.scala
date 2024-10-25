@@ -192,7 +192,7 @@ class Day15 extends Puzzle[Long] with RouteFinding {
 //    printMap((0, 0), map)
     map
 
-  private val moves = List(0, 1, 2, 3)
+  private val moves = List(NORTH, EAST, SOUTH, WEST)
   @tailrec
   private def fillWithOxygen(time: Long, filled: Set[Pos], map: mutable.Map[(Long, Long), Int]): Long =
     if filled.isEmpty then
