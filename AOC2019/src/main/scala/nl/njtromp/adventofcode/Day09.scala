@@ -77,7 +77,6 @@ class Day09 extends Puzzle[Long] {
       ip + 2
     def output(ip: Int, mode: Int): Int =
       lastOutput = read(mode, program(ip + 1))
-      print(s"$lastOutput,")
       out.enqueue(lastOutput)
       ip + 2
     def jumpIfTrue(ip: Int, mode: Int): Int =
@@ -127,7 +126,6 @@ class Day09 extends Puzzle[Long] {
             ip = adjustBp(ip, opcode.toInt / 100)
         opcode = program(ip)
       taskSwitch()
-    println
     lastOutput
 
   private def runPrograms(programs: List[ProgramState]): Long =
