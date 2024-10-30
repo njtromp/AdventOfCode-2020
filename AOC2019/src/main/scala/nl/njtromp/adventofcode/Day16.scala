@@ -1,13 +1,14 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
+import scala.collection.parallel.CollectionConverters.*
 
 class Day16 extends Puzzle[Long] {
   private def fft(repeats: Int, digits: List[Int], basePattern: Array[Int]): List[Int] =
     def createPattern(multiplier: Int): Array[Int] =
       basePattern.flatMap(Array.fill(multiplier)(_))
     def phase(digits: List[Int]): List[Int] =
-      (1 to digits.length).toList.map(n =>
+      (1 to digits.length).par.map(n =>
         val pattern = createPattern(n)
         var i = 1
         val result = digits.foldLeft(0)((a, d) =>
@@ -16,12 +17,14 @@ class Day16 extends Puzzle[Long] {
           a + d * f
         )
         Math.abs(result) % 10
-      )
+      ).toList
     @tailrec
     def fft(repeats: Int, digits: List[Int]): List[Int] =
       if repeats == 0 then
+        println
         digits
       else
+        print('.')
         fft(repeats - 1, phase(digits))
 
     fft(repeats, digits)
@@ -35,9 +38,14 @@ class Day16 extends Puzzle[Long] {
     }
     ).sum
 
-  override def exampleAnswerPart2: Long = 0
+  override def exampleAnswerPart2: Long = 0// 53553731L // 84462026L + 78725270L + 53553731L
   override def solvePart2(lines: List[String]): Long =
-    -1
+    (if lines.length == 1 then lines else lines.drop(6)).map(l =>
+      val input = l.toList.map(_.asDigit)
+      val offset = l.take(7).toInt
+      fft(100, (0 until 10000).toList.flatMap(_ => input), Array(0, 1, 0, -1)).slice(offset, offset + 8)
+        .foldLeft(0L)((a, d) => a * 10L + d)
+    ).sum
 
 }
 
