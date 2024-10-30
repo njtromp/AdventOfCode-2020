@@ -1,21 +1,18 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 
 class Day16 extends Puzzle[Long] {
-  private def fft(repeats: Int, digits: List[Int], basePattern: List[Int]): List[Int] =
-    def createPattern(multiplier: Int): mutable.Queue[Int] =
-      val pattern = mutable.Queue.from(basePattern.flatMap(List.fill(multiplier)(_)))
-      // Rotate once
-      pattern.enqueue(pattern.dequeue())
-      pattern
+  private def fft(repeats: Int, digits: List[Int], basePattern: Array[Int]): List[Int] =
+    def createPattern(multiplier: Int): Array[Int] =
+      basePattern.flatMap(Array.fill(multiplier)(_))
     def phase(digits: List[Int]): List[Int] =
       (1 to digits.length).toList.map(n =>
         val pattern = createPattern(n)
+        var i = 1
         val result = digits.foldLeft(0)((a, d) =>
-          val f = pattern.dequeue()
-          pattern.enqueue(f)
+          val f = pattern(i)
+          i = (i + 1) % pattern.length
           a + d * f
         )
         Math.abs(result) % 10
@@ -32,7 +29,7 @@ class Day16 extends Puzzle[Long] {
   override def exampleAnswerPart1: Long = 24176176L + 73745418L + 52432133L
   override def solvePart1(lines: List[String]): Long =
     (if lines.length == 1 then lines else lines.take(3)).map(l => {
-      fft(100, l.toList.map(_.asDigit), List(0, 1, 0, -1))
+      fft(100, l.toList.map(_.asDigit), Array(0, 1, 0, -1))
         .take(8)
         .foldLeft(0L)((a, d) => a * 10L + d)
     }
