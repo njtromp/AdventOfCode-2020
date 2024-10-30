@@ -37,6 +37,7 @@ class Day22 extends Puzzle[Long] {
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
+    println("Part 2 is not funny :-(")
     -1
 
 }

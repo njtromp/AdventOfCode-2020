@@ -38,9 +38,10 @@ class Day16 extends Puzzle[Long] {
     }
     ).sum
 
-  override def exampleAnswerPart2: Long = 0// 53553731L // 84462026L + 78725270L + 53553731L
+  override def exampleAnswerPart2: Long = 84462026L + 78725270L + 53553731L
   override def solvePart2(lines: List[String]): Long =
-    (if lines.length == 1 then lines else lines.drop(6)).map(l =>
+    println("Part 2 is not funny :-(")
+    (if lines.length == 1 then lines else lines.drop(3)).map(l =>
       val input = l.toList.map(_.asDigit)
       val offset = l.take(7).toInt
       fft(100, (0 until 10000).toList.flatMap(_ => input), Array(0, 1, 0, -1)).slice(offset, offset + 8)
