@@ -14,11 +14,23 @@ trait Puzzle[T] {
   def solvePart2(lines: List[String]): T
 
   def solvePuzzles(): Unit =
-    solvePuzzles(s"/${getClass.getSimpleName.toLowerCase}.txt")
+    solvePuzzles(true)
+
+  def solvePuzzles(trim: Boolean): Unit =
+    solvePuzzles(s"/${getClass.getSimpleName.toLowerCase}.txt", trim)
 
   def solvePuzzles(inputName: String): Unit =
-    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList.map(_.trim)
-    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList.map(_.trim)
+    solvePuzzles(inputName: String, true)
+
+  def solvePuzzles(inputName: String, trim: Boolean): Unit =
+    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\.")))
+      .getLines()
+      .toList
+      .map(l => if trim then l.trim else l)
+    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName))
+      .getLines()
+      .toList
+      .map(l => if trim then l.trim else l)
     solvePuzzles(example, lines)
 
   private def solvePuzzles(example: List[String], lines: List[String]): Unit =
