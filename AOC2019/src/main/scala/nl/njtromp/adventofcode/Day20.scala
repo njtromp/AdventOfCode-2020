@@ -39,7 +39,7 @@ class Day20 extends Puzzle[Long] with RouteFinding {
 
   override def exampleAnswerPart2: Long = 396
   override def solvePart2(lines: List[String]): Long =
-    println("Please run with at least 64MB stackspace, eg: -Xss64m")
+    println("Please run with at least 64MB stackspace, eg: -Xss16m")
     val ls = if lines.length == 56 then lines.drop(19) else lines
     val map = SimpleMap[Char](ls, _.toCharArray)
     val dots = map.find('.').toSet
