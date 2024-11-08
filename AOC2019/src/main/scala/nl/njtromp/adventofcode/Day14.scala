@@ -33,28 +33,6 @@ class Day14 extends Puzzle[Long] {
         ).sum
     productionNeeded(ORE)
 
-  private def produce(toBeProduced: List[Chemical], chemicals: List[(Chemical, List[Chemical])]): Long =
-    val recipes = chemicals.map(c => (c._1._1, c)).toMap
-    @tailrec
-    def produce(toBeProduced: List[Chemical]): List[Chemical] =
-      if toBeProduced.size == 1 && toBeProduced.head._1 == ORE then
-        toBeProduced
-      else
-        val bla: List[Chemical] = toBeProduced.filter(_._1 == ORE) ++
-          toBeProduced.filter(_._1 != ORE).flatMap(c =>
-            print(s"Producing ${c._1} ")
-            val recipe = recipes(c._1)
-            val multiplier = Math.max(1, c._2 / recipe._1._2) //+ (if c._2 % recipe._1._2 != 0 then 1 else 0)
-            print(s"${c._2} /  ${recipe._1._2} => $multiplier ")
-            val needed = recipe._2.map(r => (r._1, r._2 * multiplier))
-            println(s"requires $needed")
-            needed
-          )
-        println
-        val reduced = bla.groupBy(_._1).map(r => (r._1, r._2.map(_._2).sum)).toList
-        produce(reduced)
-    produce(toBeProduced).head._2
-
   override def exampleAnswerPart1: Long = 31 + 165 + 2210736
   override def solvePart1(lines: List[String]): Long =
     groupByEmptyLine(lines).map(ls =>
