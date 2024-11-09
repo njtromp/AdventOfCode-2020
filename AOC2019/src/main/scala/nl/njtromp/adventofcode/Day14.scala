@@ -47,10 +47,12 @@ class Day14 extends Puzzle[Long] {
     val MAX_ORE = 1000000000000L 
     var fuel = 1L
     var ore = produceFuel(fuel, chemicals)
+    // Find amount of fuel above the limit
     while ore < MAX_ORE do
       fuel *= 2
       ore = produceFuel(fuel, chemicals)
     var low = fuel / 2
+    // Binary search
     while low + 1 != fuel && produceFuel(fuel, chemicals) > MAX_ORE do
       val mid = low + (fuel - low) / 2
       if produceFuel(mid, chemicals) < MAX_ORE then
