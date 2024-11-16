@@ -46,6 +46,8 @@ trait Puzzle[T] {
     else
       Console.err.println(s"Part 2 failed, expecting $exampleAnswerPart2 but got $answer2")
 
+  def gcd(a: Long, b: Long): Long = if a % b == 0 then b else gcd(b, a % b)
+
   def groupByEmptyLine(lines: List[String]): List[List[String]] =
     if (lines.isEmpty)
       Nil
