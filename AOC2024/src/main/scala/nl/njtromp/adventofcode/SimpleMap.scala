@@ -26,7 +26,7 @@ trait SimpleMapTypes {
 
 class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   val height: Int = elems.length
-  val width: Int = elems(0).length
+  val width: Int = elems.map(_.length).max
   def apply(p: Pos): A = elems(p._1)(p._2)
   def update(p: Pos, v: A): Unit = elems(p._1)(p._2) = v
   def isOnMap(p: Pos): Boolean = elems.indices.contains(p._1) && elems(0).indices.contains(p._2)
@@ -51,6 +51,8 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
       allNeighborPositions(p, directions).map(this(_))
   def find(item: A): List[Pos] =
     allPositions().filter(p => this(p) == item)
+  def find(predicate: A => Boolean): List[Pos] =
+    allPositions().filter(p => predicate(this(p)))
   def asString(): String = elems.map(_.mkString).mkString("\n")
 }
 

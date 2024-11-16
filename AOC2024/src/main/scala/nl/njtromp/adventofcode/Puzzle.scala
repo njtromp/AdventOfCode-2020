@@ -14,11 +14,23 @@ trait Puzzle[T] {
   def solvePart2(lines: List[String]): T
 
   def solvePuzzles(): Unit =
-    solvePuzzles(s"/${getClass.getSimpleName.toLowerCase}.txt")
+    solvePuzzles(true)
+
+  def solvePuzzles(trim: Boolean): Unit =
+    solvePuzzles(s"/${getClass.getSimpleName.toLowerCase}.txt", trim)
 
   def solvePuzzles(inputName: String): Unit =
-    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\."))).getLines().toList.map(_.trim)
-    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName)).getLines().toList.map(_.trim)
+    solvePuzzles(inputName: String, true)
+
+  def solvePuzzles(inputName: String, trim: Boolean): Unit =
+    val example: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName.replaceAll("\\.", "-example\\.")))
+      .getLines()
+      .toList
+      .map(l => if trim then l.trim else l)
+    val lines: List[String] = Source.fromInputStream(getClass.getResourceAsStream(inputName))
+      .getLines()
+      .toList
+      .map(l => if trim then l.trim else l)
     solvePuzzles(example, lines)
 
   private def solvePuzzles(example: List[String], lines: List[String]): Unit =
@@ -34,13 +46,15 @@ trait Puzzle[T] {
     else
       Console.err.println(s"Part 2 failed, expecting $exampleAnswerPart2 but got $answer2")
 
+  def gcd(a: Long, b: Long): Long = if a % b == 0 then b else gcd(b, a % b)
+
   def groupByEmptyLine(lines: List[String]): List[List[String]] =
     if (lines.isEmpty)
       Nil
     else
       lines.takeWhile(_.nonEmpty) :: groupByEmptyLine(lines.dropWhile(_.nonEmpty).dropWhile(_.isEmpty))
 
-  extension[Repr] (repr: Repr)(using itererable: IsIterable[Repr])
+  extension[Repr] (repr: Repr)(using iterable: IsIterable[Repr])
     def takeUntil(p: itererable.A => Boolean): List[itererable.A] =
       val iter = itererable(repr).iterator
       val b = new ListBuffer[itererable.A]

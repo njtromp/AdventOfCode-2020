@@ -21,6 +21,7 @@ trait RouteFinding extends SimpleMapTypes {
         neighbors(current).foreach(n => {
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
+            source(n) = current
         })
     Nil
 
@@ -39,6 +40,7 @@ trait RouteFinding extends SimpleMapTypes {
         neighbors.foreach(n => {
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
+            source(n) = current
         })
     Nil
 
