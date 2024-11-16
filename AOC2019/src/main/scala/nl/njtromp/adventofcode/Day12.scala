@@ -1,17 +1,18 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 
 class Day12 extends Puzzle[Long] {
-  private type XYZ = (Long, Long, Long)
+  // Position, Speed
+  case class PS(x: Long, y: Long, z: Long)
+  case class Moon(pos: PS, speed: PS)
 
-  private def parseMoonSystem(lines: List[String]): List[XYZ] =
+  private def parseMoonSystem(lines: List[String]): List[Moon] =
     lines.map {
-      case s"<x=$x, y=$y, z=$z>" => (x.trim.toLong, y.trim.toLong, z.trim.toLong)
+      case s"<x=$x, y=$y, z=$z>" => Moon(PS(x.trim.toLong, y.trim.toLong, z.trim.toLong), PS(0, 0, 0))
     }
 
-  private def applyGravity(moon: (XYZ, XYZ), moons: List[(XYZ, XYZ)]): XYZ =
+  private def applyGravity(moon: Moon, moons: List[Moon]): PS =
     def gravityPull(a: Long, b: Long): Long =
       if a < b then
         1L
@@ -19,64 +20,56 @@ class Day12 extends Puzzle[Long] {
         -1L
       else
         0L
-    moons.foldLeft(moon._2)((a, s) =>
-      (
-        a._1 + gravityPull(moon._1._1, s._1._1),
-        a._2 + gravityPull(moon._1._2, s._1._2),
-        a._3 + gravityPull(moon._1._3, s._1._3)
+    moons.foldLeft(moon.speed)((a, s) =>
+      PS(
+        a.x + gravityPull(moon.pos.x, s.pos.x),
+        a.y + gravityPull(moon.pos.y, s.pos.y),
+        a.z + gravityPull(moon.pos.z, s.pos.z)
       )
     )
 
-  private def step(moonSystem: List[(XYZ, XYZ)]): List[(XYZ, XYZ)] =
+  private def step(moonSystem: List[Moon]): List[Moon] =
     moonSystem.map(ms =>
       val velocity = applyGravity(ms, moonSystem.filter(_ != ms))
-      ((ms._1._1 + velocity._1, ms._1._2 + velocity._2, ms._1._3 + velocity._3), velocity)
+      Moon(PS(ms.pos.x + velocity.x, ms.pos.y + velocity.y, ms.pos.z + velocity.z), velocity)
     )
 
   @tailrec
-  private def simulate(moonSystem: List[(XYZ, XYZ)], iterations: Long): Long =
-    def sumAbs(a: XYZ): Long = Math.abs(a._1) + Math.abs(a._2) + Math.abs(a._3)
+  private def simulate(moonSystem: List[Moon], iterations: Long): Long =
+    def sumAbs(a: PS): Long = Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z)
     if iterations == 0 then
-      moonSystem.map(ms => sumAbs(ms._1) * sumAbs(ms._2)).sum
+      moonSystem.map(ms => sumAbs(ms.pos) * sumAbs(ms.speed)).sum
     else
       simulate(step(moonSystem), iterations - 1)
 
-  private def simulate(moons: List[XYZ]): Long =
-    simulate(moons.map(m => (m, (0L, 0L, 0L))), 1000)
+  private def simulate(moons: List[Moon]): Long =
+    simulate(moons, 1000)
 
-  private def findRepetition(moons: List[XYZ]): Long =
-    val moonSystem: List[(XYZ, XYZ)] = moons.map(m => (m, (0L, 0L, 0L): XYZ))
-    val positions = Array.fill[mutable.Map[XYZ, Long]](4)(mutable.Map.empty[XYZ, Long].withDefaultValue(0L))
-    (1 until 4).foreach(planet => positions(planet)(moonSystem(planet)._1) += 1)
+  private def findRepetition(startingSystem: List[Moon], extractor: Moon => Long): Long =
     @tailrec
-    def repeat(moonSystem: List[(XYZ, XYZ)], count: Long): Long =
-      if count == 0 then
-        -1L
+    def repeat(moonSystem: List[Moon], iterationCount: Long): Long =
+      val newSystem = step(moonSystem)
+      if newSystem.map(extractor).forall(_ == 0) then
+        iterationCount
       else
-        val newMoonSystem = step(moonSystem)
-        (0 until 4).foreach(planet => positions(planet)(moonSystem(planet)._1) += 1)
-        repeat(newMoonSystem, count - 1)
-    val result = repeat(moonSystem, 10000)
-    (0 until 4).foreach(planet => println(f"${positions(planet).keySet.size}%,d"))
-    println("="*20)
-    result
+        repeat(newSystem, iterationCount + 1)
+    repeat(startingSystem, 1)
 
-  // <- The second example only uses 100 iterations, hence 1940 is not what we expect. It is however the answer
-  // with just 100 iterations
+  // The second example only uses 100 iterations and for part 1 we need 1000 iteration, hence 1940 is not what we expect
+  // 14645 is what we expect for 1000 iterations
   override def exampleAnswerPart1: Long = 14645
   override def solvePart1(lines: List[String]): Long =
     simulate(parseMoonSystem(lines))
 
   override def exampleAnswerPart2: Long = 4686774924L
   override def solvePart2(lines: List[String]): Long =
-    findRepetition(parseMoonSystem(lines))
-
-  private var steps = 0L
-  private def printMoonSystem(moonSystem: List[(XYZ, XYZ)]): Unit =
-    println(s"After $steps steps:")
-    moonSystem.foreach(println)
-    steps += 1
-    println
+    // Thanks to: https://github.com/maneatingape/advent-of-code-scala/
+    val startingSystem = parseMoonSystem(lines)
+    val halfPeriodX = findRepetition(startingSystem, (m: Moon) => m.speed.x)
+    val halfPeriodY = findRepetition(startingSystem, (m: Moon) => m.speed.y)
+    val halfPeriodZ = findRepetition(startingSystem, (m: Moon) => m.speed.z)
+    val halfPeriodXY = halfPeriodX * halfPeriodY / gcd(halfPeriodX, halfPeriodY)
+    2 * halfPeriodXY * halfPeriodZ / gcd(halfPeriodXY, halfPeriodZ)
 
 }
 
