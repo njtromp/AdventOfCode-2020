@@ -1,7 +1,6 @@
 package nl.njtromp.adventofcode
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 
 class Day21 extends Puzzle[Long] with SimpleMapTypes {
 
@@ -73,7 +72,7 @@ class Day21 extends Puzzle[Long] with SimpleMapTypes {
     val west = 5765L
     val northWest = (6709L, 1000L)
     val center = (7770L, 7627L)
-    // Based in the plots from showPlotsPerSquare we com to this calculation
+    // Based in the plots from showPlotsPerSquare we come to this calculation
     (north + east + south + west) +
       (length * (northEast._2 + southEast._2 + southWest._2 + northWest._2)) +
       (length - 1) * (northEast._1 + southEast._1 + southWest._1 + northWest._1) +
