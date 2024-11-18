@@ -55,9 +55,9 @@ trait Puzzle[T] {
       lines.takeWhile(_.nonEmpty) :: groupByEmptyLine(lines.dropWhile(_.nonEmpty).dropWhile(_.isEmpty))
 
   extension[Repr] (repr: Repr)(using iterable: IsIterable[Repr])
-    def takeUntil(p: itererable.A => Boolean): List[itererable.A] =
-      val iter = itererable(repr).iterator
-      val b = new ListBuffer[itererable.A]
+    def takeUntil(p: iterable.A => Boolean): List[iterable.A] =
+      val iter = iterable(repr).iterator
+      val b = new ListBuffer[iterable.A]
       var continue = true
       while (iter.hasNext && continue) {
         val value = iter.next
