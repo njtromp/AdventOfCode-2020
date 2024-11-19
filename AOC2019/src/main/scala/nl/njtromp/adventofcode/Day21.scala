@@ -109,25 +109,42 @@ class Day21 extends Puzzle[Long] {
     lastOutput
 
   private var inputCount: Int = 0
-  private val instructions = List(
-    // Jump if there is a hole anywhere before location D unless D is a hole itself or A is a hole
-    "OR D J", // Only jump if D is not a hole
-    "OR A T", // Can we walk?
-    "AND B T", // Is there a hole at B ...
-    "AND C T", // ... or at C ...
-    "NOT T T", // Then jump
-    "AND T J", // if there is a D
-    "WALK"
-  ).mkString("", "\n", "\n")
+  private var instructions = ""
 
   override def exampleAnswerPart1: Long = 0
   override def solvePart1(lines: List[String]): Long =
     if lines.isEmpty then return 0
+    inputCount = 0
+    instructions = List(
+      // Jump if there is a hole anywhere before location D unless D is a hole itself or A is a hole
+      "OR D J", // Only jump if D is not a hole
+      "OR A T", // Can we walk?
+      "AND B T", // Is there a hole at B ...
+      "AND C T", // ... or at C ...
+      "NOT T T", // Then jump
+      "AND T J", // if there is a D
+      "WALK"
+    ).mkString("", "\n", "\n")
     execute(lines.head.split(",").map(_.toLong))
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
-    -1
+    if lines.isEmpty then return 0
+    inputCount = 0
+    instructions = List(
+      // Jump if there is a hole anywhere before location D unless D is a hole itself or A is a hole
+      "OR A J",   // Can we walk?
+      "AND B J",  // Is there a hole at B ...
+      "AND C J",  // ... or at C ...
+      "NOT J J",  // Then jump
+      "AND D J",  // Only jump if D is not a hole ...
+      // Up until now it is a simplefied version of part 1 that doesn't use register T
+      "OR E T",   // ... and at least E ...
+      "OR H T",   // ... or H ...
+      "AND T J",  // ... is not a hole.
+      "RUN"
+    ).mkString("", "\n", "\n")
+    execute(lines.head.split(",").map(_.toLong))
 
 }
 
