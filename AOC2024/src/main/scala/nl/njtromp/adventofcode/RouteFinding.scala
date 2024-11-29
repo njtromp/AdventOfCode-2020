@@ -18,11 +18,11 @@ trait RouteFinding extends SimpleMapTypes {
         return reconstructPath(start, finish, source)
       if (!visited.contains(current))
         visited += current
-        neighbors(current).foreach(n => {
+        neighbors(current).foreach(n => 
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
             source(n) = current
-        })
+        )
     Nil
 
   def bfs[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
@@ -37,11 +37,11 @@ trait RouteFinding extends SimpleMapTypes {
       if (!visited.contains(current))
         visited += current
         val neighbors = map.neighborPositions(current, square).filter(n => canReach(map(current), map(n)))
-        neighbors.foreach(n => {
+        neighbors.foreach(n =>
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
             source(n) = current
-        })
+        )
     Nil
 
   def dijkstra[A](start: A, finish: A, neighbors: A => List[A], weight: (A, A) => Long): List[A] =
@@ -59,7 +59,7 @@ trait RouteFinding extends SimpleMapTypes {
       if (!visited.contains(current))
         visited += current
         val length = distanceToStart(current)
-        neighbors(current).foreach(n => {
+        neighbors(current).foreach(n =>
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
           // Relax
@@ -67,7 +67,7 @@ trait RouteFinding extends SimpleMapTypes {
           if (length + delta < distanceToStart(n))
             distanceToStart += n -> (length + delta)
             source += n -> current
-        })
+        )
     Nil
 
   def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
@@ -86,14 +86,14 @@ trait RouteFinding extends SimpleMapTypes {
         visited += current
         val length = distanceToStart(current)
         val neighbors = map.neighborPositions(current, square).filter(n => canReach(map(current), map(n)))
-        neighbors.foreach(n => {
+        neighbors.foreach(n =>
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
           // Relax
           if (length + 1 < distanceToStart(n))
             distanceToStart += n -> (length + 1)
             source += n -> current
-        })
+        )
     Nil
 
   protected def reconstructPath[A](start: A, current: A, source: mutable.Map[A, A]): List[A] =
