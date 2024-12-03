@@ -1,9 +1,9 @@
 package nl.njtromp.adventofcode
 
-class Day03 extends Puzzle[Long] {
+class Day03 extends ParserPuzzle[Long] {
   private val MUL = "mul\\(\\d+,\\d+\\).*".r
-  private val DO = "do\\(\\).*".r
-  private val DONT = "don't\\(\\).*".r
+  private val DO = "do()"
+  private val DONT = "don't()"
   private var enabled = true
 
   private def extractMuls(line: String): Long =
@@ -20,12 +20,12 @@ class Day03 extends Puzzle[Long] {
   private def extractMulsActive(line: String): Long =
     if line.isEmpty then
       0
-    else if DO.matches(line) then
+    else if line.startsWith(DO) then
       enabled = true
-      extractMulsActive(line.substring("do()".length))
-    else if DONT.matches(line) then
+      extractMulsActive(line.substring(DO.length))
+    else if line.startsWith(DONT) then
       enabled = false
-      extractMulsActive(line.substring("dont()".length))
+      extractMulsActive(line.substring(DONT.length))
     else if MUL.matches(line) then
       val openingBracket = line.indexOf('(')
       val closingBracket = line.indexOf(')')
@@ -40,13 +40,18 @@ class Day03 extends Puzzle[Long] {
 
   override def exampleAnswerPart1: Long = 161
   override def solvePart1(lines: List[String]): Long =
-    lines.map(extractMuls).sum
+    if lines.length == 2 then
+      lines.take(1).map(extractMuls).sum
+    else
+      lines.map(extractMuls).sum
 
-  // Very sneaky, the example doesn't contain any do()'s or dont()'s so the result of it still is 161!
-  override def exampleAnswerPart2: Long = 161
+  override def exampleAnswerPart2: Long = 48
   override def solvePart2(lines: List[String]): Long =
     enabled = true
-    lines.map(extractMulsActive).sum
+    if lines.length == 2 then
+      lines.drop(1).map(extractMulsActive).sum
+    else
+      lines.map(extractMulsActive).sum
 
 }
 
