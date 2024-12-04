@@ -34,7 +34,8 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   def rows(): List[String] = elems.map(_.mkString).toList
   def column(x: Int): List[A] = (0 until height).map(elems(_)(x)).toList
   def columns(): List[String] = (0 until width).map(column(_).mkString).toList
-  def move(p: Pos, d: Delta): Pos = (p._1 + d._1, p._2 + d._2) 
+  def move(p: Pos, d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
+  def moveOpposite(p: Pos, d: Delta): Pos = ((p._1 - d._1, p._2 - d._2))
   def allPositions(): List[Pos] =
     (0 until height).flatMap(y => {
       (0 until width).map(x => (y, x))
