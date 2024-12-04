@@ -9,13 +9,13 @@ class Day04 extends Puzzle[Long] with SimpleMapTypes {
       else
         val m = map.move(x, d)
         map(x) + createWord(m, d, length - 1)
-    val xs = map.find(xmas.head)
-    val words = xs.flatMap(x =>
+    map.find(xmas.head).flatMap(x =>
       all.map(d => createWord(x, d, xmas.length)))
-    words.count(_ == xmas)
+      .count(_ == xmas
+    )
 
   private def findX_MAS(map: SimpleMap[Char]): Long =
-    def createWord(a: Pos, d: Delta): String =
+    def createMAS(a: Pos, d: Delta): String =
       val m = map.move(a, d)
       val s = map.moveOpposite(a, d)
       if map.isOnMap(m) && map.isOnMap(s) then
@@ -23,10 +23,8 @@ class Day04 extends Puzzle[Long] with SimpleMapTypes {
       else
         ""
     def isX_MAS(a: (Int, Int), deltas: List[(Int, Int)]): Boolean =
-      deltas.count(d => List("MAS", "SAM").contains(createWord(a, d))) == 2
-    val as = map.find(_ == 'A')
-    val ds = List(upRight, downRight)
-    as.count(isX_MAS(_, ds))
+      deltas.count(d => List("MAS", "SAM").contains(createMAS(a, d))) == 2
+    map.find(_ == 'A').count(isX_MAS(_, List(upRight, downRight)))
 
   override def exampleAnswerPart1: Long = 18
   override def solvePart1(lines: List[String]): Long =
