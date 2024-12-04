@@ -1,6 +1,6 @@
 package nl.njtromp.adventofcode
 
-class Day03 extends ParserPuzzle[Long] {
+class Day03 extends Puzzle[Long] {
   private val MUL = "mul\\(\\d+,\\d+\\).*".r
   private val DO = "do()"
   private val DONT = "don't()"
