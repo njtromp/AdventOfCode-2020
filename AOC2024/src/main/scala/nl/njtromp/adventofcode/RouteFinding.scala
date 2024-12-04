@@ -36,7 +36,7 @@ trait RouteFinding extends SimpleMapTypes {
         return reconstructPath(start, finish, source)
       if (!visited.contains(current))
         visited += current
-        val neighbors = map.neighborPositions(current, square).filter(n => canReach(map(current), map(n)))
+        val neighbors = map.neighborPositions(current, SQUARE).filter(n => canReach(map(current), map(n)))
         neighbors.foreach(n =>
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
@@ -85,7 +85,7 @@ trait RouteFinding extends SimpleMapTypes {
       if (!visited.contains(current))
         visited += current
         val length = distanceToStart(current)
-        val neighbors = map.neighborPositions(current, square).filter(n => canReach(map(current), map(n)))
+        val neighbors = map.neighborPositions(current, SQUARE).filter(n => canReach(map(current), map(n)))
         neighbors.foreach(n =>
           if (!visited.contains(n))
             toBeVisited.enqueue(n)
@@ -121,11 +121,11 @@ trait RouteFinding extends SimpleMapTypes {
   protected def printPath[A](map: SimpleMap[A], path: List[Pos]): Unit =
     def decodeMove(move: List[Pos]): Char =
         val delta: Delta = (move.last._1 - move.head._1, move.last._2 - move.head._2)
-        if (delta == up)
+        if (delta == UP)
           '^'
-        else if (delta == down)
+        else if (delta == DOWN)
           'v'
-        else if (delta == left)
+        else if (delta == LEFT)
           '<'
         else
           '>'

@@ -7,21 +7,21 @@ trait SimpleMapTypes {
   type Delta = (Int, Int)
   type Pos =   (Int, Int)
 
-  val up: Delta = (-1, 0)
-  val down: Delta = (1, 0)
-  val left: Delta = (0, -1)
-  val right: Delta = (0, 1)
-  val upLeft: Delta = (-1, -1)
-  val upRight: Delta = (-1, 1)
-  val downLeft: Delta = (1, -1)
-  val downRight: Delta = (1, 1)
-  val vertical: List[Delta] = List(up, down)
-  val horizontal: List[Delta] = List(left, right)
-  val square: List[Delta] = vertical ++ horizontal
-  val diagonalCW: List[Delta] = List(upRight, downLeft)
-  val diagonalCCW: List[Delta] = List(upLeft, downRight)
-  val diagonal: List[Delta] = diagonalCW ++ diagonalCCW
-  val all: List[Delta] = square ++ diagonal
+  val UP: Delta = (-1, 0)
+  val DOWN: Delta = (1, 0)
+  val LEFT: Delta = (0, -1)
+  val RIGHT: Delta = (0, 1)
+  val UP_LEFT: Delta = (-1, -1)
+  val UP_RIGHT: Delta = (-1, 1)
+  val DOWN_LEFT: Delta = (1, -1)
+  val DOWN_RIGHT: Delta = (1, 1)
+  val VERTICAL: List[Delta] = List(UP, DOWN)
+  val HORIZONTAL: List[Delta] = List(LEFT, RIGHT)
+  val SQUARE: List[Delta] = VERTICAL ++ HORIZONTAL
+  val DIAGONAL_CW: List[Delta] = List(UP_RIGHT, DOWN_LEFT)
+  val DIAGONAL_CCW: List[Delta] = List(UP_LEFT, DOWN_RIGHT)
+  val DIAGONAL: List[Delta] = DIAGONAL_CW ++ DIAGONAL_CCW
+  val ALL_DIRECTIONS: List[Delta] = SQUARE ++ DIAGONAL
 }
 
 class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
@@ -35,7 +35,9 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   def column(x: Int): List[A] = (0 until height).map(elems(_)(x)).toList
   def columns(): List[String] = (0 until width).map(column(_).mkString).toList
   def move(p: Pos, d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
-  def moveOpposite(p: Pos, d: Delta): Pos = ((p._1 - d._1, p._2 - d._2))
+  def move(p: Pos, d: Delta, l: Int): Pos = (p._1 + l * d._1, p._2 + l * d._2)
+  def moveOpposite(p: Pos, d: Delta): Pos = (p._1 - d._1, p._2 - d._2)
+  def moveOpposite(p: Pos, d: Delta, l: Int): Pos = (p._1 - l * d._1, p._2 - l *d._2)
   def allPositions(): List[Pos] =
     (0 until height).flatMap(y => {
       (0 until width).map(x => (y, x))
@@ -54,6 +56,11 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
     allPositions().filter(p => this(p) == item)
   def find(predicate: A => Boolean): List[Pos] =
     allPositions().filter(p => predicate(this(p)))
+  def getElements(p: Pos, d: Delta, l: Int): List[A] =
+    if !isOnMap(p) || l == 0 then
+      Nil
+    else
+      apply(p) :: getElements(move(p, d), d, l - 1)
   def asString(): String = elems.map(_.mkString).mkString("\n")
 }
 
