@@ -7,7 +7,7 @@ class Day04 extends Puzzle[Long] with SimpleMapTypes {
       .flatMap(x => ALL_DIRECTIONS.map(d => map.getElements(x, d, word.length).mkString))
       .count(_ == word)
 
-  private def countXWord(word: String, map: SimpleMap[Char]): Long = {
+  private def countXWord(word: String, map: SimpleMap[Char]): Long =
     val halfLength = word.length / 2
     map.find(_ == word(halfLength))
       .count(x =>
@@ -15,7 +15,6 @@ class Day04 extends Puzzle[Long] with SimpleMapTypes {
           .map(d => map.getElements(map.moveOpposite(x, d, halfLength), d, word.length).mkString)
           .count(_ == word) == 2
       )
-  }
 
   override def exampleAnswerPart1: Long = 18
   override def solvePart1(lines: List[String]): Long =
