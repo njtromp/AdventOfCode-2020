@@ -18,7 +18,7 @@ class Day05 extends Puzzle[Long] {
     applicableRules.forall(r => updates.indexOf(r._1) < updates.indexOf(r._2))
 
   private def correctOrder(updates: List[Long], rules: List[(Long, Long)]): List[Long] =
-    val applicableRules = rules.filter(r => updates.contains(r._1) && updates.contains(r._2)).map(r => (r._1.toInt, r._2.toInt))
+    val applicableRules = rules.filter(r => updates.contains(r._1) && updates.contains(r._2)).map(r => (r._1, r._2))
     val indexes = mutable.Map.empty[Long, Int]
     updates.zipWithIndex.foreach(u => indexes(u._1) = u._2)
     var brokenRules = applicableRules.filter(r => indexes(r._1) >= indexes(r._2))
