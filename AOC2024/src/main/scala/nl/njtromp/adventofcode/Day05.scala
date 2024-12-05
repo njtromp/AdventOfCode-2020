@@ -19,17 +19,14 @@ class Day05 extends Puzzle[Long] {
 
   private def correctOrder(updates: List[Long], rules: List[(Long, Long)]): List[Long] =
     val applicableRules = rules.filter(r => updates.contains(r._1) && updates.contains(r._2)).map(r => (r._1.toInt, r._2.toInt))
-    val indexes = Array.ofDim[Int](updates.max.toInt + 1)
-    updates.zipWithIndex.foreach(u => indexes(u._1.toInt) = u._2)
+    val indexes = mutable.Map.empty[Long, Int]
+    updates.zipWithIndex.foreach(u => indexes(u._1) = u._2)
     def isValid: Boolean =
       applicableRules.forall(r => indexes(r._1) < indexes(r._2))
     while !isValid do
       applicableRules.filter(r => indexes(r._1) >= indexes(r._2))
         .foreach(r => indexes(r._2) += 1)
-    updates.map(u => (u, indexes(u.toInt)))
-      .sortBy(_._2)
-      .map(_._1)
-
+    indexes.toList.sortBy(_._2).map(_._1)
 
   override def exampleAnswerPart1: Long = 143
   override def solvePart1(lines: List[String]): Long =
