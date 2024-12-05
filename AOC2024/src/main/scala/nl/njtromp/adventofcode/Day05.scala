@@ -21,11 +21,10 @@ class Day05 extends Puzzle[Long] {
     val applicableRules = rules.filter(r => updates.contains(r._1) && updates.contains(r._2)).map(r => (r._1.toInt, r._2.toInt))
     val indexes = mutable.Map.empty[Long, Int]
     updates.zipWithIndex.foreach(u => indexes(u._1) = u._2)
-    def isValid: Boolean =
-      applicableRules.forall(r => indexes(r._1) < indexes(r._2))
-    while !isValid do
-      applicableRules.filter(r => indexes(r._1) >= indexes(r._2))
-        .foreach(r => indexes(r._2) += 1)
+    var brokenRules = applicableRules.filter(r => indexes(r._1) >= indexes(r._2))
+    while brokenRules.nonEmpty do
+      brokenRules.foreach(r => indexes(r._2) += 1)
+      brokenRules = applicableRules.filter(r => indexes(r._1) >= indexes(r._2))
     indexes.toList.sortBy(_._2).map(_._1)
 
   override def exampleAnswerPart1: Long = 143
