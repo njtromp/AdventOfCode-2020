@@ -45,13 +45,13 @@ class Day06 extends Puzzle[Long] with SimpleMapTypes {
 
   override def exampleAnswerPart1: Long = 41
   override def solvePart1(lines: List[String]): Long =
-    val map = SimpleMap(lines, _.toArray)
+    val map = SimpleMap(lines)
     val guard = map.find('^').head
     followGuard(guard, UP, map).size
 
   override def exampleAnswerPart2: Long = 6
   override def solvePart2(lines: List[String]): Long =
-    val map = SimpleMap(lines, _.toArray)
+    val map = SimpleMap(lines)
     val guard = map.find('^').head
     map.find('.')
       .count(dot =>

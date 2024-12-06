@@ -65,6 +65,7 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
 }
 
 object SimpleMap {
+  def apply(lines: List[String]): SimpleMap[Char] = apply(lines, _.toCharArray)
   def apply[A: ClassTag](lines: List[String], mapping: String => Array[A]): SimpleMap[A] =
     new SimpleMap(lines.map(l => mapping(l)).toArray)
 }
