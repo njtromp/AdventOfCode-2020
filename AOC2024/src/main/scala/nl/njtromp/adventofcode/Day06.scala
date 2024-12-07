@@ -53,7 +53,10 @@ class Day06 extends Puzzle[Long] with SimpleMapTypes {
   override def solvePart2(lines: List[String]): Long =
     val map = SimpleMap(lines)
     val guard = map.find('^').head
-    map.find('.')
+    // Thanks to Kamiel for the tip to only try positions where the guard originally passed during part 1.
+    // In hindsight it is rather logical to only try those positions.
+    // Speed is increased by a factor of almost 5 :-)
+    followGuard(guard, UP, map)
       .count(dot =>
         map(dot) = '#'
         val hasLoop = containsLoop(guard, UP, map)
