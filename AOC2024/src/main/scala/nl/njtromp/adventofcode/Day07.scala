@@ -7,36 +7,32 @@ class Day07 extends Puzzle[Long] {
     val parts = line.split(':').last.trim.split(' ').map(_.toLong).toList
     (result, parts)
 
-  private def isSolvablePart1(equation: (Long, List[Long])): Boolean =
+  private def isSolvable(equation: (Long, List[Long]), ops: List[(Long, Long) => Long]): Boolean =
     def solve(numbers: List[Long]): List[Long] =
       if numbers.length <= 1 then
         numbers
       else
-        solve((numbers.head + numbers.tail.head) ::numbers.drop(2)) ++
-          solve((numbers.head * numbers.tail.head) :: numbers.drop(2))
-    val possibleResults = solve(equation._2)
-    possibleResults.contains(equation._1)
-
-  private def isSolvablePart2(equation: (Long, List[Long])): Boolean =
-    def solve(numbers: List[Long]): List[Long] =
-      if numbers.length <= 1 then
-        numbers
-      else
-        solve((numbers.head + numbers.tail.head) ::numbers.drop(2)) ++
-          solve((numbers.head * numbers.tail.head) :: numbers.drop(2)) ++
-          solve((numbers.head.toString + numbers.tail.head.toString).toLong :: numbers.drop(2))
-    val possibleResults = solve(equation._2)
-    possibleResults.contains(equation._1)
+        ops.flatMap(op => solve(op(numbers.head, numbers(1)) :: numbers.drop(2)))
+    solve(equation._2).contains(equation._1)
 
   override def exampleAnswerPart1: Long = 3749
   override def solvePart1(lines: List[String]): Long =
     val equations = lines.map(parse)
-    equations.filter(isSolvablePart1).map(_._1).sum
+    val operations: List[(Long, Long) => Long] = List(
+      (a, b) => a * b,
+      (a, b) => a + b
+    )
+    equations.filter(isSolvable(_, operations)).map(_._1).sum
 
   override def exampleAnswerPart2: Long = 11387
   override def solvePart2(lines: List[String]): Long =
     val equations = lines.map(parse)
-    equations.filter(isSolvablePart2).map(_._1).sum
+    val operations: List[(Long, Long) => Long] = List(
+      (a, b) => a * b,
+      (a, b) => a + b,
+      (a, b) => s"$a$b".toLong
+    )
+    equations.filter(isSolvable(_, operations)).map(_._1).sum
 
 }
 
