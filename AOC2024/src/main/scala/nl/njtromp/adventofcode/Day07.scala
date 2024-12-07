@@ -7,7 +7,7 @@ class Day07 extends Puzzle[Long] {
     val parts = line.split(':').last.trim.split(' ').map(_.toLong).toList
     (result, parts)
 
-  private def isSolveablePart1(equation: (Long, List[Long])): Boolean =
+  private def isSolvablePart1(equation: (Long, List[Long])): Boolean =
     def solve(numbers: List[Long]): List[Long] =
       if numbers.length <= 1 then
         numbers
@@ -17,7 +17,7 @@ class Day07 extends Puzzle[Long] {
     val possibleResults = solve(equation._2)
     possibleResults.contains(equation._1)
 
-  private def isSolveablePart2(equation: (Long, List[Long])): Boolean =
+  private def isSolvablePart2(equation: (Long, List[Long])): Boolean =
     def solve(numbers: List[Long]): List[Long] =
       if numbers.length <= 1 then
         numbers
@@ -31,12 +31,12 @@ class Day07 extends Puzzle[Long] {
   override def exampleAnswerPart1: Long = 3749
   override def solvePart1(lines: List[String]): Long =
     val equations = lines.map(parse)
-    equations.filter(isSolveablePart1).map(_._1).sum
+    equations.filter(isSolvablePart1).map(_._1).sum
 
   override def exampleAnswerPart2: Long = 11387
   override def solvePart2(lines: List[String]): Long =
     val equations = lines.map(parse)
-    equations.filter(isSolveablePart2).map(_._1).sum
+    equations.filter(isSolvablePart2).map(_._1).sum
 
 }
 
