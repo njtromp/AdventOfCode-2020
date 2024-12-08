@@ -12,8 +12,7 @@ class Day08 extends Puzzle[Long] with SimpleMapTypes {
             Set(
               map.move(b, d, l),
               map.moveOpposite(a, d, l),
-            )
-              .filter(map.isOnMap)
+            ).filter(map.isOnMap)
           )
         )
       )
