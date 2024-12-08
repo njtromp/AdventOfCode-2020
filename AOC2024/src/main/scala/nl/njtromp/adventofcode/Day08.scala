@@ -25,7 +25,7 @@ class Day08 extends Puzzle[Long] with SimpleMapTypes {
       val antiNodes = as.flatMap(a =>
         as.filterNot(_ == a).flatMap(b =>
           val d = a - b
-          (1 to 50).indices.flatMap(l => // The real map is 50x50 hence duplicating anti nodes 50 times
+          (1 to map.height).indices.flatMap(l =>
             Set(
               map.move(b, d, l),
               map.moveOpposite(a, d, l),
