@@ -22,6 +22,13 @@ trait SimpleMapTypes {
   val DIAGONAL_CCW: List[Delta] = List(UP_LEFT, DOWN_RIGHT)
   val DIAGONAL: List[Delta] = DIAGONAL_CW ++ DIAGONAL_CCW
   val ALL_DIRECTIONS: List[Delta] = SQUARE ++ DIAGONAL
+
+  extension (p: Pos)
+    def -(o: Pos): Delta = (o._1 - p._1, o._2 - p._2)
+    def +(d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
+  extension (d: Delta)
+    def *(l: Int): Pos = (l * d._1, l * d._2)
+
 }
 
 class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
@@ -34,10 +41,10 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   def rows(): List[String] = elems.map(_.mkString).toList
   def column(x: Int): List[A] = (0 until height).map(elems(_)(x)).toList
   def columns(): List[String] = (0 until width).map(column(_).mkString).toList
-  def move(p: Pos, d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
-  def move(p: Pos, d: Delta, l: Int): Pos = (p._1 + l * d._1, p._2 + l * d._2)
-  def moveOpposite(p: Pos, d: Delta): Pos = (p._1 - d._1, p._2 - d._2)
-  def moveOpposite(p: Pos, d: Delta, l: Int): Pos = (p._1 - l * d._1, p._2 - l *d._2)
+  def move(p: Pos, d: Delta): Pos = p + d
+  def move(p: Pos, d: Delta, l: Int): Pos = p + (d * l)
+  def moveOpposite(p: Pos, d: Delta): Pos = d - p
+  def moveOpposite(p: Pos, d: Delta, l: Int): Pos = (d * l) - p
   def allPositions(): List[Pos] =
     (0 until height).flatMap(y => {
       (0 until width).map(x => (y, x))

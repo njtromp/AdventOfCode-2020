@@ -2,11 +2,6 @@ package nl.njtromp.adventofcode
 
 class Day08 extends Puzzle[Long] with SimpleMapTypes {
 
-  extension (p: Pos)
-    def - (o: Pos): Delta = (o._1 - p._1, o._2 - p._2)
-  extension (d: Delta)
-    def * (l: Int): Pos = (l * d._1, l * d._2)
-
   private def markAntiNodes1(map: SimpleMap[Char]): Unit =
     def markAntiNodes(antennas: (Char, List[Pos])): Unit =
       val as = antennas._2.toSet
@@ -27,7 +22,7 @@ class Day08 extends Puzzle[Long] with SimpleMapTypes {
     antennas.foreach(markAntiNodes)
 
   private def markAntiNodes2(map: SimpleMap[Char]): Unit =
-    def markAntinodes(antennas: (Char, List[Pos])): Unit =
+    def markAntiNodes(antennas: (Char, List[Pos])): Unit =
       val as = antennas._2.toSet
       val antiNodes = as.flatMap(a =>
         as.filterNot(_ == a).flatMap(b =>
@@ -45,7 +40,7 @@ class Day08 extends Puzzle[Long] with SimpleMapTypes {
       )
       antiNodes.foreach(map(_) = '#')
     val antennas = map.find(_ != '.').groupBy(map(_))
-    antennas.foreach(markAntinodes)
+    antennas.foreach(markAntiNodes)
 
   override def exampleAnswerPart1: Long = 14
   override def solvePart1(lines: List[String]): Long =
