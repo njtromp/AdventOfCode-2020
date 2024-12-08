@@ -50,13 +50,13 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
       (0 until width).map(x => (y, x))
     }).toList
   def neighborPositions(p: Pos, directions: List[Delta]): List[Pos] =
-    directions.map(d => (p._1 + d._1, p._2 + d._2))
-      .filter(p => isOnMap(p))
+    directions.map(p + _)
+      .filter(isOnMap)
   def neighbors(p: Pos, directions: List[Delta]): List[A] =
     neighborPositions(p, directions).map(this(_))
   def allNeighborPositions(p: Pos, directions: List[Delta]): List[Pos] =
-    (1 to Math.max(height, width)).flatMap(l => directions.map(d => (p._1 + d._1 * l, p._2 + d._2 * l)))
-      .filter(p => isOnMap(p)).toList
+    (1 to Math.max(height, width)).flatMap(l => directions.map(d => move(p, d, l)))
+      .filter(isOnMap).toList
   def allNeighbors(p: Pos, directions: List[Delta]): List[A] =
       allNeighborPositions(p, directions).map(this(_))
   def find(item: A): List[Pos] =
