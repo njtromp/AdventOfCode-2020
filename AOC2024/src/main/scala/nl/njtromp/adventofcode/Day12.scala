@@ -39,53 +39,26 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     region.map(p => 4 - map.neighbors(p, SQUARE).count(_ == map(p))).sum
 
   private def sides(region: List[Pos], islands: List[List[Pos]], map: SimpleMap[Char]): Long =
-    val checked = mutable.Set.empty[(Pos, Delta)]
+    val turnAfterMove = Map(RIGHT -> UP, UP -> LEFT, LEFT -> DOWN, DOWN -> RIGHT)
+    val justTurn = Map(RIGHT -> DOWN, DOWN -> LEFT, LEFT -> UP, UP -> RIGHT)
+    val checked = mutable.Set.empty[(Pos, Delta)]  // Used to o prevent endless loops
     def countSides(current: Pos, dir: Delta): Long =
       if checked.contains(current, dir) then
-        0
+        0 // Back where we started so sides are known
       else
         checked += ((current, dir))
-        val newPos = current + dir
+        val newPos = current + dir // Move one step and check if we're at a corner
         if region.contains(newPos) then
-          dir match {
-            case RIGHT =>
-              if region.contains(newPos + UP) then
-                1 + countSides(newPos + UP, UP)
-              else
-                countSides(newPos, dir)
-            case UP =>
-              if region.contains(newPos + LEFT) then
-                1 + countSides(newPos + LEFT, LEFT)
-              else
-                countSides(newPos, dir)
-            case LEFT =>
-              if region.contains(newPos + DOWN) then
-                1 + countSides(newPos + DOWN, DOWN)
-              else
-                countSides(newPos, dir)
-            case DOWN =>
-              if region.contains(newPos + RIGHT) then
-                1 + countSides(newPos + RIGHT, RIGHT)
-              else
-                countSides(newPos, dir)
-          }
+          val newDir = turnAfterMove(dir)
+          if region.contains(newPos + newDir) then
+            1 + countSides(newPos + newDir, newDir) // Yes, and try to turn at next move
+          else
+            countSides(newPos, dir) // No, just continue
         else
-          dir match {
-            case RIGHT =>
-              1 + countSides(current, DOWN)
-            case DOWN =>
-              1 + countSides(current, LEFT)
-            case LEFT =>
-              1 + countSides(current, UP)
-            case UP =>
-              1 + countSides(current, RIGHT)
-          }
+          1 + countSides(current, justTurn(dir))
     val outerSides = countSides(region.min, RIGHT)
     val innerSides = islands.filter(neighbors(_, map).toSet.diff(region.toSet).isEmpty)
-      .map(island =>
-        val result = sides(island, islands, map)
-        result
-      ).sum
+      .map(island => sides(island, islands, map)).sum
     outerSides + innerSides
 
   override def exampleAnswerPart1: Long = 1930
