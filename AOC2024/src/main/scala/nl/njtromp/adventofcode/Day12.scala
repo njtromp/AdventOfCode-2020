@@ -29,9 +29,11 @@ class Day12 extends Puzzle[Long] with SimpleMapTypes {
     region.toSet.flatMap(map.neighborPositions(_, SQUARE)).removedAll(region).toList
 
   private def isIsland(region: List[Pos], map: SimpleMap[Char]): Boolean =
+    // Check that the 'island' is not on the edge of the map
     region.forall(p => SQUARE.forall(d => map.isOnMap(p + d))) &&
-      region.toSet.flatMap(map.neighborPositions(_, ALL_DIRECTIONS)).removedAll(region).toList
-        .map(map(_)).toSet.size == 1
+      region.toSet.flatMap(map.neighborPositions(_, ALL_DIRECTIONS))
+        .removedAll(region)
+        .map(map(_)).size == 1
 
   private def perimeter(region: List[Pos], map: SimpleMap[Char]): Long =
     region.map(p => 4 - map.neighbors(p, SQUARE).count(_ == map(p))).sum
