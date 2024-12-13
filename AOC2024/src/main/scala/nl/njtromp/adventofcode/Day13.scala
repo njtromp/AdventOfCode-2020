@@ -1,28 +1,16 @@
 package nl.njtromp.adventofcode
 
-import org.apache.commons.math3.linear.{Array2DRowRealMatrix, ArrayRealVector, LUDecomposition}
-
-class Day13 extends Puzzle[Long] {
+class Day13 extends Puzzle[Long] with LinearAlgebra {
 
   type Pos = (Long, Long)
 
   case class Button(costs: Long, dx: Long, dy: Long)
 
   case class Machine(a: Button, b: Button, prize: Pos) {
-    private def checkPresses(aPressed: Double, bPressed: Double): Long =
-      val a1 = Math.round(aPressed)
-      val b1 = Math.round(bPressed)
-      if a1 * a.dx + b1 * b.dx == prize._1 && a1 * a.dy + b1 * b.dy == prize._2 then
-        a1 * a.costs + b1 * b.costs
-      else
-        0
     def play: Long =
-      val matrix = new Array2DRowRealMatrix(Array(Array(a.dx.toDouble, b.dx.toDouble), Array(a.dy.toDouble, b.dy.toDouble)))
-      val target = new ArrayRealVector(Array(prize._1.toDouble, prize._2.toDouble), false)
-      val solution = new LUDecomposition(matrix).getSolver.solve(target)
-      val aPresses = solution.getEntry(0)
-      val bPresses = solution.getEntry(1)
-      checkPresses(aPresses, bPresses)
+      solve(Array(Array(a.dx, b.dx), Array(a.dy, b.dy)), Array(prize._1, prize._2)) match
+        case Some(s) => s.zip(Array(a.costs, b.costs)).map(_ * _).sum
+        case None => 0
   }
 
   private def parse(lines: List[String]): Machine =
