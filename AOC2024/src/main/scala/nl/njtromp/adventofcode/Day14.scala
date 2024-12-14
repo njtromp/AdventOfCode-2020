@@ -9,15 +9,14 @@ class Day14 extends Puzzle[Long] {
 
   extension (p: Pos)
     def +(d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
+    def limit: Pos = ((p._1 + width) % width, (p._2 + height) % height)
 
   private var width = 11
   private var height = 7
 
   private case class Robot(pos: Pos, delta: Delta) {
     def move: Robot =
-      Robot(wrapAround(pos + delta), delta)
-    def wrapAround(pos: Pos): Pos =
-      ((pos._1 + width) % width, (pos._2 + height) % height)
+      Robot((pos + delta).limit, delta)
     def isNeighbour(other: Robot): Boolean =
       Math.abs(pos._1 - other.pos._1) <= 1 &&
         Math.abs(pos._2 - other.pos._2) <= 1
