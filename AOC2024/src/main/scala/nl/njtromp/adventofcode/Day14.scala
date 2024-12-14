@@ -44,17 +44,17 @@ class Day14 extends Puzzle[Long] {
 
   @tailrec
   private def findEasterEgg(robots: List[Robot], time: Long): Long =
-    def allHaveNeighbour(robots: List[Robot]): Boolean =
+    def easterEggFound(robots: List[Robot]): Boolean =
       val neighbourCount = robots.count(r => robots.exists(o => o != r && o.isNeighbour(r)))
-      // After printing the number of robots that have a neighbour, and the maximum for that count.
-      // The maximum did not change after some time. In my case the maximum was 367.
+      // After printing the number of robots that have a neighbour, and the maximum for that count,
+      // the maximum did not change after some time. In my case the maximum was 367.
       // Printing the robots using that maximum turns out to show the Easter egg.
       if neighbourCount == 367 then
         printEasterEgg(robots)
         true
       else
         false
-    if allHaveNeighbour(robots) then
+    if easterEggFound(robots) then
       time
     else
       findEasterEgg(robots.map(_.move), time + 1)
