@@ -57,7 +57,6 @@ trait RouteFinding extends SimpleMapTypes {
         return reconstructPath(start, finish, source)
       // The queue might hold positions with an 'old' (lower) priority so if we encounter one of them, we must skip it.
       if (!visited.contains(current))
-        visited += current
         val length = distanceToStart(current)
         neighbors(current).foreach(n =>
           if (!visited.contains(n))
@@ -68,6 +67,7 @@ trait RouteFinding extends SimpleMapTypes {
             distanceToStart += n -> (length + delta)
             source += n -> current
         )
+        visited += current
     Nil
 
   def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
@@ -83,7 +83,6 @@ trait RouteFinding extends SimpleMapTypes {
         return reconstructPath(start, finish, source)
       // The queue might hold positions with an 'old' (lower) priority so if we encounter one of them, we must skip it.
       if (!visited.contains(current))
-        visited += current
         val length = distanceToStart(current)
         val neighbors = map.neighborPositions(current, SQUARE).filter(n => canReach(map(current), map(n)))
         neighbors.foreach(n =>
@@ -94,6 +93,7 @@ trait RouteFinding extends SimpleMapTypes {
             distanceToStart += n -> (length + 1)
             source += n -> current
         )
+        visited += current
     Nil
 
   protected def reconstructPath[A](start: A, current: A, source: mutable.Map[A, A]): List[A] =
@@ -137,7 +137,7 @@ trait RouteFinding extends SimpleMapTypes {
         if (moves.nonEmpty)
           print(decodeMove(moves.head))
         else
-          print('.')
+          print(map(y, x))
       )
       println
     )
