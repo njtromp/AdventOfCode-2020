@@ -45,56 +45,56 @@ trait RouteFinding extends SimpleMapTypes {
     Nil
 
   def dijkstra[A](start: A, finish: A, neighbors: A => List[A], weight: (A, A) => Long): List[A] =
-    val distanceToStart = mutable.Map.empty[A, Long].withDefaultValue(Long.MaxValue)
+    val weightToStart = mutable.Map.empty[A, Long].withDefaultValue(Long.MaxValue)
     val source = mutable.Map.empty[A, A]
-    val toBeVisited = mutable.PriorityQueue.empty[A](Ordering.by(n => -distanceToStart(n)))
+    val toBeVisited = mutable.PriorityQueue.empty[A](Ordering.by(n => -weightToStart(n)))
     val visited = mutable.Set.empty[A]
-    distanceToStart += start -> 0
+    weightToStart(start) = 0
     toBeVisited.enqueue(start)
-    while (toBeVisited.nonEmpty)
+    while toBeVisited.nonEmpty do
       val current = toBeVisited.dequeue()
-      if (current == finish)
+      if current == finish then
         return reconstructPath(start, finish, source)
       // The queue might hold positions with an 'old' (lower) priority so if we encounter one of them, we must skip it.
-      if (!visited.contains(current))
-        val length = distanceToStart(current)
+      if !visited.contains(current) then
+        visited += current
+        val length = weightToStart(current)
         neighbors(current).foreach(n =>
-          if (!visited.contains(n))
-            toBeVisited.enqueue(n)
           // Relax
           val delta = weight(current, n)
-          if (length + delta < distanceToStart(n))
-            distanceToStart += n -> (length + delta)
+          if length + delta < weightToStart(n) then
+            weightToStart(n) = (length + delta)
             source += n -> current
+          if !visited.contains(n) then
+            toBeVisited.enqueue(n)
         )
-        visited += current
-    Nil
+    List.empty
 
   def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
-    val distanceToStart = mutable.Map.empty[Pos, Int].withDefaultValue(Int.MaxValue)
+    val weightToStart = mutable.Map.empty[Pos, Int].withDefaultValue(Int.MaxValue)
     val source = mutable.Map.empty[Pos, Pos]
-    val toBeVisited = mutable.PriorityQueue.empty[Pos](Ordering.by(p => -distanceToStart(p)))
+    val toBeVisited = mutable.PriorityQueue.empty[Pos](Ordering.by(p => -weightToStart(p)))
     val visited = mutable.Set.empty[Pos]
-    distanceToStart += start -> 0
+    weightToStart += start -> 0
     toBeVisited.enqueue(start)
-    while (toBeVisited.nonEmpty)
+    while toBeVisited.nonEmpty do
       val current = toBeVisited.dequeue()
-      if (current == finish)
+      if current == finish then
         return reconstructPath(start, finish, source)
       // The queue might hold positions with an 'old' (lower) priority so if we encounter one of them, we must skip it.
-      if (!visited.contains(current))
-        val length = distanceToStart(current)
+      if !visited.contains(current) then
+        visited += current
+        val length = weightToStart(current)
         val neighbors = map.neighborPositions(current, SQUARE).filter(n => canReach(map(current), map(n)))
         neighbors.foreach(n =>
-          if (!visited.contains(n))
-            toBeVisited.enqueue(n)
           // Relax
-          if (length + 1 < distanceToStart(n))
-            distanceToStart += n -> (length + 1)
+          if length + 1 < weightToStart(n) then
+            weightToStart += n -> (length + 1)
             source += n -> current
+          if !visited.contains(n) then
+            toBeVisited.enqueue(n)
         )
-        visited += current
-    Nil
+    List.empty
 
   protected def reconstructPath[A](start: A, current: A, source: mutable.Map[A, A]): List[A] =
     def reconstructPath(current: A): List[A] =
