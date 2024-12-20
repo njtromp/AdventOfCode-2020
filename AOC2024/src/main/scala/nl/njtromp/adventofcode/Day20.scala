@@ -8,13 +8,12 @@ class Day20 extends Puzzle[Long] with RouteFinding {
         List.empty
       else
         val current = path.head
-        val candidates = (-(cheatSize + 1) to cheatSize + 1).flatMap(y =>
-          (-(cheatSize + 1) to cheatSize + 1).map(x => current + (y, x))
-        ).filter(p => (p - current).manhattan <= cheatSize)
-          .filter(map.isOnMap)
-          .filter(map(_) == '.').toList
+        // Create a list of all positions that are within cheatSize of the current position
+        // and make sure it is on the path
+        val candidates = map.manhattanNeighborPositions(current, cheatSize).filter(map(_) == '.')
         // Make sure the candidates are closer to the finish, hence dropping the first 4 positions on the path
         val cheats = candidates.filter(path.drop(4).contains)
+        // Gather all the information per cheat, might need it in the future
         cheats.map(p => ((current, p), path.indexOf(p).toLong - (p - current).manhattan)) ++ cheatCandidates(path.tail)
     cheatCandidates(path)
 

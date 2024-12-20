@@ -31,6 +31,7 @@ trait SimpleMapTypes {
   extension (d: Delta)
     def *(l: Int): Pos = (l * d._1, l * d._2)
     def manhattan: Int = Math.abs(d._1) + Math.abs(d._2)
+    def opposite: Delta = d - (0, 0)
 
 }
 
@@ -52,6 +53,13 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
     (0 until height).flatMap(y => {
       (0 until width).map(x => (y, x))
     }).toList
+  def manhattanNeighborPositions(p: Pos, distance: Int): List[Pos] =
+    (-distance to distance).flatMap(y =>
+      (-(distance - Math.abs(y)) to distance - Math.abs(y)).map(x => p + (y, x))
+    ).filter(isOnMap).toList
+  def manhattanNeighbors(p: Pos, distance: Int): List[A] =
+    manhattanNeighborPositions(p, distance)
+      .map(this(_))
   def neighborPositions(p: Pos, directions: List[Delta]): List[Pos] =
     directions.map(p + _)
       .filter(isOnMap)
