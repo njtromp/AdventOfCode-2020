@@ -1,7 +1,5 @@
 package nl.njtromp.adventofcode
 
-import scala.collection.mutable
-
 class Day20 extends Puzzle[Long] with RouteFinding {
 
   private def findCheats(path: List[Pos], cheatSize: Int, map: SimpleMap[Char]): List[((Pos, Pos), Long)] =
