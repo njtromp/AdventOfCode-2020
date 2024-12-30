@@ -52,7 +52,7 @@ class Day22 extends Puzzle[Long] {
 
   override def exampleAnswerPart1: Long = 37327623
   override def solvePart1(lines: List[String]): Long =
-    lines.take(4).map(line => Generator(line.toLong).simulate(2000)).sum
+    (if lines.size == 8 then lines.take(4) else lines).map(line => Generator(line.toLong).simulate(2000)).sum
 
   override def exampleAnswerPart2: Long = 23
   override def solvePart2(lines: List[String]): Long =
