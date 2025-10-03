@@ -47,7 +47,7 @@ trait RouteFinding extends SimpleMapTypes {
   def dijkstra[A](start: A, finish: A, neighbors: A => List[A], weight: (A, A) => Long): List[A] =
     val weightToStart = mutable.Map.empty[A, Long].withDefaultValue(Long.MaxValue)
     val source = mutable.Map.empty[A, A]
-    val toBeVisited = mutable.PriorityQueue.empty[A](Ordering.by(n => -weightToStart(n)))
+    val toBeVisited = mutable.PriorityQueue.empty[A](using Ordering.by(n => -weightToStart(n)))
     val visited = mutable.Set.empty[A]
     weightToStart(start) = 0
     toBeVisited.enqueue(start)
@@ -89,8 +89,8 @@ trait RouteFinding extends SimpleMapTypes {
         neighbors.foreach(n =>
           // Relax
           if length + 1 < weightToStart(n) then
-            weightToStart += n -> (length + 1)
-            source += n -> current
+            weightToStart(n) = length + 1
+            source(n) = current
           if !visited.contains(n) then
             toBeVisited.enqueue(n)
         )

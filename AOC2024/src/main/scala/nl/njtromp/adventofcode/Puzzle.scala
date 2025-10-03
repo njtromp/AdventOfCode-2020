@@ -2,7 +2,6 @@ package nl.njtromp.adventofcode
 
 import java.util.concurrent.TimeUnit
 import scala.collection.generic.IsIterable
-import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 

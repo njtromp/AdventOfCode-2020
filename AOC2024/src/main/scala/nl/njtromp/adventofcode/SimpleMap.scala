@@ -25,8 +25,10 @@ trait SimpleMapTypes {
 
   extension (p: Pos)
     def -(o: Pos): Delta = (o._1 - p._1, o._2 - p._2)
-    def +(d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
-    def ==(o: Pos): Boolean = p._1 == o._1 && p._2 == o._2
+    def +(d: Delta): Pos = (p._1 + d._1, p._2 + d._2) 
+// Seems to be a duplicate...
+//    def ==(o: Pos): Boolean = p._1 == o._1 && p._2 == o._2
+    def /(l: Int): Pos = (p._1 / l, p._2 / l)
   
   extension (d: Delta)
     def *(l: Int): Pos = (l * d._1, l * d._2)
