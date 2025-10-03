@@ -29,7 +29,6 @@ class Day16 extends Puzzle[Long] with RouteFinding {
           if !visited.contains(newState) then
             // Relax
             val newDir = n - current.p
-            val newState = State(n, newDir)
             val delta = 1 + (if current.d == newDir then 0 else 1000)
             if weight + delta <= weightToStart(newState) then
               weightToStart(newState) = (weight + delta)

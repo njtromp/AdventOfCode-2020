@@ -33,11 +33,22 @@ class Day22 extends Puzzle[Long] {
       case s"deal with increment $n" =>
         deal(n.toInt, cards)
     )
+    println(result.mkString(", "))
     result.zipWithIndex.find(_._1 == 2019).get._2
 
   override def exampleAnswerPart2: Long = 0
   override def solvePart2(lines: List[String]): Long =
-    println("Part 2 is not funny :-(")
+//    val deck = LongRange(0, 101741582076661L - 1L).toList
+//    val result = lines.foldLeft(deck)((cards, ins) => ins match
+//      case "deal into new stack" =>
+//        newStack(cards)
+//      case s"cut $n" =>
+//        cut(n.toInt, cards)
+//      case s"deal with increment $n" =>
+//        deal(n.toInt, cards)
+//    )
+//    println(result.mkString(", "))
+//    result.zipWithIndex.find(_._1 == 2019).get._2
     -1
 
 }

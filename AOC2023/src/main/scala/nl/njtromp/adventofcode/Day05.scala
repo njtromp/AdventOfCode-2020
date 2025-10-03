@@ -5,8 +5,8 @@ import scala.util.parsing.combinator.RegexParsers
 
 class Day05 extends Puzzle[Long] with RegexParsers {
   def number: Parser[Long] = """\d+""".r ^^ { _.toLong }
-  def seeds: Parser[List[Long]] = """seeds:""".r ~ rep(number) ^^ { case "seeds:" ~ numbers => numbers }
-  def mapping: Parser[(String, String)] = """\w+""".r ~ "-to-" ~ """\w+""".r ~ "map:" ^^ { case from ~ "-to-" ~ to ~ "map:" => (from, to) }
+  def seeds: Parser[List[Long]] = """seeds:""".r ~> rep(number) ^^ { numbers => numbers }
+  def mapping: Parser[(String, String)] = ("""\w+""".r ~ ("-to-" ~> """\w+""".r)) <~ "map:" ^^ { case from ~ to => (from, to) }
   def numbers: Parser[Mapping] = number ~ number ~ number ^^ {case destStart ~ sourceStart ~ range => Mapping(sourceStart, destStart, range) }
 
   case class Mapping(sourceStart: Long, destinationStart: Long, range: Long) {
