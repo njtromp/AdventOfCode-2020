@@ -13,7 +13,6 @@ class Day01 extends Puzzle[Long] {
 
   override def exampleAnswerPart2: Long = 6
   override def solvePart2(lines: List[String]): Long = {
-    println("6183 is too high")
     def rotate(dial: Long, rotation: Long): Long =
       if rotation > 0 then {
         val newDial = (dial + 101L) % 100L
