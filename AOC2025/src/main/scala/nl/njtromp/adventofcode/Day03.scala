@@ -4,7 +4,7 @@ class Day03 extends Puzzle[Long] {
   private def turnBatteriesOn(nrOfBatteries: Int, batteries: String): String =
     def maximizeBatteries(min: Int, max: Int): String =
       if min < max && min < batteries.length then
-        val highestDigitIndex = batteries.substring(min, max).zipWithIndex.foldLeft(min)((higest, bi) => if bi._1 > batteries(higest) then bi._2 else higest)
+        val highestDigitIndex = batteries.substring(min, max).zipWithIndex.foldLeft(min)((highest, bi) => if bi._1 > batteries(highest) then bi._2 else highest)
         val rightSide = if highestDigitIndex >= min && highestDigitIndex + 1 < max then
            turnBatteriesOn(nrOfBatteries - 1, batteries.substring(highestDigitIndex + 1, max))
         else
