@@ -79,6 +79,8 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
       Nil
     else
       apply(p) :: getElements(move(p, d), d, l - 1)
+  def setAll(ps: List[Pos], v: A): Unit =
+    ps.filter(isOnMap).foreach(update(_, v))
   def asString(): String = elems.map(_.mkString).mkString("\n")
 }
 

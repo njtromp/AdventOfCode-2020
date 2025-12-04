@@ -2,6 +2,7 @@ package nl.njtromp.adventofcode
 
 class Day04 extends Puzzle[Long] with SimpleMapTypes {
   private val PAPER = '@'
+  private val NO_PAPER = '.'
 
   override def exampleAnswerPart1: Long = 13
   override def solvePart1(lines: List[String]): Long =
@@ -20,7 +21,7 @@ class Day04 extends Puzzle[Long] with SimpleMapTypes {
       if removablePaper.isEmpty then
         0
       else
-        removablePaper.foreach(map(_) = '.')
+        map.setAll(removablePaper, NO_PAPER)
         removablePaper.size + removePaperRolls(map)
     removePaperRolls(SimpleMap(lines))
 
