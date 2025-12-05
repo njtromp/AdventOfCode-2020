@@ -20,10 +20,10 @@ class Day05 extends Puzzle[Long] {
         val overlapping = ranges.tail.filter(_.isOverlapping(range))
         if overlapping.isEmpty then
           range :: merge(ranges.tail)
-        else {
+        else
           val combined = overlapping.flatMap(_.combine(range))
           merge(combined ++ ranges.tail.filterNot(overlapping.contains))
-        }
+
     val freshIds: List[LongRange] = lines.takeWhile(_.nonEmpty).map {
       case s"$first-$last" => LongRange(first.toLong, last.toLong)
     }
