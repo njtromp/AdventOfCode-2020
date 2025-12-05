@@ -24,14 +24,14 @@ trait SimpleMapTypes {
   val ALL_DIRECTIONS: List[Delta] = SQUARE ++ DIAGONAL
 
   extension (p: Pos)
-    def -(o: Pos): Delta = (o._1 - p._1, o._2 - p._2)
+    def -(o: Pos): Delta = (p._1 - o._1, p._2 - o._2)
     def +(d: Delta): Pos = (p._1 + d._1, p._2 + d._2)
     def /(l: Int): Pos = (p._1 / l, p._2 / l)
-  
+
   extension (d: Delta)
     def *(l: Int): Pos = (l * d._1, l * d._2)
     def manhattan: Int = Math.abs(d._1) + Math.abs(d._2)
-    def opposite: Delta = d - (0, 0)
+    def opposite: Delta = (0, 0) - d
 
 }
 
@@ -47,8 +47,8 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
   def columns(): List[String] = (0 until width).map(column(_).mkString).toList
   def move(p: Pos, d: Delta): Pos = p + d
   def move(p: Pos, d: Delta, l: Int): Pos = p + (d * l)
-  def moveOpposite(p: Pos, d: Delta): Pos = d - p
-  def moveOpposite(p: Pos, d: Delta, l: Int): Pos = (d * l) - p
+  def moveOpposite(p: Pos, d: Delta): Pos = p - d
+  def moveOpposite(p: Pos, d: Delta, l: Int): Pos = p - (d * l)
   def allPositions(): List[Pos] =
     (0 until height).flatMap(y => {
       (0 until width).map(x => (y, x))
@@ -69,7 +69,7 @@ class SimpleMap[A](val elems: Array[Array[A]]) extends SimpleMapTypes {
     (1 to Math.max(height, width)).flatMap(l => directions.map(d => move(p, d, l)))
       .filter(isOnMap).toList
   def allNeighbors(p: Pos, directions: List[Delta]): List[A] =
-      allNeighborPositions(p, directions).map(this(_))
+    allNeighborPositions(p, directions).map(this(_))
   def find(item: A): List[Pos] =
     allPositions().filter(p => this(p) == item)
   def find(predicate: A => Boolean): List[Pos] =
