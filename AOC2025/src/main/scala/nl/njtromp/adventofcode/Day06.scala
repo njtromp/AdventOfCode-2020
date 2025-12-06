@@ -38,7 +38,7 @@ class Day06 extends Puzzle[Long] {
       if values.head.isEmpty then
         Nil
       else
-        extractColumn(values.map(v => if v.isEmpty then ' ' else v.charAt(0)).reverse) :: transform(values.map(v => if v.isEmpty then " " else v.substring(1)))
+        extractColumn(values.map(_.charAt(0)).reverse) :: transform(values.map(_.substring(1)))
     grandTotal(lines.reverse, transform)
 
 }
