@@ -58,6 +58,6 @@ object LeaderBoard extends App {
         .filter(_.score > 0)
         .sortBy[Int](_.score)
         .reverse
-        .foreach(m => println(f"${m.score}%7s : ${m.name}"))
+        .foreach(m => println(f"${m.score}%7s : (${m.stars}) ${m.name}"))
   }
 }
