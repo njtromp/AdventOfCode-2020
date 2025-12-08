@@ -1,7 +1,7 @@
 package nl.njtromp.adventofcode
 
 import scala.collection.mutable
-import io.AnsiColor._
+import scala.io.AnsiColor._
 
 import nl.njtromp.adventofcode.{SimpleMap, SimpleMapTypes}
 
