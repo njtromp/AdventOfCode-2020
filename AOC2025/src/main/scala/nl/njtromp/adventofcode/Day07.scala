@@ -39,8 +39,8 @@ class Day07 extends Puzzle[Long] with SimpleMapTypes {
   override def exampleAnswerPart1: Long = 21
   override def solvePart1(lines: List[String]): Long =
     val map = SimpleMap(lines)
-    val beams = map.find(START)
-    countSplits(map, beams)
+    val start = map.find(START)
+    countSplits(map, start)
 
   override def exampleAnswerPart2: Long = 40
   override def solvePart2(lines: List[String]): Long =
