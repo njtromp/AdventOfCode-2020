@@ -47,11 +47,12 @@ trait Puzzle[T] {
 
   def gcd(a: Long, b: Long): Long = if a % b == 0 then b else gcd(b, a % b)
 
-  def groupByEmptyLine(lines: List[String]): List[List[String]] =
-    if (lines.isEmpty)
-      Nil
-    else
-      lines.takeWhile(_.nonEmpty) :: groupByEmptyLine(lines.dropWhile(_.nonEmpty).dropWhile(_.isEmpty))
+  extension (lines: List[String])
+    def splitOnEmptyLines: List[List[String]] =
+      if (lines.isEmpty)
+        Nil
+      else
+        lines.takeWhile(_.nonEmpty) :: lines.dropWhile(_.nonEmpty).dropWhile(_.isEmpty).splitOnEmptyLines
 
   extension[Repr] (repr: Repr)(using iterable: IsIterable[Repr])
     def takeUntil(p: iterable.A => Boolean): List[iterable.A] =
