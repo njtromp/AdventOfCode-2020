@@ -21,8 +21,8 @@ class Day07 extends Puzzle[Long] with SimpleMapTypes {
         nrOfSplits
     followBeams(beams.toSet, 0L)
 
-  private val nrOfPaths = mutable.Map.empty[Pos, Long]
   private def countParallelSplits(map: SimpleMap[Char], particle: Pos): Long =
+    val nrOfPaths = mutable.Map.empty[Pos, Long]
     def followParticle(particle: Pos): Long =
       if !map.isOnMap(particle) then
         1
