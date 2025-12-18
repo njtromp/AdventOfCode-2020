@@ -3,7 +3,6 @@ package nl.njtromp.adventofcode
 import com.google.ortools.Loader
 import com.google.ortools.linearsolver.{MPSolver, MPVariable}
 
-
 class Day10 extends Puzzle[Long] {
   private val LAMP = '#'
 
@@ -34,7 +33,7 @@ class Day10 extends Puzzle[Long] {
     val solver = MPSolver.createSolver("SCIP")
     val buttonPresses = buttons.indices.map(i => solver.makeIntVar(0, Double.PositiveInfinity, s"b$i")).toArray
     targetJoltages.indices.foreach(i =>
-      val constraint = solver.makeConstraint(targetJoltages(i), targetJoltages(i), s"c$i")
+      val constraint = solver.makeConstraint(targetJoltages(i), targetJoltages(i))
       buttons.indices.foreach(j =>
         constraint.setCoefficient(buttonPresses(j), if buttons(j).contains(i) then 1 else 0)
       )
@@ -43,6 +42,8 @@ class Day10 extends Puzzle[Long] {
     buttonPresses.foreach(b => objective.setCoefficient(b, 1))
     objective.minimization()
     val status = solver.solve()
+    if status != MPSolver.ResultStatus.OPTIMAL then
+      println("THE SOLUTION IS NOT OPTIMAL!")
     buttonPresses.map(_.solutionValue().toLong).sum
 
   override def exampleAnswerPart1: Long = 7
