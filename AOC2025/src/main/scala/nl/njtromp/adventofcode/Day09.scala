@@ -1,13 +1,20 @@
 package nl.njtromp.adventofcode
 
+import scala.annotation.tailrec
+
 class Day09 extends Puzzle[Long] {
   private type Pos = (Int, Int)
+  private type Square = Line
   private val UP = 'U'
   private val DOWN = 'D'
 
+  extension (r: Range)
+    private def overlaps(o: Range): Boolean = r.contains(o.start) || r.contains(o.end)
+
   private case class Line(horizontal: Range, vertical: Range) {
-    def isHorizontal: Boolean = horizontal.size > 1
-    def isVertical: Boolean = vertical.size > 1
+    val isHorizontal: Boolean = horizontal.size > 1
+    val isVertical: Boolean = vertical.size > 1
+    val area: Int = horizontal.size * vertical.size
     def intersects(other: Line): Boolean =
       if isHorizontal then
         other.isVertical && horizontal.contains(other.horizontal.start) && other.vertical.contains(vertical.start)
@@ -19,54 +26,68 @@ class Day09 extends Puzzle[Long] {
       else
         (horizontal.start, other.vertical.start)
   }
-
-  private def fillInner(mapping: Array[Array[Boolean]], redTiles: List[(Int, Int)], minX: Int, maxX: Int, minY: Int, maxY: Int): Unit =
-    val ranges = redTiles.zip(redTiles.tail :+ redTiles.head)
-    val polygon = ranges.map((p1, p2) =>
-      Line(
+  private object Line {
+    def apply(p1: Pos, p2: Pos): Line =
+      new Line(
         Range(Math.min(p1._1, p2._1), Math.max(p1._1, p2._1)).inclusive,
         Range(Math.min(p1._2, p2._2), Math.max(p1._2, p2._2)).inclusive
-      ))
-    val linesAtY = (minY to maxY).map(y => (y, polygon.filter(_.vertical.contains(y)))).toMap
-    (minY to maxY).foreach(y =>
-      val lines = linesAtY(y)
-      var startX = maxX
-      var endX = minX
-      lines.foreach(l =>
-        if l.isVertical then
-          mapping(y - minY)(l._1.start - minX) = true
-        else
-          (l._1.start to l._1.end).foreach(x => mapping(y - minY)(x - minX) = true)
-        startX = Math.min(startX, l.horizontal.start)
-        endX = Math.max(endX, l.horizontal.end)
       )
-      var inSide = false
-      var x = startX
-      while x < endX do
-        var linesAtX = lines.filter(_.horizontal.contains(x))
-        linesAtX.size match
-          case 0 =>
-            mapping(y - minY)(x - minX) = inSide
-          case 1 =>
-            inSide = !inSide
-            mapping(y - minY)(x - minX) = inSide
-          case 2 =>
-            val firstVerticalLine = if linesAtX.head.isVertical then
-              x = linesAtX.last.horizontal.end
-              linesAtX.head
-            else
-              x = linesAtX.head.horizontal.end
-              linesAtX.last
-            val firstDirection = if firstVerticalLine.vertical.start == y then DOWN else UP
-            linesAtX = lines.filter(_.horizontal.contains(x))
-            val secondVerticalLine = if linesAtX.head.isVertical then
-              linesAtX.head
-            else
-              linesAtX.last
-            val secondDirection = if secondVerticalLine.vertical.start == y then DOWN else UP
-            if firstDirection != secondDirection then inSide = !inSide
-        x += 1
+  }
+
+  private def keepInnerSquares(squares: List[Square], polygon: List[Line]): List[Square] =
+    val (minX, maxX, minY, maxY) = squares.foldLeft((Int.MaxValue, Int.MinValue, Int.MaxValue, Int.MinValue))((a, p) =>
+      (Math.min(a._1, p.horizontal.start - 1), Math.max(a._2, p.horizontal.end + 1), Math.min(a._3, p.vertical.start), Math.max(a._4, p.vertical.end))
     )
+    @tailrec
+    def filter(y: Int, squares: List[Square]): List[Square] =
+      def outsideParts(polygonParts: List[Line]): List[Line] =
+        @tailrec
+        def scan(start: Int, x: Int, isInside: Boolean, outsideParts: List[Line]): List[Line] =
+          if x >= maxX then
+            if !isInside then Line((start, y), (x, y)) :: outsideParts else outsideParts
+          else
+            val linesAtX = polygonParts.filter(_.horizontal.contains(x))
+            linesAtX.size match
+              case 0 =>
+                scan(start, x + 1, isInside, outsideParts)
+              case 1 =>
+                if isInside then
+                  scan(x + 1, x + 1, false, outsideParts)
+                else
+                  scan(x, x + 1, true, Line((start, y), (x - 1, y)) :: outsideParts)
+              case 2 =>
+                val (newX, firstVerticalLine) = if linesAtX.head.isVertical then
+                  (linesAtX.last.horizontal.end, linesAtX.head)
+                else
+                  (linesAtX.head.horizontal.end, linesAtX.last)
+                val firstDirection = if firstVerticalLine.vertical.start == y then DOWN else UP
+                val linesAtNewX = polygonParts.filter(_.horizontal.contains(newX))
+                val secondVerticalLine = if linesAtNewX.head.isVertical then
+                  linesAtNewX.head
+                else
+                  linesAtNewX.last
+                val secondDirection = if secondVerticalLine.vertical.start == y then DOWN else UP
+                val switchSides = firstDirection != secondDirection
+                if isInside then
+                  if switchSides then
+                    scan(newX + 1, newX + 1, false, outsideParts)
+                  else
+                    scan(newX + 1, newX + 1, true, outsideParts)
+                else
+                  if switchSides then
+                    scan(newX + 1, newX + 1, true, Line((start, y), (x - 1, y)) :: outsideParts)
+                  else
+                    scan(newX + 1, newX + 1, false, Line((start, y), (x - 1, y)) :: outsideParts)
+        scan(minX, minX, false, List.empty)
+      if y == maxY then
+        squares
+      else
+        val squaresAtY = squares.filter(_.vertical.contains(y))
+        val polygonsAtY = polygon.filter(_.vertical.contains(y))
+        val outsideRanges: List[Line] = outsideParts(polygonsAtY)
+        val invalidSquares = squaresAtY.filter(s => outsideRanges.exists(p => p.horizontal.overlaps(s.horizontal)))
+        filter(y + 1, squares.filterNot(invalidSquares.contains))
+    filter(minY, squares)
 
   override def exampleAnswerPart1: Long = 50
   override def solvePart1(lines: List[String]): Long =
@@ -77,27 +98,15 @@ class Day09 extends Puzzle[Long] {
       dX * dY
     ).max
 
-  private def allRedAndGreen(map: Array[Array[Boolean]], c1: Pos, c2: Pos): Boolean =
-    !(Math.min(c1._2, c2._2) to Math.max(c1._2, c2._2)).exists(y =>
-      (Math.min(c1._1, c2._1) to Math.max(c1._1, c2._1)).exists(x  => !map(y)(x))
-    )
-
-
   override def exampleAnswerPart2: Long = 24
   override def solvePart2(lines: List[String]): Long =
     val redTiles: List[Pos] = lines.map {case s"$x,$y" => (x.toInt, y.toInt)}
-    val (minX, maxX, minY, maxY) = redTiles.foldLeft((Int.MaxValue, Int.MinValue, Int.MaxValue, Int.MinValue))((a, p) =>
-      (Math.min(a._1, p._1), Math.max(a._2, p._1), Math.min(a._3, p._2), Math.max(a._4, p._2))
-    )
-    val mapping = Array.ofDim[Boolean](maxY - minY + 1, maxX - minX + 1)
-    fillInner(mapping, redTiles, minX, maxX, minY, maxY)
-    redTiles.combinations(2)
-      .filter(t => allRedAndGreen(mapping, (t.head._1 - minX, t.head._2 - minY), (t.last._1 - minX, t.last._2 - minY)))
-      .map(t =>
-        val dX = Math.abs(t.head._1 - t.last._1) + 1
-        val dY = Math.abs(t.head._2 - t.last._2) + 1
-        dX * dY
-      ).max
+    val ranges = redTiles.zip(redTiles.tail :+ redTiles.head)
+    val polygon = ranges.map((p1, p2) => Line(p1, p2))
+    // For some reason the type alias Square can not be used here :-(
+    val squares = redTiles.combinations(2).map(ps => Line(ps.head, ps.last)).toList
+    val innerSquares = keepInnerSquares(squares, polygon)
+    innerSquares.map(_.area).max
 
 }
 
