@@ -40,11 +40,10 @@ class Day23 extends Puzzle[String] {
     val computers = parse(lines).map(c => Computer(c.name, c.connections + c.name))
     val byName =  computers.map(c => c.name -> c).toMap
     computers.map(c =>
-      val cons = c.connections
+      c.connections
         .toList
         .map(byName(_).connections.intersect(c.connections))
-        .groupBy(_.size).maxBy(_._2.size)
-      cons._2
+        .groupBy(_.size).maxBy(_._2.size)._2
     ).map(_.reduce(_ intersect _)).groupBy(c => c)
       .filter(gc => gc._1.size == gc._2.size)
       .maxBy(_._1.size)._1
