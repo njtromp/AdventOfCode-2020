@@ -1,7 +1,5 @@
 package nl.njtromp.adventofcode
 
-import scala.collection.mutable
-
 class Day23 extends Puzzle[String] {
 
   private case class Computer(name: String, connections: Set[String]) {
@@ -39,20 +37,18 @@ class Day23 extends Puzzle[String] {
 
   override def exampleAnswerPart2: String = "co,de,ka,ta"
   override def solvePart2(lines: List[String]): String =
-    val computers = parse(lines)
+    val computers = parse(lines).map(c => Computer(c.name, c.connections + c.name))
     val byName =  computers.map(c => c.name -> c).toMap
-    val result = byName.keySet.map(name =>
-      byName(name).connectionCombinations
-        .filter((a, b) => byName(a).isConnected(b))
-        .toSet
-        .flatMap((a, b) => Set(name, a, b))
-    )
-    result
-      .filter(names =>
-        val computer = byName(names.head)
-        names.tail.forall(computer.connections.contains)
-      )
-      .maxBy(_.size).toList.sorted.mkString(",")
+    computers.map(c =>
+      val cons = c.connections
+        .toList
+        .map(byName(_).connections.intersect(c.connections))
+        .groupBy(_.size).maxBy(_._2.size)
+      cons._2
+    ).map(_.reduce(_ intersect _)).groupBy(c => c)
+      .filter(gc => gc._1.size == gc._2.size)
+      .maxBy(_._1.size)._1
+      .toList.sorted.mkString(",")
 
 }
 
