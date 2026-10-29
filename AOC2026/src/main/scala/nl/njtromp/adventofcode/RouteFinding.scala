@@ -73,7 +73,7 @@ trait RouteFinding extends SimpleMapTypes {
   def dijkstra[A](map: SimpleMap[A], canReach: (A, A) => Boolean, start: Pos, finish: Pos): List[Pos] =
     val weightToStart = mutable.Map.empty[Pos, Int].withDefaultValue(Int.MaxValue)
     val source = mutable.Map.empty[Pos, Pos]
-    val toBeVisited = mutable.PriorityQueue.empty[Pos](Ordering.by(p => -weightToStart(p)))
+    val toBeVisited = mutable.PriorityQueue.empty[Pos](using Ordering.by(p => -weightToStart(p)))
     val visited = mutable.Set.empty[Pos]
     weightToStart += start -> 0
     toBeVisited.enqueue(start)
@@ -105,7 +105,7 @@ trait RouteFinding extends SimpleMapTypes {
     reconstructPath(current)
 
   protected def printColoredPath[A](map: SimpleMap[A], path: List[Pos], colorMapping: A => Int): Unit =
-    println
+    println()
     val ps = path.toSet
     (0 until map.height).foreach(y =>
       (0 until map.width).foreach(x =>
@@ -115,7 +115,7 @@ trait RouteFinding extends SimpleMapTypes {
         else
           print(s"\u001B[38;5;${colorMapping(map(p))}m${map(p)}$RESET")
       )
-      println
+      println()
     )
 
   protected def printPath[A](map: SimpleMap[A], path: List[Pos]): Unit =
@@ -129,7 +129,7 @@ trait RouteFinding extends SimpleMapTypes {
           '<'
         else
           '>'
-    println
+    println()
     val ps = path.sliding(2).toList
     (0 until map.height).foreach(y =>
       (0 until map.width).foreach(x =>
@@ -139,7 +139,7 @@ trait RouteFinding extends SimpleMapTypes {
         else
           print(map(y, x))
       )
-      println
+      println()
     )
 
 }
