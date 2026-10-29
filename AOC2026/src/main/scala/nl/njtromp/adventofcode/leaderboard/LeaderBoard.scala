@@ -8,7 +8,7 @@ import sttp.model.StatusCode
 import sttp.model.StatusCode.Ok
 
 import java.io.{File, FileWriter}
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{LocalDateTime, Year, ZoneOffset}
 import scala.io.Source
 
 object LeaderBoard {
@@ -72,6 +72,10 @@ object LeaderBoard {
 }
 
 @main def showLeaderBoard(args: String*): Unit =
+  val year = args.headOption match
+    case Some(y) if y.matches("\\d{4}") => y.toInt
+    case Some(y) => throw IllegalArgumentException(s"Expected a four digit year, got: $y")
+    case None => Year.now().getValue
   val source = Source.fromResource(".session.cookie")
   val cookie = try source.mkString.trim finally source.close()
-  LeaderBoard.showLeaderBoard(2025, cookie)
+  LeaderBoard.showLeaderBoard(year, cookie)
