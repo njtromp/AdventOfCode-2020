@@ -72,24 +72,18 @@ class Day16 extends Puzzle[Long] with RouteFinding {
       val map = SimpleMap(ls)
       val start = map.find('S').head
       val finish = map.find('E').head
-      def neighbours(p: Pos): List[Pos] =
-        map.neighborPositions(p, SQUARE).filter(map(_) != '#')
-      val winningPath = dijkstra(start, RIGHT, finish, neighbours)
-      val junctions = winningPath._2.filter(map.neighbors(_, SQUARE).count(_ == '.') >= 3).filter(winningPath._2.contains)
-      val bestPaths = mutable.Set(winningPath._2*)
-      junctions.foreach(junction =>
-        map(junction) = '#'
-        val path = dijkstra(start, RIGHT, finish, neighbours)
-        if path._1 == winningPath._1 then
-          bestPaths.addAll(path._2)
-        map(junction) = '.'
-      )
-      printMap(bestPaths.toList, map)
-      println(bestPaths.size)
-      if lines.size > 50 then
-        if bestPaths.size <= 530 then
-          println("TOO LOW!!!")
-      bestPaths.size
+      // The finish can be reached facing any direction, so all states on the finish lead to a single end state.
+      val end = State(finish, (0, 0))
+      def neighbours(s: State): List[State] =
+        if s == end then
+          List.empty
+        else if s.p == finish then
+          List(end)
+        else
+          map.neighborPositions(s.p, SQUARE).filter(map(_) != '#').map(n => State(n, n - s.p))
+      def weight(from: State, to: State): Long =
+        if to == end then 0 else 1 + (if from.d == to.d then 0 else 1000)
+      allShortestPaths(State(start, RIGHT), end, neighbours, weight).flatten.map(_.p).toSet.size.toLong
     ).sum
 
 }
