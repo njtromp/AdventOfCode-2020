@@ -52,7 +52,7 @@ object LeaderBoard {
   }
 
   def showLeaderBoard(year: Int, cookie: String): Unit =
-    val scoring: Response[String] = quickRequest.get(uri"https://adventofcode.com/2025/leaderboard/private/view/1030938.json")
+    val scoring: Response[String] = quickRequest.get(uri"https://adventofcode.com/$year/leaderboard/private/view/1030938.json")
       .cookie("session", cookie).send()
     if scoring.code == Ok then {
       val writer = new FileWriter(new File(getClass.getResource("/leaderboard.json").getFile))
