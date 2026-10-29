@@ -5,8 +5,9 @@ class Day01 extends Puzzle[Long] {
   override def exampleAnswerPart1: Long = 3
   override def solvePart1(lines: List[String]): Long = {
     lines.foldLeft((50L, 0L))((a, l) =>
-      val rotation = (if l.charAt(0) == 'L' then -1L else 1L) * l.substring(1).toLong
-      val dial = (a._1 + rotation + 100L) % 100L
+      // Doing +99 and module 100 keeps the value always positive
+      val rotation = (if l.charAt(0) == 'L' then 99L else 1L) * l.substring(1).toLong
+      val dial = (a._1 + rotation) % 100L
       (dial, a._2 + (if dial == 0 then 1 else 0))
     )._2
   }
@@ -15,17 +16,12 @@ class Day01 extends Puzzle[Long] {
   override def solvePart2(lines: List[String]): Long = {
     def rotate(dial: Long, rotation: Long): Long =
       if rotation > 0 then {
-        val newDial = (dial + 101L) % 100L
-        if newDial == 0 then
-          1 + rotate(newDial, rotation - 1)
-        else
-          rotate(newDial, rotation - 1)
+        val newDial = (dial + 1L) % 100L
+        (if newDial == 0 then 1 else 0) + rotate(newDial, rotation - 1)
       } else if rotation < 0 then
+        // Doing +99 and module 100 keeps the value always positive
         val newDial = (dial + 99L) % 100L
-        if newDial == 0 then
-          1 + rotate(newDial, rotation + 1)
-        else
-          rotate(newDial, rotation + 1)
+        (if newDial == 0 then 1 else 0) + rotate(newDial, rotation + 1)
       else
         0
 
