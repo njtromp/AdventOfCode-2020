@@ -11,10 +11,7 @@ import java.io.{File, FileWriter}
 import java.time.{LocalDateTime, ZoneOffset}
 import scala.io.Source
 
-class LeaderBoard {
-}
-
-object LeaderBoard extends App {
+object LeaderBoard {
   def unixTime(timeStamp: Int): LocalDateTime =
     LocalDateTime.ofEpochSecond(timeStamp, 0, ZoneOffset.ofHours(1))
 
@@ -54,21 +51,25 @@ object LeaderBoard extends App {
     Event(unixTime(startTime), event, numberOfDays, ownerId, members.filter(_._2.score > 0).values.toList)
   }
 
-  val scoring: Response[String] = quickRequest.get(uri"https://adventofcode.com/2025/leaderboard/private/view/1030938.json")
-    .cookie("session", "53616c7465645f5fc2cb49ca039e93f1aba6002c961ed5aa120d12915cbb00d0fb0b88699f06aa63300dcda43df80204e19190e87d1c4d723e1f3bdd8d9a3aec").send()
-  if scoring.code == Ok then {
-    val writer = new FileWriter(new File(getClass.getResource("/leaderboard.json").getFile))
-    writer.write(scoring.body)
-    writer.close()
-  }
+  def showLeaderBoard(year: Int, cookie: String): Unit =
+    val scoring: Response[String] = quickRequest.get(uri"https://adventofcode.com/2025/leaderboard/private/view/1030938.json")
+      .cookie("session", cookie).send()
+    if scoring.code == Ok then {
+      val writer = new FileWriter(new File(getClass.getResource("/leaderboard.json").getFile))
+      writer.write(scoring.body)
+      writer.close()
+    }
 
-  private val json = Source.fromInputStream(getClass.getResourceAsStream("/leaderboard.json")).getLines().mkString
-  decode[Event](json) match {
-    case Left(error) => Console.err.println(error)
-    case Right(result) =>
-      result.members
-        .sortBy[Int](_.score)
-        .reverse
-        .foreach(m => println(f"${m.score}%7s : (${m.stars}) ${m.name}"))
-  }
+    val json = Source.fromInputStream(getClass.getResourceAsStream("/leaderboard.json")).getLines().mkString
+    decode[Event](json) match {
+      case Left(error) => Console.err.println(error)
+      case Right(result) =>
+        result.members
+          .sortBy[Int](_.score)
+          .reverse
+          .foreach(m => println(f"${m.score}%7s : (${m.stars}) ${m.name}"))
+    }
 }
+
+@main def showLeaderBoard(args: String*): Unit =
+  LeaderBoard.showLeaderBoard(2025, "53616c7465645f5f3b5bd85fa634d03122c5fc51a3adf7dcb9510390c0bf9b9689577c7c1d4b978cc186505fc99539ef894e73654d9108fd07dcd2992334c911")
