@@ -72,4 +72,6 @@ object LeaderBoard {
 }
 
 @main def showLeaderBoard(args: String*): Unit =
-  LeaderBoard.showLeaderBoard(2025, "53616c7465645f5f3b5bd85fa634d03122c5fc51a3adf7dcb9510390c0bf9b9689577c7c1d4b978cc186505fc99539ef894e73654d9108fd07dcd2992334c911")
+  val source = Source.fromResource(".session.cookie")
+  val cookie = try source.mkString.trim finally source.close()
+  LeaderBoard.showLeaderBoard(2025, cookie)
