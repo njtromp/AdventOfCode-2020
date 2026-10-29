@@ -12,5 +12,5 @@ class Day00 extends Puzzle[Long] {
 
 }
 
-@main def solve(args: String*): Unit =
+@main def solveDay00(args: String*): Unit =
   new Day00().solvePuzzles()
