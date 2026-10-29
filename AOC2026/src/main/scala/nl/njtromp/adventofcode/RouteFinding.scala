@@ -96,6 +96,31 @@ trait RouteFinding extends SimpleMapTypes {
         )
     List.empty
 
+  def allDijkstra[A](start: A, finish: A, neighbors: A => List[A], weight: (A, A) => Long): List[List[A]] =
+    val weightToStart = mutable.Map.empty[A, Long].withDefaultValue(Long.MaxValue)
+    val sources = mutable.Map.empty[A, Set[A]].withDefaultValue(Set.empty)
+    val toBeVisited = mutable.PriorityQueue.empty[(Long, A)](using Ordering.by(-_._1))
+    val visited = mutable.Set.empty[A]
+    weightToStart(start) = 0
+    toBeVisited.enqueue((0L, start))
+    // Continue until every node that could still lead to finish with the same weight has been processed.
+    while toBeVisited.nonEmpty && toBeVisited.head._1 <= weightToStart(finish) do
+      val (length, current) = toBeVisited.dequeue()
+      if !visited.contains(current) then
+        visited += current
+        neighbors(current).foreach(n =>
+          // Relax, keeping every predecessor that results in the same shortest weight
+          val delta = weight(current, n)
+          if length + delta < weightToStart(n) then
+            weightToStart(n) = length + delta
+            sources(n) = Set(current)
+            toBeVisited.enqueue((length + delta, n))
+          else if length + delta == weightToStart(n) then
+            sources(n) += current
+        )
+    if weightToStart(finish) == Long.MaxValue then List.empty
+    else reconstructAllPaths(start, finish, sources)
+
   protected def reconstructPath[A](start: A, current: A, source: mutable.Map[A, A]): List[A] =
     def reconstructPath(current: A): List[A] =
       if (current == start)
@@ -103,6 +128,14 @@ trait RouteFinding extends SimpleMapTypes {
       else
         reconstructPath(source(current)) ++ List(current)
     reconstructPath(current)
+
+  protected def reconstructAllPaths[A](start: A, finish: A, sources: collection.Map[A, Set[A]]): List[List[A]] =
+    def paths(current: A): List[List[A]] =
+      if current == start then
+        List(List(start))
+      else
+        sources(current).toList.flatMap(p => paths(p).map(_ :+ current))
+    paths(finish)
 
   protected def printColoredPath[A](map: SimpleMap[A], path: List[Pos], colorMapping: A => Int): Unit =
     println()
